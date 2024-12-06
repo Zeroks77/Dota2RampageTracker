@@ -37,16 +37,15 @@ namespace OpenDotaRampage.Helpers
                 }
             }
 
-            if (Interlocked.Increment(ref apiCallCount) > maxCallsPerMinute)
+            if (Interlocked.Increment(ref apiCallCount) >= maxCallsPerMinute)
             {
                 TimeSpan delay = TimeSpan.FromMinutes(1) - (DateTime.UtcNow - lastApiCallReset);
-                Console.WriteLine($"Rate limit exceeded. Delaying for {delay.TotalSeconds} seconds.");
+                Console.WriteLine($"\r\nRate limit exceeded. Delaying for {delay.TotalSeconds} seconds.");
                 await Task.Delay(delay);
                 lock (concurrencyLimiter)
                 {
                     lastApiCallReset = DateTime.UtcNow;
-                    apiCallCount = 1;
-                    Console.WriteLine("Rate limiter reset after delay.");
+                    apiCallCount = 0;
                 }
             }
         }
@@ -62,7 +61,6 @@ namespace OpenDotaRampage.Helpers
                 {
                     rateLimitSemaphore.Release(releaseCount);
                 }
-                Console.WriteLine($"Rate limiter reset at {DateTime.UtcNow}. Released {releaseCount} permits.");
             }
         }
     }

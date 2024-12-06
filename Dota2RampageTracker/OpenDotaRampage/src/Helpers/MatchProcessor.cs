@@ -69,6 +69,7 @@ namespace OpenDotaRampage.Helpers
                 .Select((match, index) => new { match, index })
                 .GroupBy(x => x.index / 500)
                 .Select(g => g.Select(x => x.match).ToList())
+                .Reverse()
                 .ToList();
 
             foreach (var batch in matchBatches)

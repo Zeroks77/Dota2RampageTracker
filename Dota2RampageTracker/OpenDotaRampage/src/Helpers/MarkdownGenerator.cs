@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using OpenDotaRampage.Models;
 
@@ -20,7 +18,12 @@ namespace OpenDotaRampage.Helpers
             // Load cached rampage matches
             var cachedRampageMatches = LoadRampageMatchesFromCache(steamName);
 
-            var allRampageMatches = newRampageMatches.Concat(cachedRampageMatches).ToList();
+            // Combine new and cached rampage matches, ensuring distinct matches
+            var allRampageMatches = newRampageMatches.Concat(cachedRampageMatches)
+                .GroupBy(m => m.MatchId)
+                .Select(g => g.First())
+                .Distinct()
+                .ToList();
 
             using (var writer = new StreamWriter(filePath))
             {
@@ -29,9 +32,9 @@ namespace OpenDotaRampage.Helpers
                 var groupedRampages = allRampageMatches
                     .SelectMany(match => match.Players
                         .Where(player => player.AccountId == playerId) // Filter to include only the player's hero
-                        .Select(player => new { match.MatchId, player.HeroId }))
+                        .Select(player => new { match.MatchId, player.HeroId}))
                     .GroupBy(x => x.HeroId)
-                    .ToDictionary(g => (int)g.Key, g => g.Select(x => x.MatchId).ToList());
+                    .ToDictionary(g => (int)g.Key, g => g.Select(x => new { x.MatchId }).ToList());
 
                 var sortedGroupedRampages = groupedRampages
                     .OrderBy(g => heroData.ContainsKey(g.Key) ? heroData[g.Key].LocalizedName : $"Hero ID {g.Key} (Name not found)")
@@ -51,9 +54,9 @@ namespace OpenDotaRampage.Helpers
                         writer.WriteLine("| Match ID |");
                         writer.WriteLine("|----------|");
 
-                        foreach (var matchId in group.Value)
+                        foreach (var match in group.Value)
                         {
-                            writer.WriteLine($"| [Match URL](https://www.opendota.com/matches/{matchId}) |");
+                            writer.WriteLine($"| [Match URL](https://www.opendota.com/matches/{match.MatchId}) |");
                         }
 
                         writer.WriteLine();
@@ -64,15 +67,18 @@ namespace OpenDotaRampage.Helpers
                         writer.WriteLine("| Match ID |");
                         writer.WriteLine("|----------|");
 
-                        foreach (var matchId in group.Value)
+                        foreach (var match in group.Value)
                         {
-                            writer.WriteLine($"| [Match URL](https://www.opendota.com/matches/{matchId}) |");
+                            writer.WriteLine($"| [Match URL](https://www.opendota.com/matches/{match.MatchId}) |");
                         }
 
                         writer.WriteLine();
                     }
                 }
             }
+
+            // Commit and push the markdown file to the current Git repository
+            GitHelper.CommitAndPush(Directory.GetCurrentDirectory(), playerDirectory, filePath, steamName);
         }
 
         private static List<Match> LoadRampageMatchesFromCache(string playerName)
