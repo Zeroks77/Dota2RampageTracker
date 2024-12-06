@@ -26,7 +26,6 @@ namespace OpenDotaRampage.Helpers
             await rateLimitSemaphore.WaitAsync();
 
             TimeSpan timeUntilReset = resetInterval - (DateTime.UtcNow - lastApiCallReset);
-            Console.WriteLine($"\r\nTime until rate limit resets: {timeUntilReset.TotalSeconds} seconds");
 
             lock (concurrencyLimiter)
             {

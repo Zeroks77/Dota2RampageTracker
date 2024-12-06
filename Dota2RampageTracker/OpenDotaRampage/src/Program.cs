@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using OpenDotaRampage.Helpers;
 using OpenDotaRampage.Models;
 
@@ -51,6 +53,23 @@ class Program
 
         // Fetch hero data
         heroData = await HeroDataFetcher.FetchHeroData(client);
+
+        // Handle CLI options
+        if (args.Length > 0)
+        {
+            switch (args[0])
+            {
+                case "request-parsing":
+                    await RequestParsingForFixedMatches();
+                    return;
+                case "store-match-ids":
+                    StoreMatchIdsLocally(args.Skip(1).ToArray());
+                    return;
+                default:
+                    Console.WriteLine("Invalid option. Use 'request-parsing' or 'store-match-ids'.");
+                    return;
+            }
+        }
 
         // Replace with the player's name you want to check
         Console.WriteLine("Enter the player's name to check for rampages:");
@@ -111,5 +130,48 @@ class Program
         {
             return false;
         }
+    }
+
+   
+       static async Task RequestParsingForFixedMatches()
+    {
+        var matchIds = LoadMatchIdsFromJson("match_ids.json");
+
+        foreach (var matchId in matchIds)
+        {
+            await MatchProcessor.RequestMatchParsing(client, matchId);
+            Console.WriteLine($"Requested parsing for match ID: {matchId}");
+        }
+
+        // Store only the match IDs back into the file
+        StoreMatchIdsLocally(matchIds.Select(id => id.ToString()).ToArray());
+    }
+
+    static void StoreMatchIdsLocally(string[] matchIds)
+    {
+        string filePath = Path.Combine(outputDirectory, "match_ids.txt");
+        var distinctMatchIds = new HashSet<string>(matchIds);
+
+        if (File.Exists(filePath))
+        {
+            var existingMatchIds = File.ReadAllLines(filePath);
+            distinctMatchIds.UnionWith(existingMatchIds);
+        }
+
+        File.WriteAllLines(filePath, distinctMatchIds);
+        Console.WriteLine("Match IDs stored locally.");
+    }
+
+    static List<long> LoadMatchIdsFromJson(string filePath)
+    {
+        if (!File.Exists(filePath))
+        {
+            Console.WriteLine($"File not found: {filePath}");
+            return new List<long>();
+        }
+
+        var jsonData = File.ReadAllText(filePath);
+        var matches = JsonConvert.DeserializeObject<List<Match>>(jsonData);
+        return matches.Select(m => m.MatchId).Distinct().ToList();
     }
 }

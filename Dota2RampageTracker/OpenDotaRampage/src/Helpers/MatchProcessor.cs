@@ -15,7 +15,7 @@ namespace OpenDotaRampage.Helpers
     public static class MatchProcessor
     {
         private static readonly string errorLogFilePath = Path.Combine(Program.outputDirectory, $"{DateTime.UtcNow:HH_mm_ss}_error_log.txt");
-
+        private static string apiKey;
         static MatchProcessor()
         {
             // Ensure the error log file is created
@@ -24,15 +24,44 @@ namespace OpenDotaRampage.Helpers
                 Directory.CreateDirectory(Path.GetDirectoryName(errorLogFilePath));
                 File.Create(errorLogFilePath).Dispose();
             }
+            apiKey = "?api_key=" + Program.apiKey;
         }
 
+        public static async Task RequestMatchParsing(HttpClient client, long matchId)
+        {
+            string url = $"https://api.opendota.com/api/request/{matchId}{apiKey}";
+            var response = await client.PostAsync(url, null);
+            response.EnsureSuccessStatusCode();
+        }
+        public static async Task<bool> IsMatchParsed(HttpClient client, long matchId)
+        {
+            string url = $"https://api.opendota.com/api/request/{matchId}{apiKey}";
+            var response = await client.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var parsed = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
+            return parsed;
+        }
         public static async Task<List<Match>> GetRampageMatches(HttpClient client, long playerId, string steamName)
         {
-            long lastCheckedMatchId = ReadLastCheckedMatchId(steamName);
+            long lastCheckedMatchId = ReadLastCheckedMatchId(steamName); // foreach (var match in matches)
             var matches = await GetPlayerMatches(client, playerId, lastCheckedMatchId);
+            var parsedMatches = new List<Match>();
+            // {
+            //     await RequestMatchParsing(client, match.MatchId);
+            //     Console.WriteLine($"Requested parsing for match ID: {match.MatchId}");
+
+            //     // Wait until the match is parsed
+            //     while (!await IsMatchParsed(client, match.MatchId))
+            //     {
+            //         Console.WriteLine($"Waiting for match ID: {match.MatchId} to be parsed...");
+            //         await Task.Delay(10000); // Wait for 10 seconds before checking again
+            //     }
+            //     parsedMatches.Add(match);
+            // }
             var rampageMatches = new ConcurrentBag<Match>();
 
-            int totalMatches = matches.Count;
+            int totalMatches = matches.Count();
             int processedMatches = 0;
 
             var matchBatches = matches
@@ -50,7 +79,7 @@ namespace OpenDotaRampage.Helpers
                     await RateLimiter.concurrencyLimiter.WaitAsync();
                     try
                     {
-                        long matchId = (long)match["match_id"];
+                        long matchId = match.MatchId;
                         var matchDetails = await GetMatchDetails(client, matchId);
 
                         if (matchDetails != null)
@@ -63,7 +92,6 @@ namespace OpenDotaRampage.Helpers
                                 }
                             }
                         }
-
                         Interlocked.Increment(ref processedMatches);
                         DisplayProgress(processedMatches, totalMatches);
                     }
@@ -76,14 +104,15 @@ namespace OpenDotaRampage.Helpers
                 await Task.WhenAll(tasks);
             }
 
-            if (matches.Count > 0)
+            if (matches.Any())
             {
-                UpdateLastCheckedMatchId(steamName, (long)matches.First()["match_id"]);
+                UpdateLastCheckedMatchId(steamName, matches.Last().MatchId);
                 SaveRampageMatchesToCache(steamName, rampageMatches.ToList());
             }
 
             return rampageMatches.ToList();
         }
+
 
         public static async Task CheckSpecificMatch(HttpClient client, long playerId, long matchId)
         {
@@ -113,15 +142,15 @@ namespace OpenDotaRampage.Helpers
             Console.Write($"\rProcessing matches: {processed}/{total} ({(processed * 100) / total}%) - Time spent: {timeSpent:hh\\:mm\\:ss}");
         }
 
-        private static async Task<JArray> GetPlayerMatches(HttpClient client, long playerId, long lastCheckedMatchId)
+        private static async Task<IEnumerable<Match>> GetPlayerMatches(HttpClient client, long playerId, long lastCheckedMatchId)
         {
             await RateLimiter.EnsureRateLimit();
-            string url = $"https://api.opendota.com/api/players/{playerId}/matches?api_key={Program.apiKey}";
+            string url = $"https://api.opendota.com/api/players/{playerId}/matches";
             var response = await client.GetStringAsync(url);
-            var matches = JArray.Parse(response);
+            var matches =  JsonConvert.DeserializeObject<List<Match>>(response);
 
             // Filter matches to only include those after the last checked match ID
-            var newMatches = new JArray(matches.Where(match => (long)match["match_id"] > lastCheckedMatchId));
+            var newMatches = matches.Where(match => match.MatchId > lastCheckedMatchId);
 
             return newMatches;
         }

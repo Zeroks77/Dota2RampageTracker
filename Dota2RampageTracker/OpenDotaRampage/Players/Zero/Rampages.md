@@ -1,10 +1,11 @@
-Player Zero has got 7 total Rampages
+Player Zero has got 14 total Rampages
 
 ### Anti-Mage
 ![Anti-Mage](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/antimage.png)
 
 | Match ID |
 |----------|
+| [Match URL](https://www.opendota.com/matches/5150851292) |
 | [Match URL](https://www.opendota.com/matches/5150851292) |
 
 ### Broodmother
@@ -13,12 +14,14 @@ Player Zero has got 7 total Rampages
 | Match ID |
 |----------|
 | [Match URL](https://www.opendota.com/matches/4033534317) |
+| [Match URL](https://www.opendota.com/matches/4033534317) |
 
 ### Huskar
 ![Huskar](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/huskar.png)
 
 | Match ID |
 |----------|
+| [Match URL](https://www.opendota.com/matches/5207599129) |
 | [Match URL](https://www.opendota.com/matches/5207599129) |
 
 ### Techies
@@ -27,12 +30,14 @@ Player Zero has got 7 total Rampages
 | Match ID |
 |----------|
 | [Match URL](https://www.opendota.com/matches/7033836142) |
+| [Match URL](https://www.opendota.com/matches/7033836142) |
 
 ### Timbersaw
 ![Timbersaw](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/shredder.png)
 
 | Match ID |
 |----------|
+| [Match URL](https://www.opendota.com/matches/6696217177) |
 | [Match URL](https://www.opendota.com/matches/6696217177) |
 
 ### Viper
@@ -41,11 +46,13 @@ Player Zero has got 7 total Rampages
 | Match ID |
 |----------|
 | [Match URL](https://www.opendota.com/matches/5410339630) |
+| [Match URL](https://www.opendota.com/matches/5410339630) |
 
 ### Zeus
 ![Zeus](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/zuus.png)
 
 | Match ID |
 |----------|
+| [Match URL](https://www.opendota.com/matches/4273659076) |
 | [Match URL](https://www.opendota.com/matches/4273659076) |
 
