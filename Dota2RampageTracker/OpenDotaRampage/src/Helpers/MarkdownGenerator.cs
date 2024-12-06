@@ -15,6 +15,12 @@ namespace OpenDotaRampage.Helpers
             Directory.CreateDirectory(playerDirectory);
             string filePath = Path.Combine(playerDirectory, "Rampages.md");
 
+            // Delete the existing markdown file if it exists
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
             // Load cached rampage matches
             var cachedRampageMatches = LoadRampageMatchesFromCache(steamName);
 
@@ -32,9 +38,9 @@ namespace OpenDotaRampage.Helpers
                 var groupedRampages = allRampageMatches
                     .SelectMany(match => match.Players
                         .Where(player => player.AccountId == playerId) // Filter to include only the player's hero
-                        .Select(player => new { match.MatchId, player.HeroId}))
+                        .Select(player => new { match.MatchId, player.HeroId, IsNew = newRampageMatches.Any(m => m.MatchId == match.MatchId) }))
                     .GroupBy(x => x.HeroId)
-                    .ToDictionary(g => (int)g.Key, g => g.Select(x => new { x.MatchId }).ToList());
+                    .ToDictionary(g => (int)g.Key, g => g.Select(x => new { x.MatchId, x.IsNew }).ToList());
 
                 var sortedGroupedRampages = groupedRampages
                     .OrderBy(g => heroData.ContainsKey(g.Key) ? heroData[g.Key].LocalizedName : $"Hero ID {g.Key} (Name not found)")
@@ -51,12 +57,13 @@ namespace OpenDotaRampage.Helpers
                         writer.WriteLine($"### {hero.LocalizedName}");
                         writer.WriteLine($"![{hero.LocalizedName}]({heroIconUrl})\n");
 
-                        writer.WriteLine("| Match ID |");
-                        writer.WriteLine("|----------|");
+                        writer.WriteLine("| Match ID | Source |");
+                        writer.WriteLine("|----------|--------|");
 
                         foreach (var match in group.Value)
                         {
-                            writer.WriteLine($"| [Match URL](https://www.opendota.com/matches/{match.MatchId}) |");
+                            string source = match.IsNew ? "New" : "Cached";
+                            writer.WriteLine($"| [Match URL](https://www.opendota.com/matches/{match.MatchId}) | {source} |");
                         }
 
                         writer.WriteLine();
@@ -64,12 +71,13 @@ namespace OpenDotaRampage.Helpers
                     else
                     {
                         writer.WriteLine($"### Hero ID {heroId} (Name not found)");
-                        writer.WriteLine("| Match ID |");
-                        writer.WriteLine("|----------|");
+                        writer.WriteLine("| Match ID | Source |");
+                        writer.WriteLine("|----------|--------|");
 
                         foreach (var match in group.Value)
                         {
-                            writer.WriteLine($"| [Match URL](https://www.opendota.com/matches/{match.MatchId}) |");
+                            string source = match.IsNew ? "New" : "Cached";
+                            writer.WriteLine($"| [Match URL](https://www.opendota.com/matches/{match.MatchId}) | {source} |");
                         }
 
                         writer.WriteLine();
