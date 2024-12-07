@@ -89,6 +89,31 @@ namespace OpenDotaRampage.Helpers
             GitHelper.CommitAndPush(Directory.GetCurrentDirectory(), playerDirectory, filePath, steamName);
         }
 
+        public static void GenerateMainReadme(Dictionary<string, long> players)
+        {
+            string filePath = Path.Combine(Program.outputDirectory, "README.md");
+
+            using (var writer = new StreamWriter(filePath))
+            {
+                writer.WriteLine("# Dota 2 Rampage Tracker");
+                writer.WriteLine("This repository contains rampage tracking data for various Dota 2 players.\n");
+
+                writer.WriteLine("## Players");
+                writer.WriteLine("| Player Name | Rampage File |");
+                writer.WriteLine("|-------------|---------------|");
+
+                foreach (var player in players)
+                {
+                    string playerName = player.Key;
+                    string rampageFilePath = Path.Combine(playerName, "Rampages.md");
+                    writer.WriteLine($"| {playerName} | [Rampages](./{rampageFilePath}) |");
+                }
+            }
+
+            // Commit and push the main README file to the current Git repository
+            GitHelper.CommitAndPush(Directory.GetCurrentDirectory(), Program.outputDirectory, filePath, "Main README");
+        }
+
         private static List<Match> LoadRampageMatchesFromCache(string playerName)
         {
             string playerDirectory = Path.Combine(Program.outputDirectory, playerName);
