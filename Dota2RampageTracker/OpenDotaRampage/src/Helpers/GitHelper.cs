@@ -8,6 +8,12 @@ namespace OpenDotaRampage.Helpers
     {
         public static void CommitAndPush(string repoPath, string playerDirectory, string filePath, string playerName)
         {
+            // Ensure the repository is initialized in the correct directory
+            if (!Directory.Exists(Path.Combine(repoPath, ".git")))
+            {
+                RunGitCommand("init", repoPath);
+            }
+
             // Ensure the remote repository is set up
             EnsureRemoteRepository(repoPath);
 
@@ -39,7 +45,7 @@ namespace OpenDotaRampage.Helpers
             // Set the upstream branch if not already set
             if (!IsUpstreamSet(repoPath))
             {
-                RunGitCommand("push --set-upstream origin main", repoPath);
+                RunGitCommand("push --set-upstream origin master", repoPath);
             }
             else
             {
@@ -52,6 +58,7 @@ namespace OpenDotaRampage.Helpers
         {
             var gitHubConfig = AppConfigurationController.LoadGitHubConfiguration();
             string repoUrl = gitHubConfig["RepoUrl"];
+            string token = Environment.GetEnvironmentVariable("GH_TOKEN");
 
             // Check if the remote repository is set up
             var processInfo = new ProcessStartInfo("git", "remote -v")
@@ -72,7 +79,7 @@ namespace OpenDotaRampage.Helpers
 
                 if (!output.Contains("origin"))
                 {
-                    RunGitCommand($"remote add origin {repoUrl}", repoPath);
+                    RunGitCommand($"remote add origin https://{token}@{repoUrl}", repoPath);
                 }
             }
         }
@@ -100,10 +107,10 @@ namespace OpenDotaRampage.Helpers
                 Console.WriteLine($"Git command output: {output}");
                 Console.WriteLine($"Git command error: {error}");
 
-                // Ignore line ending warnings
+                // Ignore line ending warnings and handle errors gracefully
                 if (process.ExitCode != 0 && !error.Contains("LF will be replaced by CRLF"))
                 {
-                    throw new Exception($"Git command failed: {error}");
+                    Console.WriteLine($"Git command failed: {error}");
                 }
             }
         }
