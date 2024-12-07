@@ -23,4 +23,4 @@ jobs:
         run: dotnet build 'Dota2RampageTracker/RampageTracker.sln' --no-restore
 
       - name: Run the script to check player stats
-        run: dotnet run --project 'Dota2RampageTracker/RampageTracker.csproj'
+        run: dotnet run --project 'Dota2RampageTracker\OpenDotaRampage\OpenDotaRampage.csproj'
