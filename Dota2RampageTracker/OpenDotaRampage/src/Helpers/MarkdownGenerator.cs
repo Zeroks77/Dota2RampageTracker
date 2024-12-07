@@ -83,9 +83,6 @@ namespace OpenDotaRampage.Helpers
                     }
                 }
             }
-
-            // Commit and push the markdown file to the current Git repository
-            GitHelper.CommitAndPush(Directory.GetCurrentDirectory(), playerDirectory, filePath, steamName);
         }
 
         public static void GenerateMainReadme(Dictionary<string, string> steamNames)
@@ -112,9 +109,6 @@ namespace OpenDotaRampage.Helpers
             }
 
             Console.WriteLine("Main README generated successfully.");
-
-            // Commit and push the main README file to the current Git repository
-            GitHelper.CommitAndPush(Directory.GetCurrentDirectory(), Directory.GetParent(Program.outputDirectory).FullName, filePath, "Main README");
         }
 
         private static List<Match> LoadRampageMatchesFromCache(string playerName)

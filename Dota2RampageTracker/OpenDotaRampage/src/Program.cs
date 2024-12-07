@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using dotenv.net;
 using Newtonsoft.Json;
 using OpenDotaRampage.Helpers;
 using OpenDotaRampage.Models;
@@ -14,11 +16,14 @@ class Program
     public static readonly HttpClient client = new HttpClient();
     public static string apiKey;
     public static readonly Stopwatch stopwatch = new Stopwatch();
-    private static Dictionary<string, long> players;
+    private static List<long> playerIds;
     private static Dictionary<int, Hero> heroData;
 
     static async Task Main(string[] args)
     {
+        // Load environment variables from .env file
+        DotEnv.Load();
+
         // Initialize the rate limit reset timer
         RateLimiter.Initialize();
 
@@ -33,31 +38,28 @@ class Program
         }
 
         // Load configuration from environment variables
-        apiKey = Environment.GetEnvironmentVariable("ApiKey");
-        var playersJson = Environment.GetEnvironmentVariable("Players");
+        apiKey = Environment.GetEnvironmentVariable("API_KEY");
+        var playersCsv = Environment.GetEnvironmentVariable("PLAYERS");
         Console.WriteLine($"API Key: {apiKey}");
-        Console.WriteLine($"Players JSON: {playersJson}");
+        Console.WriteLine($"Players CSV: {playersCsv}");
 
-        players = JsonConvert.DeserializeObject<Dictionary<string, long>>(playersJson);
-        Console.WriteLine("Players:");
-        foreach (var player in players)
+        playerIds = playersCsv.Split(',').Select(long.Parse).ToList();
+        Console.WriteLine("Player IDs:");
+        foreach (var playerId in playerIds)
         {
-            Console.WriteLine($"  {player.Key}: {player.Value}");
+            Console.WriteLine($"  {playerId}");
         }
 
         // Fetch hero data
         heroData = await HeroDataFetcher.FetchHeroData(client);
         Console.WriteLine("Hero data fetched successfully.");
 
-        // Replace with the player's name you want to check
-        foreach (var player in players)
+        // Process each player ID
+        foreach (var playerId in playerIds)
         {
-            string playerName = player.Key;
-            long playerId = player.Value;
-
             // Fetch player's Steam name
             string steamName = await HeroDataFetcher.GetPlayerSteamName(client, playerId);
-            Console.WriteLine($"Player: {playerName}, Steam Name: {steamName}");
+            Console.WriteLine($"Player ID: {playerId}, Steam Name: {steamName}");
 
             var rampageMatches = await MatchProcessor.GetRampageMatches(client, playerId, steamName);
 
@@ -68,6 +70,9 @@ class Program
 
             MarkdownGenerator.GenerateMarkdown(steamName, rampageMatches, heroData, (int)playerId);
         }
+
+        // Generate the main README file with quick links to all players' markdown rampage files
+        MarkdownGenerator.GenerateMainReadme(playerIds.ToDictionary(id => id.ToString(), id => id.ToString()));
 
         // Stop the stopwatch
         stopwatch.Stop();
