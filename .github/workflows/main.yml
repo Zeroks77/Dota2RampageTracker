@@ -15,33 +15,19 @@ jobs:
       PLAYERS: ${{ secrets.PLAYERS }}
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Set up .NET
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: '9.0.x' # Use the appropriate .NET version
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '9.0.x'
 
-    - name: Restore dependencies
-      run: dotnet restore Dota2RampageTracker/RampageTracker.sln
+      - name: Restore dependencies
+        run: dotnet restore Dota2RampageTracker/OpenDotaRampage/OpenDotaRampage.csproj
 
-    - name: Build the project
-      run: dotnet build --configuration Release Dota2RampageTracker/RampageTracker.sln
+      - name: Build
+        run: dotnet build Dota2RampageTracker/OpenDotaRampage/OpenDotaRampage.csproj --no-restore
 
-    - name: Run Rampage Tracker
-      run: dotnet run --project Dota2RampageTracker\OpenDotaRampage\OpenDotaRampage.csproj
-      env:
-        ApiKey: ${{ secrets.API_KEY }}
-        Players: ${{ secrets.PLAYERS }}
-        GitHubToken: ${{ secrets.GH_TOKEN }}
-
-    - name: Commit and push changes
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git add .
-        git commit -m "Daily update"
-        git push
-      env:
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Run the application
+        run: dotnet run --project Dota2RampageTracker/OpenDotaRampage/OpenDotaRampage.csproj
