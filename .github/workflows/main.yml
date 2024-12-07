@@ -21,7 +21,7 @@ jobs:
     - name: Set up .NET
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: '6.0.x' # Use the appropriate .NET version
+        dotnet-version: '9.0.x' # Use the appropriate .NET version
 
     - name: Restore dependencies
       run: dotnet restore Dota2RampageTracker/RampageTracker.sln
@@ -30,7 +30,7 @@ jobs:
       run: dotnet build --configuration Release Dota2RampageTracker/RampageTracker.sln
 
     - name: Run Rampage Tracker
-      run: dotnet run --project Dota2RampageTracker/OpenDotaRampage/OpenDotaRampage.csproj
+      run: dotnet run --project Dota2RampageTracker\OpenDotaRampage\OpenDotaRampage.csproj
       env:
         ApiKey: ${{ secrets.API_KEY }}
         Players: ${{ secrets.PLAYERS }}
