@@ -91,7 +91,7 @@ namespace OpenDotaRampage.Helpers
 
         public static void GenerateMainReadme(Dictionary<string, long> players)
         {
-            string filePath = Path.Combine(Program.outputDirectory, "README.md");
+            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "README.md");
 
             using (var writer = new StreamWriter(filePath))
             {
@@ -105,13 +105,13 @@ namespace OpenDotaRampage.Helpers
                 foreach (var player in players)
                 {
                     string playerName = player.Key;
-                    string rampageFilePath = Path.Combine(playerName, "Rampages.md");
+                    string rampageFilePath = Path.Combine(Program.outputDirectory, playerName, "Rampages.md");
                     writer.WriteLine($"| {playerName} | [Rampages](./{rampageFilePath}) |");
                 }
             }
 
             // Commit and push the main README file to the current Git repository
-            GitHelper.CommitAndPush(Directory.GetCurrentDirectory(), Program.outputDirectory, filePath, "Main README");
+            GitHelper.CommitAndPush(Directory.GetCurrentDirectory(), Directory.GetCurrentDirectory(), filePath, "Main README");
         }
 
         private static List<Match> LoadRampageMatchesFromCache(string playerName)
