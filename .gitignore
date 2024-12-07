@@ -396,3 +396,12 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Ignore GitHub settings file
+githubsettings.json
+
+# Ignore error logs
+*_error_log.txt
+
+# Ignore Appsettings
+appsettings.json
