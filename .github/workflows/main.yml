@@ -24,15 +24,10 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore 'Dota2RampageTracker/OpenDotaRampage/OpenDotaRampage.csproj'
+        run: dotnet restore Dota2RampageTracker/OpenDotaRampage/OpenDotaRampage.csproj
 
       - name: Build
-        run: dotnet build 'Dota2RampageTracker/OpenDotaRampage/OpenDotaRampage.csproj' --no-restore
+        run: dotnet build Dota2RampageTracker/OpenDotaRampage/OpenDotaRampage.csproj --no-restore
 
       - name: Run the application
-        run: dotnet run --project 'Dota2RampageTracker/OpenDotaRampage/OpenDotaRampage.csproj'
-
-      env:
-        ApiKey: ${{ secrets.API_KEY }}
-        Players: ${{ secrets.PLAYERS }}
-        GitHubToken: ${{ secrets.GH_TOKEN }}
+        run: dotnet run --project Dota2RampageTracker/OpenDotaRampage/OpenDotaRampage.csproj
