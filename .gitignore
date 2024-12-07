@@ -405,3 +405,6 @@ githubsettings.json
 
 # Ignore Appsettings
 appsettings.json
+
+# Ignore Environmentvariables
+.env

@@ -56,8 +56,7 @@ namespace OpenDotaRampage.Helpers
 
         private static void EnsureRemoteRepository(string repoPath)
         {
-            var gitHubConfig = AppConfigurationController.LoadGitHubConfiguration();
-            string repoUrl = gitHubConfig["RepoUrl"];
+            string repoUrl = Environment.GetEnvironmentVariable("REPO_URL");
             string token = Environment.GetEnvironmentVariable("GH_TOKEN");
 
             // Check if the remote repository is set up
