@@ -18,6 +18,7 @@ class Program
     public static readonly Stopwatch stopwatch = new Stopwatch();
     private static Dictionary<string, long> players;
     private static Dictionary<int, Hero> heroData;
+    private static Dictionary<string, string> steamNames = new Dictionary<string, string>();
 
     static async Task Main(string[] args)
     {
@@ -79,6 +80,7 @@ class Program
 
             // Fetch player's Steam name
             string steamName = await HeroDataFetcher.GetPlayerSteamName(client, playerId);
+            steamNames[playerName] = steamName;
 
             var rampageMatches = await MatchProcessor.GetRampageMatches(client, playerId, steamName);
 
@@ -91,7 +93,7 @@ class Program
         }
 
         // Generate the main README file with quick links to all players' markdown rampage files
-        MarkdownGenerator.GenerateMainReadme(players);
+        MarkdownGenerator.GenerateMainReadme(steamNames);
 
         // Stop the stopwatch
         stopwatch.Stop();

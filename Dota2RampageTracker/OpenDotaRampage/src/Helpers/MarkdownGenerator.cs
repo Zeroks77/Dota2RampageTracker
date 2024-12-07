@@ -88,7 +88,7 @@ namespace OpenDotaRampage.Helpers
             GitHelper.CommitAndPush(Directory.GetCurrentDirectory(), playerDirectory, filePath, steamName);
         }
 
-        public static void GenerateMainReadme(Dictionary<string, long> players)
+        public static void GenerateMainReadme(Dictionary<string, string> steamNames)
         {
             string filePath = Path.Combine(Directory.GetParent(Program.outputDirectory).FullName, "README.md");
 
@@ -101,10 +101,10 @@ namespace OpenDotaRampage.Helpers
                 writer.WriteLine("| Player Name | Rampage File |");
                 writer.WriteLine("|-------------|---------------|");
 
-                foreach (var player in players)
+                foreach (var steamName in steamNames)
                 {
-                    string playerName = player.Key;
-                    string rampageFilePath = Path.Combine(Program.outputDirectory, playerName, "Rampages.md");
+                    string playerName = steamName.Value;
+                    string rampageFilePath = Path.Combine(Program.outputDirectory, steamName.Key, "Rampages.md").Replace("\\", "/");
                     writer.WriteLine($"| {playerName} | [Rampages](./{rampageFilePath}) |");
                 }
             }
