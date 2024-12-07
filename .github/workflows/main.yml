@@ -35,13 +35,3 @@ jobs:
         ApiKey: ${{ secrets.API_KEY }}
         Players: ${{ secrets.PLAYERS }}
         GitHubToken: ${{ secrets.GH_TOKEN }}
-
-    - name: Commit and push changes
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git add .
-        git commit -m "Daily update"
-        git push
-      env:
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
