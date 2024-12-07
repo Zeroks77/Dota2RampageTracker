@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace OpenDotaRampage.Helpers
 {
-    public static class ConfigurationManager
+    public static class AppConfigurationController
     {
         private static readonly string configFilePath = "appsettings.json";
         private static readonly string gitHubConfigFilePath = "githubsettings.json";

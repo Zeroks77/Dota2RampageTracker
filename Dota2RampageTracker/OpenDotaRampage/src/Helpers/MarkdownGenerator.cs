@@ -92,6 +92,8 @@ namespace OpenDotaRampage.Helpers
         {
             string filePath = Path.Combine(Directory.GetParent(Program.outputDirectory).FullName, "README.md");
 
+            Console.WriteLine($"Generating main README at: {filePath}");
+
             using (var writer = new StreamWriter(filePath))
             {
                 writer.WriteLine("# Dota 2 Rampage Tracker");
@@ -108,6 +110,8 @@ namespace OpenDotaRampage.Helpers
                     writer.WriteLine($"| {playerName} | [Rampages](./{rampageFilePath}) |");
                 }
             }
+
+            Console.WriteLine("Main README generated successfully.");
 
             // Commit and push the main README file to the current Git repository
             GitHelper.CommitAndPush(Directory.GetCurrentDirectory(), Directory.GetParent(Program.outputDirectory).FullName, filePath, "Main README");

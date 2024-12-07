@@ -38,17 +38,17 @@ class Program
         // Check if the configuration file exists
         if (!File.Exists("appsettings.json"))
         {
-            OpenDotaRampage.Helpers.ConfigurationManager.CreateConfigurationFile();
+            AppConfigurationController.CreateConfigurationFile();
         }
 
         // Check if the GitHub configuration file exists
         if (!File.Exists("githubsettings.json"))
         {
-            OpenDotaRampage.Helpers.ConfigurationManager.CreateGitHubConfigurationFile();
+            AppConfigurationController.CreateGitHubConfigurationFile();
         }
 
         // Load configuration
-        var config = OpenDotaRampage.Helpers.ConfigurationManager.LoadConfiguration();
+        var config = AppConfigurationController.LoadConfiguration();
         apiKey = config["ApiKey"];
         players = config.GetSection("Players").Get<Dictionary<string, long>>();
 
