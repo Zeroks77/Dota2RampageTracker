@@ -35,10 +35,19 @@ class Program
         // Load configuration from environment variables
         apiKey = Environment.GetEnvironmentVariable("ApiKey");
         var playersJson = Environment.GetEnvironmentVariable("Players");
+        Console.WriteLine($"API Key: {apiKey}");
+        Console.WriteLine($"Players JSON: {playersJson}");
+
         players = JsonConvert.DeserializeObject<Dictionary<string, long>>(playersJson);
+        Console.WriteLine("Players:");
+        foreach (var player in players)
+        {
+            Console.WriteLine($"  {player.Key}: {player.Value}");
+        }
 
         // Fetch hero data
         heroData = await HeroDataFetcher.FetchHeroData(client);
+        Console.WriteLine("Hero data fetched successfully.");
 
         // Replace with the player's name you want to check
         foreach (var player in players)
@@ -48,6 +57,7 @@ class Program
 
             // Fetch player's Steam name
             string steamName = await HeroDataFetcher.GetPlayerSteamName(client, playerId);
+            Console.WriteLine($"Player: {playerName}, Steam Name: {steamName}");
 
             var rampageMatches = await MatchProcessor.GetRampageMatches(client, playerId, steamName);
 
@@ -61,6 +71,7 @@ class Program
 
         // Stop the stopwatch
         stopwatch.Stop();
+        Console.WriteLine($"Total time spent: {stopwatch.Elapsed:hh\\:mm\\:ss}");
     }
 
     static async Task<bool> IsApiAlive()
