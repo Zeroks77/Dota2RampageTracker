@@ -24,13 +24,13 @@ jobs:
         dotnet-version: '6.0.x' # Use the appropriate .NET version
 
     - name: Restore dependencies
-      run: dotnet restore Dota2RampageTracker/RampageTracker.sln
+      run: dotnet restore Dota2RampageTracker\Rampage Tracker.sln
 
     - name: Build the project
-      run: dotnet build --configuration Release Dota2RampageTracker/RampageTracker.sln
+      run: dotnet build --configuration Release Dota2RampageTracker\Rampage Tracker.sln
 
     - name: Run Rampage Tracker
-      run: dotnet run --project Dota2RampageTracker/OpenDotaRampage/OpenDotaRampage.csproj
+      run: dotnet run --project Dota2RampageTracker\OpenDotaRampage\OpenDotaRampage.csproj
       env:
         ApiKey: ${{ secrets.API_KEY }}
         Players: ${{ secrets.PLAYERS }}
