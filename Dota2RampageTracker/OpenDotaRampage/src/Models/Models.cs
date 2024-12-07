@@ -49,4 +49,15 @@ namespace OpenDotaRampage.Models
         [JsonProperty("legs")]
         public int Legs { get; set; }
     }
+    public class JobResponse
+    {
+        [JsonProperty("job")]
+        public Job Job { get; set; }
+    }
+
+    public class Job
+    {
+        [JsonProperty("jobId")]
+        public string JobId { get; set; }
+    }
 }

@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OpenDotaRampage.Models;
 
 namespace OpenDotaRampage.Helpers
@@ -16,6 +15,7 @@ namespace OpenDotaRampage.Helpers
     {
         private static readonly string errorLogFilePath = Path.Combine(Program.outputDirectory, $"{DateTime.UtcNow:HH_mm_ss}_error_log.txt");
         private static string apiKey;
+
         static MatchProcessor()
         {
             // Ensure the error log file is created
@@ -27,38 +27,39 @@ namespace OpenDotaRampage.Helpers
             apiKey = "?api_key=" + Program.apiKey;
         }
 
-        public static async Task RequestMatchParsing(HttpClient client, long matchId)
+        public static async Task<string> RequestMatchParsing(HttpClient client, long matchId)
         {
             string url = $"https://api.opendota.com/api/request/{matchId}{apiKey}";
             var response = await client.PostAsync(url, null);
             response.EnsureSuccessStatusCode();
-        }
-        public static async Task<bool> IsMatchParsed(HttpClient client, long matchId)
-        {
-            string url = $"https://api.opendota.com/api/request/{matchId}{apiKey}";
-            var response = await client.GetAsync(url);
-            response.EnsureSuccessStatusCode();
 
-            var parsed = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
-            return parsed;
+            var jobResponse = JsonConvert.DeserializeObject<JobResponse>(await response.Content.ReadAsStringAsync());
+            return jobResponse.Job.JobId;
         }
+
+        public static async Task<bool> IsMatchParsed(HttpClient client, string jobId)
+        {
+            string url = $"https://api.opendota.com/api/request/{jobId}{apiKey}";
+            try
+            {
+                var response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                var jobStatus = JsonConvert.DeserializeObject<JobResponse>(await response.Content.ReadAsStringAsync());
+                return response.StatusCode == System.Net.HttpStatusCode.OK;;
+            }
+            catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.BadRequest || ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                // Log the error and return false to skip the match
+                LogError(jobId, ex.Message);
+                return false;
+            }
+        }
+
         public static async Task<List<Match>> GetRampageMatches(HttpClient client, long playerId, string steamName)
         {
-            long lastCheckedMatchId = ReadLastCheckedMatchId(steamName); // foreach (var match in matches)
+            long lastCheckedMatchId = ReadLastCheckedMatchId(steamName);
             var matches = await GetPlayerMatches(client, playerId, lastCheckedMatchId);
-            var parsedMatches = new List<Match>();
-            // {
-            //     await RequestMatchParsing(client, match.MatchId);
-            //     Console.WriteLine($"Requested parsing for match ID: {match.MatchId}");
-
-            //     // Wait until the match is parsed
-            //     while (!await IsMatchParsed(client, match.MatchId))
-            //     {
-            //         Console.WriteLine($"Waiting for match ID: {match.MatchId} to be parsed...");
-            //         await Task.Delay(10000); // Wait for 10 seconds before checking again
-            //     }
-            //     parsedMatches.Add(match);
-            // }
             var rampageMatches = new ConcurrentBag<Match>();
 
             int totalMatches = matches.Count();
@@ -80,6 +81,16 @@ namespace OpenDotaRampage.Helpers
                     try
                     {
                         long matchId = match.MatchId;
+                        var jobId = await RequestMatchParsing(client, matchId);
+                        Console.WriteLine($"Requested parsing for match ID: {matchId}, Job ID: {jobId}");
+
+                        // Wait until the match is parsed
+                        while (!await IsMatchParsed(client, jobId))
+                        {
+                            Console.WriteLine($"Waiting for match ID: {matchId} to be parsed...");
+                            await Task.Delay(10000); // Wait for 10 seconds before checking again
+                        }
+
                         var matchDetails = await GetMatchDetails(client, matchId);
 
                         if (matchDetails != null)
@@ -92,6 +103,7 @@ namespace OpenDotaRampage.Helpers
                                 }
                             }
                         }
+
                         Interlocked.Increment(ref processedMatches);
                         DisplayProgress(processedMatches, totalMatches);
                     }
@@ -112,7 +124,6 @@ namespace OpenDotaRampage.Helpers
 
             return rampageMatches.ToList();
         }
-
 
         public static async Task CheckSpecificMatch(HttpClient client, long playerId, long matchId)
         {
@@ -147,7 +158,7 @@ namespace OpenDotaRampage.Helpers
             await RateLimiter.EnsureRateLimit();
             string url = $"https://api.opendota.com/api/players/{playerId}/matches";
             var response = await client.GetStringAsync(url);
-            var matches =  JsonConvert.DeserializeObject<List<Match>>(response);
+            var matches = JsonConvert.DeserializeObject<List<Match>>(response);
 
             // Filter matches to only include those after the last checked match ID
             var newMatches = matches.Where(match => match.MatchId > lastCheckedMatchId);
@@ -175,16 +186,15 @@ namespace OpenDotaRampage.Helpers
             catch (Exception ex)
             {
                 // Log errors to a separate log file
-                LogError(matchId, ex.Message);
+                LogError(matchId.ToString(), ex.Message);
                 return null;
             }
         }
 
-        private static void LogError(long matchId, string errorMessage)
+        private static void LogError(string jobId, string errorMessage)
         {
             string timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            string matchUrl = $"https://www.opendota.com/matches/{matchId}";
-            string logMessage = $"Error - {timestamp} - {matchUrl} - {errorMessage}";
+            string logMessage = $"Error - {timestamp} - Job ID: {jobId} - {errorMessage}";
 
             lock (errorLogFilePath)
             {
@@ -218,13 +228,25 @@ namespace OpenDotaRampage.Helpers
             File.WriteAllText(lastCheckedMatchFile, matchId.ToString());
         }
 
-        private static void SaveRampageMatchesToCache(string playerName, List<Match> rampageMatches)
+        private static void SaveRampageMatchesToCache(string playerName, List<Match> newRampageMatches)
         {
             string playerDirectory = Path.Combine(Program.outputDirectory, playerName);
             Directory.CreateDirectory(playerDirectory);
             string cacheFilePath = Path.Combine(playerDirectory, "RampageMatchesCache.json");
 
-            File.WriteAllText(cacheFilePath, JsonConvert.SerializeObject(rampageMatches, Formatting.Indented));
+            List<Match> cachedRampageMatches = new List<Match>();
+            if (File.Exists(cacheFilePath))
+            {
+                var jsonData = File.ReadAllText(cacheFilePath);
+                cachedRampageMatches = JsonConvert.DeserializeObject<List<Match>>(jsonData);
+            }
+
+            var allRampageMatches = cachedRampageMatches.Concat(newRampageMatches)
+                .GroupBy(m => m.MatchId)
+                .Select(g => g.First())
+                .ToList();
+
+            File.WriteAllText(cacheFilePath, JsonConvert.SerializeObject(allRampageMatches, Formatting.Indented));
         }
     }
 }
