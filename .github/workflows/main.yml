@@ -11,8 +11,8 @@ jobs:
 
     env:
       API_KEY: ${{ secrets.API_KEY }}
-      PLAYERS: ${{ secrets.PLAYERS }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PLAYERS: ${{ secrets.PLAYERS }}
 
     steps:
     - name: Checkout repository
@@ -34,13 +34,12 @@ jobs:
       env:
         ApiKey: ${{ secrets.API_KEY }}
         Players: ${{ secrets.PLAYERS }}
+        GitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Commit and push changes
       run: |
-        git config --global user.name "${{ secrets.GIT_USERNAME }}"
-        git config --global user.email "${{ secrets.GIT_EMAIL }}"
         git add .
         git commit -m "Daily update"
         git push
       env:
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

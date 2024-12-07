@@ -16,7 +16,7 @@ class Program
     public static readonly HttpClient client = new HttpClient();
     public static string apiKey;
     public static readonly Stopwatch stopwatch = new Stopwatch();
-    private static List<long> playerIds;
+    private static List<long> players;
     private static Dictionary<int, Hero> heroData;
 
     static async Task Main(string[] args)
@@ -40,26 +40,44 @@ class Program
         // Load configuration from environment variables
         apiKey = Environment.GetEnvironmentVariable("API_KEY");
         var playersCsv = Environment.GetEnvironmentVariable("PLAYERS");
-        Console.WriteLine($"API Key: {apiKey}");
-        Console.WriteLine($"Players CSV: {playersCsv}");
 
-        playerIds = playersCsv.Split(',').Select(long.Parse).ToList();
-        Console.WriteLine("Player IDs:");
-        foreach (var playerId in playerIds)
+        // Check if the required environment variables exist
+        if (string.IsNullOrEmpty(playersCsv))
         {
-            Console.WriteLine($"  {playerId}");
+            Console.WriteLine("Error: PLAYERS environment variable is missing.");
+            return;
         }
+
+        // Parse the players CSV into a list of long
+        players = playersCsv.Split(',').Select(long.Parse).ToList();
 
         // Fetch hero data
         heroData = await HeroDataFetcher.FetchHeroData(client);
-        Console.WriteLine("Hero data fetched successfully.");
 
-        // Process each player ID
-        foreach (var playerId in playerIds)
+        // Determine the total number of new matches for all players
+        int totalNewMatches = 0;
+        foreach (var playerId in players)
+        {
+            long lastCheckedMatchId = MatchProcessor.ReadLastCheckedMatchId(playerId.ToString());
+            var matches = await MatchProcessor.GetPlayerMatches(client, playerId, lastCheckedMatchId);
+            totalNewMatches += matches.Count();
+        }
+
+        // Set the rate limit based on the total number of new matches
+        if (totalNewMatches < 2000)
+        {
+            RateLimiter.SetRateLimit(60, false); // 60 calls per minute without API key
+        }
+        else
+        {
+            RateLimiter.SetRateLimit(1100, true); // Use API key and existing rate limiting logic
+        }
+
+        // Process each player
+        foreach (var playerId in players)
         {
             // Fetch player's Steam name
             string steamName = await HeroDataFetcher.GetPlayerSteamName(client, playerId);
-            Console.WriteLine($"Player ID: {playerId}, Steam Name: {steamName}");
 
             var rampageMatches = await MatchProcessor.GetRampageMatches(client, playerId, steamName);
 
@@ -71,12 +89,8 @@ class Program
             MarkdownGenerator.GenerateMarkdown(steamName, rampageMatches, heroData, (int)playerId);
         }
 
-        // Generate the main README file with quick links to all players' markdown rampage files
-        MarkdownGenerator.GenerateMainReadme(playerIds.ToDictionary(id => id.ToString(), id => id.ToString()));
-
         // Stop the stopwatch
         stopwatch.Stop();
-        Console.WriteLine($"Total time spent: {stopwatch.Elapsed:hh\\:mm\\:ss}");
     }
 
     static async Task<bool> IsApiAlive()

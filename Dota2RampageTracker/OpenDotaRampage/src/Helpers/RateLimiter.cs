@@ -7,7 +7,8 @@ namespace OpenDotaRampage.Helpers
     public static class RateLimiter
     {
         public static readonly SemaphoreSlim concurrencyLimiter = new SemaphoreSlim(10); // Increase concurrency limit
-        private static readonly int maxCallsPerMinute = 1100;
+        public static bool useApiKey = false;
+        private static int maxCallsPerMinute = 60;
         private static int apiCallCount = 0;
         private static DateTime lastApiCallReset = DateTime.UtcNow;
         private static readonly SemaphoreSlim rateLimitSemaphore = new SemaphoreSlim(maxCallsPerMinute, maxCallsPerMinute);
@@ -19,6 +20,14 @@ namespace OpenDotaRampage.Helpers
             // Initialize the rate limit reset timer
             rateLimitResetTimer = new Timer(ResetRateLimiter, null, resetInterval, resetInterval);
             Console.WriteLine("Rate limiter initialized.");
+        }
+
+        public static void SetRateLimit(int callsPerMinute, bool useKey)
+        {
+            maxCallsPerMinute = callsPerMinute;
+            useApiKey = useKey;
+            rateLimitSemaphore.Release(maxCallsPerMinute - rateLimitSemaphore.CurrentCount);
+            Console.WriteLine($"Rate limit set to {callsPerMinute} calls per minute. Use API key: {useKey}");
         }
 
         public static async Task EnsureRateLimit()
@@ -61,6 +70,7 @@ namespace OpenDotaRampage.Helpers
                 {
                     rateLimitSemaphore.Release(releaseCount);
                 }
+                Console.WriteLine($"Rate limiter reset at {DateTime.UtcNow}. Released {releaseCount} permits.");
             }
         }
     }
