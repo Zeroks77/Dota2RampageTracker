@@ -117,10 +117,10 @@ class Program
         {
             // Fetch player's Steam name, avatar URL, and totals data
             var (steamName, avatarUrl, totals, counts) = steamProfiles[playerId.ToString()];
-
-            var rampageMatches = await MatchProcessor.GetRampageMatches(client, playerId, steamName, playerMatches[playerId]);
+            string encodedPlayerName = WebUtility.UrlEncode(steamName);
+            var rampageMatches = await MatchProcessor.GetRampageMatches(client, playerId, encodedPlayerName, playerMatches[playerId]);
             // Load cached rampage matches
-            var cachedRampageMatches = MarkdownGenerator.LoadRampageMatchesFromCache(steamName);
+            var cachedRampageMatches = MarkdownGenerator.LoadRampageMatchesFromCache(encodedPlayerName);
 
             // Combine new and cached rampage matches, ensuring distinct matches
             var allRampageMatches = rampageMatches.Concat(cachedRampageMatches)
