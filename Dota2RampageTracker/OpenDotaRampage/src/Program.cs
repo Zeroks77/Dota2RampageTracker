@@ -18,7 +18,9 @@ class Program
     public static readonly Stopwatch stopwatch = new Stopwatch();
     private static List<long> players;
     private static Dictionary<int, Hero> heroData;
-    private static Dictionary<string, string> steamNames = new Dictionary<string, string>();
+    private static Dictionary<string, (string SteamName, string AvatarUrl)> steamProfiles = new Dictionary<string, (string SteamName, string AvatarUrl)>();
+    private static Dictionary<long, string> playerDirectoryMapping = new Dictionary<long, string>();
+    private static readonly string mappingFilePath = "player_directory_mapping.json";
 
     static async Task Main(string[] args)
     {
@@ -52,17 +54,37 @@ class Program
         // Parse the players CSV into a list of long
         players = playersCsv.Split(',').Select(long.Parse).ToList();
 
+        // Load player directory mapping from JSON file
+        LoadPlayerDirectoryMapping();
+
         // Fetch hero data
         heroData = await HeroDataFetcher.FetchHeroData(client);
-    
+
         // Determine the total number of new matches for all players
         int totalNewMatches = 0;
         var playerMatches = new Dictionary<long, List<Match>>();
         foreach (var playerId in players)
         {
-            // Fetch player's Steam name
-            string steamName = await HeroDataFetcher.GetPlayerSteamName(client, playerId);
-            steamNames[playerId.ToString()] = steamName;
+            // Fetch player's Steam name and avatar URL
+            var (steamName, avatarUrl) = await HeroDataFetcher.GetPlayerSteamName(client, playerId);
+            steamProfiles[playerId.ToString()] = (steamName, avatarUrl);
+
+            // Check if the directory name has changed
+            if (playerDirectoryMapping.TryGetValue(playerId, out var oldDirectoryName))
+            {
+                string oldDirectoryPath = Path.Combine(outputDirectory, oldDirectoryName);
+                string newDirectoryPath = Path.Combine(outputDirectory, steamName);
+                if (Directory.Exists(oldDirectoryPath) && oldDirectoryPath != newDirectoryPath)
+                {
+                    Directory.Move(oldDirectoryPath, newDirectoryPath);
+                    playerDirectoryMapping[playerId] = steamName;
+                }
+            }
+            else
+            {
+                playerDirectoryMapping[playerId] = steamName;
+            }
+
             long lastCheckedMatchId = MatchProcessor.ReadLastCheckedMatchId(steamName);
             var matches = await MatchProcessor.GetPlayerMatches(client, playerId, lastCheckedMatchId);
             int playerMatchesCount = matches.Count();
@@ -71,6 +93,10 @@ class Program
             Console.WriteLine($"Player ID: {playerId}, Steam Name: {steamName}, New Matches: {playerMatchesCount}");
         }
 
+        // Save updated player directory mapping to JSON file
+        SavePlayerDirectoryMapping();
+
+        Console.WriteLine($"Total New Matches: {totalNewMatches}");
 
         // Set the rate limit based on the total number of new matches
         if (totalNewMatches < 2000)
@@ -85,16 +111,8 @@ class Program
         // Process each player
         foreach (var playerId in players)
         {
-            // Fetch player's Steam name
-            string steamName = steamNames[playerId.ToString()];
-
-            // Check if the directory name has changed
-            string oldDirectoryPath = Path.Combine(outputDirectory, playerId.ToString());
-            string newDirectoryPath = Path.Combine(outputDirectory, steamName);
-            if (Directory.Exists(oldDirectoryPath) && oldDirectoryPath != newDirectoryPath)
-            {
-                Directory.Move(oldDirectoryPath, newDirectoryPath);
-            }
+            // Fetch player's Steam name and avatar URL
+            var (steamName, avatarUrl) = steamProfiles[playerId.ToString()];
 
             var rampageMatches = await MatchProcessor.GetRampageMatches(client, playerId, steamName, playerMatches[playerId]);
 
@@ -107,11 +125,26 @@ class Program
         }
 
         // Generate the main README file
-        MarkdownGenerator.GenerateMainReadme(steamNames);
+        MarkdownGenerator.GenerateMainReadme(steamProfiles);
 
         // Stop the stopwatch
         stopwatch.Stop();
         Console.WriteLine($"Total time spent: {stopwatch.Elapsed:hh\\:mm\\:ss}");
+    }
+
+    static void LoadPlayerDirectoryMapping()
+    {
+        if (File.Exists(mappingFilePath))
+        {
+            var jsonData = File.ReadAllText(mappingFilePath);
+            playerDirectoryMapping = JsonConvert.DeserializeObject<Dictionary<long, string>>(jsonData);
+        }
+    }
+
+    static void SavePlayerDirectoryMapping()
+    {
+        var jsonData = JsonConvert.SerializeObject(playerDirectoryMapping, Formatting.Indented);
+        File.WriteAllText(mappingFilePath, jsonData);
     }
 
     static async Task<bool> IsApiAlive()

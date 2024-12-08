@@ -1,4 +1,4 @@
-Player Zero has got 7 total Rampages
+Player Nahaz has got 7 total Rampages
 
 ### Anti-Mage
 ![Anti-Mage](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/antimage.png)

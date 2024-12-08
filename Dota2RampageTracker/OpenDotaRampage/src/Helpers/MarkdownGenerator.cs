@@ -86,7 +86,8 @@ namespace OpenDotaRampage.Helpers
             }
         }
 
-         public static void GenerateMainReadme(Dictionary<string, string> steamNames)
+       
+        public static void GenerateMainReadme(Dictionary<string, (string SteamName, string AvatarUrl)> steamProfiles)
         {
             string rootDirectory = Directory.GetCurrentDirectory();
             string filePath = Path.Combine(rootDirectory, "README.md");
@@ -99,14 +100,15 @@ namespace OpenDotaRampage.Helpers
                 writer.WriteLine("This repository contains rampage tracking data for various Dota 2 players.\n");
 
                 writer.WriteLine("## Players");
-                writer.WriteLine("| Player Name | Rampage File |");
-                writer.WriteLine("|-------------|---------------|");
+                writer.WriteLine("| Player Name | Profile Picture | Rampage File |");
+                writer.WriteLine("|-------------|-----------------|--------------|");
 
-                foreach (var steamName in steamNames)
+                foreach (var steamProfile in steamProfiles)
                 {
-                    string playerName = steamName.Value;
-                    string rampageFilePath = Path.Combine(Program.outputDirectory, steamName.Value, "Rampages.md").Replace("\\", "/");
-                    writer.WriteLine($"| {playerName} | [Rampages](./{rampageFilePath}) |");
+                    string playerName = steamProfile.Value.SteamName;
+                    string avatarUrl = steamProfile.Value.AvatarUrl;
+                    string rampageFilePath = Path.Combine(Program.outputDirectory, steamProfile.Key, "Rampages.md").Replace("\\", "/");
+                    writer.WriteLine($"| {playerName} | ![Profile Picture]({avatarUrl}) | [Rampages](./{rampageFilePath}) |");
                 }
             }
 
