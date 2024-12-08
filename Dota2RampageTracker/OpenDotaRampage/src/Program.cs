@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Net;
 using dotenv.net;
 using Newtonsoft.Json;
 using OpenDotaRampage.Helpers;
@@ -76,15 +71,17 @@ class Program
             var counts = await HeroDataFetcher.GetPlayerCounts(client, playerId);
             steamProfiles[playerId.ToString()] = (steamName, avatarUrl, totals, counts);
 
+            string encodedPlayerName = WebUtility.UrlEncode(steamName);
             // Check if the directory name has changed
             if (playerDirectoryMapping.TryGetValue(playerId, out var oldDirectoryName))
             {
-                string oldDirectoryPath = Path.Combine(outputDirectory, oldDirectoryName);
-                string newDirectoryPath = Path.Combine(outputDirectory, steamName);
+                // Check if the directory name has changed
+            string oldDirectoryPath = Path.Combine(outputDirectory, oldDirectoryName.ToString());
+            string newDirectoryPath = Path.Combine(outputDirectory, encodedPlayerName);
                 if (Directory.Exists(oldDirectoryPath) && oldDirectoryPath != newDirectoryPath)
                 {
                     Directory.Move(oldDirectoryPath, newDirectoryPath);
-                    playerDirectoryMapping[playerId] = steamName;
+                    playerDirectoryMapping[playerId] = encodedPlayerName;
                 }
             }
             else
@@ -92,7 +89,7 @@ class Program
                 playerDirectoryMapping[playerId] = steamName;
             }
 
-            long lastCheckedMatchId = MatchProcessor.ReadLastCheckedMatchId(steamName);
+            long lastCheckedMatchId = MatchProcessor.ReadLastCheckedMatchId(encodedPlayerName);
             var matches = await MatchProcessor.GetPlayerMatches(client, playerId, lastCheckedMatchId);
             int playerMatchesCount = matches.Count();
             totalNewMatches += playerMatchesCount;
