@@ -28,20 +28,18 @@ namespace OpenDotaRampage.Helpers
             apiKey = "?api_key=" + Program.apiKey;
         }
 
-        public static async Task<List<Match>> GetRampageMatches(HttpClient client, long playerId, string steamName)
+        public static async Task<List<Match>> GetRampageMatches(HttpClient client, long playerId, string steamName, List<Match> matches)
         {
-            long lastCheckedMatchId = ReadLastCheckedMatchId(steamName);
-            var matches = await GetPlayerMatches(client, playerId, lastCheckedMatchId);
             var rampageMatches = new ConcurrentBag<Match>();
 
             int totalMatches = matches.Count();
             int processedMatches = 0;
 
             var matchBatches = matches
-                .Reverse() // Process from oldest to newest
                 .Select((match, index) => new { match, index })
                 .GroupBy(x => x.index / 500)
                 .Select(g => g.Select(x => x.match).ToList())
+                .Reverse()
                 .ToList();
 
             foreach (var batch in matchBatches)

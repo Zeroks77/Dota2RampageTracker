@@ -36,10 +36,15 @@ jobs:
         Players: ${{ secrets.PLAYERS }}
         GitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Configure git
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
     - name: Commit and push changes
       run: |
         git add .
         git commit -m "Daily update"
         git push
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

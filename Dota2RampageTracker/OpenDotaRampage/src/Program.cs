@@ -18,6 +18,8 @@ class Program
     public static readonly Stopwatch stopwatch = new Stopwatch();
     private static List<long> players;
     private static Dictionary<int, Hero> heroData;
+    private static Dictionary<string, string> steamNames = new Dictionary<string, string>();
+
 
     static async Task Main(string[] args)
     {
@@ -30,7 +32,7 @@ class Program
         // Start the stopwatch to track total time spent
         stopwatch.Start();
 
-        // Check if the API is alive
+        //Check if the API is alive
         if (!await IsApiAlive())
         {
             Console.WriteLine("The OpenDota API is currently unavailable. Please try again later.");
@@ -56,21 +58,30 @@ class Program
 
         // Determine the total number of new matches for all players
         int totalNewMatches = 0;
+        var playerMatches = new Dictionary<long, List<Match>>();
         foreach (var playerId in players)
         {
-            long lastCheckedMatchId = MatchProcessor.ReadLastCheckedMatchId(playerId.ToString());
+            // Fetch player's Steam name
+            string steamName = await HeroDataFetcher.GetPlayerSteamName(client, playerId);
+
+            long lastCheckedMatchId = MatchProcessor.ReadLastCheckedMatchId(steamName);
             var matches = await MatchProcessor.GetPlayerMatches(client, playerId, lastCheckedMatchId);
-            totalNewMatches += matches.Count();
+            int playerMatchesCount = matches.Count();
+            totalNewMatches += playerMatchesCount;
+            playerMatches[playerId] = matches.ToList();
+            Console.WriteLine($"Player ID: {playerId}, Steam Name: {steamName}, New Matches: {playerMatchesCount}");
         }
 
+        Console.WriteLine($"Total New Matches: {totalNewMatches}");
+
         // Set the rate limit based on the total number of new matches
-        if (totalNewMatches < 2000)
+        if (totalNewMatches > 2000)
         {
-            RateLimiter.SetRateLimit(60, false); // 60 calls per minute without API key
+            RateLimiter.SetRateLimit(true); // Use API key and existing rate limiting logic
         }
         else
         {
-            RateLimiter.SetRateLimit(1100, true); // Use API key and existing rate limiting logic
+            RateLimiter.SetRateLimit(false); // 60 calls per minute without API key
         }
 
         // Process each player
@@ -78,8 +89,9 @@ class Program
         {
             // Fetch player's Steam name
             string steamName = await HeroDataFetcher.GetPlayerSteamName(client, playerId);
+            steamNames[playerId.ToString()] = steamName;
 
-            var rampageMatches = await MatchProcessor.GetRampageMatches(client, playerId, steamName);
+            var rampageMatches = await MatchProcessor.GetRampageMatches(client, playerId, steamName, playerMatches[playerId]);
 
             foreach (var match in rampageMatches)
             {
@@ -89,8 +101,11 @@ class Program
             MarkdownGenerator.GenerateMarkdown(steamName, rampageMatches, heroData, (int)playerId);
         }
 
+         MarkdownGenerator.GenerateMainReadme(steamNames);
+
         // Stop the stopwatch
         stopwatch.Stop();
+        Console.WriteLine($"Total time spent: {stopwatch.Elapsed:hh\\:mm\\:ss}");
     }
 
     static async Task<bool> IsApiAlive()
