@@ -87,7 +87,7 @@ namespace OpenDotaRampage.Helpers
 
          public static void GenerateMainReadme(Dictionary<string, string> steamNames)
         {
-            string rootDirectory = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
+            string rootDirectory = Directory.GetCurrentDirectory();
             string filePath = Path.Combine(rootDirectory, "README.md");
 
             Console.WriteLine($"Generating main README at: {filePath}");
