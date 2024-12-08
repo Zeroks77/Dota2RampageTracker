@@ -71,17 +71,16 @@ class Program
             var counts = await HeroDataFetcher.GetPlayerCounts(client, playerId);
             steamProfiles[playerId.ToString()] = (steamName, avatarUrl, totals, counts);
 
-            string encodedPlayerName = WebUtility.UrlEncode(steamName);
             // Check if the directory name has changed
             if (playerDirectoryMapping.TryGetValue(playerId, out var oldDirectoryName))
             {
                 // Check if the directory name has changed
             string oldDirectoryPath = Path.Combine(outputDirectory, oldDirectoryName.ToString());
-            string newDirectoryPath = Path.Combine(outputDirectory, encodedPlayerName);
+            string newDirectoryPath = Path.Combine(outputDirectory, playerId.ToString());
                 if (Directory.Exists(oldDirectoryPath) && oldDirectoryPath != newDirectoryPath)
                 {
                     Directory.Move(oldDirectoryPath, newDirectoryPath);
-                    playerDirectoryMapping[playerId] = encodedPlayerName;
+                    playerDirectoryMapping[playerId] = playerId.ToString();
                 }
             }
             else
@@ -89,7 +88,7 @@ class Program
                 playerDirectoryMapping[playerId] = steamName;
             }
 
-            long lastCheckedMatchId = MatchProcessor.ReadLastCheckedMatchId(encodedPlayerName);
+            long lastCheckedMatchId = MatchProcessor.ReadLastCheckedMatchId(playerId.ToString());
             var matches = await MatchProcessor.GetPlayerMatches(client, playerId, lastCheckedMatchId);
             int playerMatchesCount = matches.Count();
             totalNewMatches += playerMatchesCount;
@@ -117,10 +116,9 @@ class Program
         {
             // Fetch player's Steam name, avatar URL, and totals data
             var (steamName, avatarUrl, totals, counts) = steamProfiles[playerId.ToString()];
-            string encodedPlayerName = WebUtility.UrlEncode(steamName);
-            var rampageMatches = await MatchProcessor.GetRampageMatches(client, playerId, encodedPlayerName, playerMatches[playerId]);
+            var rampageMatches = await MatchProcessor.GetRampageMatches(client, playerId, playerMatches[playerId]);
             // Load cached rampage matches
-            var cachedRampageMatches = MarkdownGenerator.LoadRampageMatchesFromCache(encodedPlayerName);
+            var cachedRampageMatches = MarkdownGenerator.LoadRampageMatchesFromCache(playerId.ToString());
 
             // Combine new and cached rampage matches, ensuring distinct matches
             var allRampageMatches = rampageMatches.Concat(cachedRampageMatches)
@@ -146,20 +144,20 @@ class Program
         Console.WriteLine($"Total time spent: {stopwatch.Elapsed:hh\\:mm\\:ss}");
     }
 
-    static void LoadPlayerDirectoryMapping()
+   static void LoadPlayerDirectoryMapping()
+{
+    if (File.Exists(mappingFilePath))
     {
-        if (File.Exists(mappingFilePath))
-        {
-            var jsonData = File.ReadAllText(mappingFilePath);
-            playerDirectoryMapping = JsonConvert.DeserializeObject<Dictionary<long, string>>(jsonData);
-        }
+        var jsonData = File.ReadAllText(mappingFilePath);
+        playerDirectoryMapping = JsonConvert.DeserializeObject<Dictionary<long, string>>(jsonData);
     }
+}
 
-    static void SavePlayerDirectoryMapping()
-    {
-        var jsonData = JsonConvert.SerializeObject(playerDirectoryMapping, Formatting.Indented);
-        File.WriteAllText(mappingFilePath, jsonData);
-    }
+static void SavePlayerDirectoryMapping()
+{
+    var jsonData = JsonConvert.SerializeObject(playerDirectoryMapping, Formatting.Indented);
+    File.WriteAllText(mappingFilePath, jsonData);
+}
 
     static async Task<bool> IsApiAlive()
     {

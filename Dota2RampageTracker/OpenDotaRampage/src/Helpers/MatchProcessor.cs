@@ -28,10 +28,9 @@ namespace OpenDotaRampage.Helpers
             apiKey = "?api_key=" + Program.apiKey;
         }
 
-        public static async Task<List<Match>> GetRampageMatches(HttpClient client, long playerId, string steamName, List<Match> matches)
+        public static async Task<List<Match>> GetRampageMatches(HttpClient client, long playerId, List<Match> matches)
         {
             var rampageMatches = new ConcurrentBag<Match>();
-
             int totalMatches = matches.Count();
             int processedMatches = 0;
 
@@ -39,7 +38,6 @@ namespace OpenDotaRampage.Helpers
                 .Select((match, index) => new { match, index })
                 .GroupBy(x => x.index / 500)
                 .Select(g => g.Select(x => x.match).ToList())
-                .Reverse() // Process from oldest to newest
                 .ToList();
 
             foreach (var batch in matchBatches)
@@ -66,6 +64,11 @@ namespace OpenDotaRampage.Helpers
 
                         Interlocked.Increment(ref processedMatches);
                         DisplayProgress(processedMatches, totalMatches);
+                        Console.WriteLine($"Processed match {matchId}. Total processed: {processedMatches}/{totalMatches}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error {ex.Message}");
                     }
                     finally
                     {
@@ -78,8 +81,8 @@ namespace OpenDotaRampage.Helpers
 
             if (matches.Any())
             {
-                UpdateLastCheckedMatchId(steamName, matches.Last().MatchId);
-                SaveRampageMatchesToCache(steamName, rampageMatches.ToList());
+                UpdateLastCheckedMatchId(playerId.ToString(), matches.Last().MatchId);
+                SaveRampageMatchesToCache(playerId.ToString(), rampageMatches.ToList());
             }
 
             return rampageMatches.ToList();
@@ -99,7 +102,7 @@ namespace OpenDotaRampage.Helpers
             var matches = JsonConvert.DeserializeObject<List<Match>>(response);
 
             // Filter matches to only include those after the last checked match ID
-            var newMatches = matches.Where(match => match.MatchId > lastCheckedMatchId);
+            var newMatches = matches.Where(match => match.MatchId > lastCheckedMatchId).Reverse();
 
             return newMatches;
         }
@@ -121,6 +124,10 @@ namespace OpenDotaRampage.Helpers
                     await Task.Delay(10000);
                     Console.WriteLine($"TooManyrequests. Delaying for 10 seconds.");
                     return await GetMatchDetails(client, matchId);
+                }
+                if (!response.IsSuccessStatusCode)
+                {
+                    return null;
                 }
                 response.EnsureSuccessStatusCode();
                 return JsonConvert.DeserializeObject<Match>(await response.Content.ReadAsStringAsync());
@@ -145,9 +152,9 @@ namespace OpenDotaRampage.Helpers
             }
         }
 
-        public static long ReadLastCheckedMatchId(string playerName)
+        public static long ReadLastCheckedMatchId(string playerID)
         {
-            string playerDirectory = Path.Combine(Program.outputDirectory, playerName);
+            string playerDirectory = Path.Combine(Program.outputDirectory, playerID);
             string lastCheckedMatchFile = Path.Combine(playerDirectory, "LastCheckedMatch.txt");
 
             if (File.Exists(lastCheckedMatchFile))
@@ -162,18 +169,18 @@ namespace OpenDotaRampage.Helpers
             return 0;
         }
 
-        private static void UpdateLastCheckedMatchId(string playerName, long matchId)
+        private static void UpdateLastCheckedMatchId(string playerID, long matchId)
         {
-            string playerDirectory = Path.Combine(Program.outputDirectory, playerName);
+            string playerDirectory = Path.Combine(Program.outputDirectory, playerID);
             Directory.CreateDirectory(playerDirectory);
             string lastCheckedMatchFile = Path.Combine(playerDirectory, "LastCheckedMatch.txt");
 
             File.WriteAllText(lastCheckedMatchFile, matchId.ToString());
         }
 
-        private static void SaveRampageMatchesToCache(string playerName, List<Match> newRampageMatches)
+        private static void SaveRampageMatchesToCache(string playerID, List<Match> newRampageMatches)
         {
-            string playerDirectory = Path.Combine(Program.outputDirectory, playerName);
+            string playerDirectory = Path.Combine(Program.outputDirectory, playerID);
             Directory.CreateDirectory(playerDirectory);
             string cacheFilePath = Path.Combine(playerDirectory, "RampageMatchesCache.json");
 

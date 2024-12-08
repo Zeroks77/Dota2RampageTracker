@@ -12,8 +12,7 @@ namespace OpenDotaRampage.Helpers
     {
         public static void GenerateMarkdown(string steamName, List<Match> allRampageMatches, Dictionary<int, Hero> heroData, int playerId)
         {
-            string encodedPlayerName = WebUtility.UrlEncode(steamName);
-            string playerDirectory = Path.Combine(Program.outputDirectory, encodedPlayerName);
+            string playerDirectory = Path.Combine(Program.outputDirectory, playerId.ToString());
             Directory.CreateDirectory(playerDirectory);
             string filePath = Path.Combine(playerDirectory, "Rampages.md");
             // Delete the existing markdown file if it exists
@@ -97,6 +96,7 @@ namespace OpenDotaRampage.Helpers
                 foreach (var steamProfile in steamProfiles)
                 {
                     string playerName = steamProfile.Value.SteamName;
+                    string playerId  = steamProfile.Key;
                     string avatarUrl = steamProfile.Value.AvatarUrl;
                     var totals = steamProfile.Value.Totals;
                     var counts = steamProfile.Value.Counts;
@@ -113,8 +113,7 @@ namespace OpenDotaRampage.Helpers
                     double winRateUnranked = unrankedMatches > 0 ? (double)unrankedWins / unrankedMatches * 100 : 0;
                     double winRateRanked = rankedMatches > 0 ? (double)rankedWins / rankedMatches * 100 : 0;
 
-                    string encodedPlayerName = WebUtility.UrlEncode(playerName);
-                    string rampageFilePath = Path.Combine(Program.outputDirectory, encodedPlayerName, "Rampages.md").Replace("\\", "/");
+                    string rampageFilePath = Path.Combine(Program.outputDirectory, playerId, "Rampages.md").Replace("\\", "/");
                     writer.WriteLine($"| {playerName} | ![Profile Picture]({avatarUrl}) | {totals["rampages"]}/{totals["matches"]}| {winRateTotal:F2}% | {winRateUnranked:F2}% | {winRateRanked:F2}% | [Rampages](./{rampageFilePath}) |");
                 }
             }
