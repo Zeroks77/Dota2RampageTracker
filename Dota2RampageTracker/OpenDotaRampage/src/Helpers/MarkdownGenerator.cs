@@ -112,7 +112,7 @@ namespace OpenDotaRampage.Helpers
                     double winRateUnranked = unrankedMatches > 0 ? (double)unrankedWins / unrankedMatches * 100 : 0;
                     double winRateRanked = rankedMatches > 0 ? (double)rankedWins / rankedMatches * 100 : 0;
 
-                    string rampageFilePath = Path.Combine(Program.outputDirectory, steamProfile.Key, "Rampages.md").Replace("\\", "/");
+                    string rampageFilePath = Path.Combine(Program.outputDirectory, playerName, "Rampages.md").Replace("\\", "/");
                     writer.WriteLine($"| {playerName} | ![Profile Picture]({avatarUrl}) | {totals["rampages"]}/{totals["matches"]}| {winRateTotal:F2}% | {winRateUnranked:F2}% | {winRateRanked:F2}% | [Rampages](./{rampageFilePath}) |");
                 }
             }

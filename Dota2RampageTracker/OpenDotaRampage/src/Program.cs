@@ -138,7 +138,7 @@ class Program
                 Console.WriteLine($"Match ID: {match.MatchId}, Rampages: {match.Players[0].MultiKills}");
             }
 
-            MarkdownGenerator.GenerateMarkdown(steamName, rampageMatches, heroData, (int)playerId);
+            MarkdownGenerator.GenerateMarkdown(steamName, allRampageMatches, heroData, (int)playerId);
         }
 
         // Generate the main README file
