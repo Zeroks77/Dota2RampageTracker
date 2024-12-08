@@ -18,8 +18,8 @@ class Program
     public static readonly Stopwatch stopwatch = new Stopwatch();
     private static List<long> players;
     private static Dictionary<int, Hero> heroData;
-    private static Dictionary<string, (string SteamName, string AvatarUrl)> steamProfiles = new Dictionary<string, (string SteamName, string AvatarUrl)>();
-    private static Dictionary<long, string> playerDirectoryMapping = new Dictionary<long, string>();
+   private static Dictionary<string, (string SteamName, string AvatarUrl, Dictionary<string, int> Totals, CountsResponse Counts)> steamProfiles = new Dictionary<string, (string SteamName, string AvatarUrl, Dictionary<string, int> Totals, CountsResponse Counts)>();
+     private static Dictionary<long, string> playerDirectoryMapping = new Dictionary<long, string>();
     private static readonly string mappingFilePath = "player_directory_mapping.json";
 
     static async Task Main(string[] args)
@@ -60,14 +60,21 @@ class Program
         // Fetch hero data
         heroData = await HeroDataFetcher.FetchHeroData(client);
 
+        // Fetch game modes, lobby types, and patches
+        var gameModes = await HeroDataFetcher.GetGameModes(client);
+        var lobbyTypes = await HeroDataFetcher.GetLobbyTypes(client);
+        var patches = await HeroDataFetcher.GetPatches(client);
+
         // Determine the total number of new matches for all players
         int totalNewMatches = 0;
         var playerMatches = new Dictionary<long, List<Match>>();
         foreach (var playerId in players)
         {
-            // Fetch player's Steam name and avatar URL
-            var (steamName, avatarUrl) = await HeroDataFetcher.GetPlayerSteamName(client, playerId);
-            steamProfiles[playerId.ToString()] = (steamName, avatarUrl);
+            // Fetch player's Steam name, avatar URL, and totals data
+             var (steamName, avatarUrl) = await HeroDataFetcher.GetPlayerSteamName(client, playerId);
+            var totals = await HeroDataFetcher.GetPlayerTotals(client, playerId);
+            var counts = await HeroDataFetcher.GetPlayerCounts(client, playerId);
+            steamProfiles[playerId.ToString()] = (steamName, avatarUrl, totals, counts);
 
             // Check if the directory name has changed
             if (playerDirectoryMapping.TryGetValue(playerId, out var oldDirectoryName))
@@ -111,11 +118,21 @@ class Program
         // Process each player
         foreach (var playerId in players)
         {
-            // Fetch player's Steam name and avatar URL
-            var (steamName, avatarUrl) = steamProfiles[playerId.ToString()];
+            // Fetch player's Steam name, avatar URL, and totals data
+            var (steamName, avatarUrl, totals, counts) = steamProfiles[playerId.ToString()];
 
             var rampageMatches = await MatchProcessor.GetRampageMatches(client, playerId, steamName, playerMatches[playerId]);
+            // Load cached rampage matches
+            var cachedRampageMatches = MarkdownGenerator.LoadRampageMatchesFromCache(steamName);
 
+            // Combine new and cached rampage matches, ensuring distinct matches
+            var allRampageMatches = rampageMatches.Concat(cachedRampageMatches)
+                .GroupBy(m => m.MatchId)
+                .Select(g => g.First())
+                .Distinct()
+                .ToList();
+
+            steamProfiles[playerId.ToString()].Totals["rampages"] = allRampageMatches.Count;
             foreach (var match in rampageMatches)
             {
                 Console.WriteLine($"Match ID: {match.MatchId}, Rampages: {match.Players[0].MultiKills}");
@@ -125,7 +142,7 @@ class Program
         }
 
         // Generate the main README file
-        MarkdownGenerator.GenerateMainReadme(steamProfiles);
+        MarkdownGenerator.GenerateMainReadme(steamProfiles, gameModes, lobbyTypes, patches);
 
         // Stop the stopwatch
         stopwatch.Stop();

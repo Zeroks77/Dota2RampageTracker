@@ -9,7 +9,7 @@ namespace OpenDotaRampage.Helpers
 {
     public static class MarkdownGenerator
     {
-        public static void GenerateMarkdown(string steamName, List<Match> newRampageMatches, Dictionary<int, Hero> heroData, int playerId)
+        public static void GenerateMarkdown(string steamName, List<Match> allRampageMatches, Dictionary<int, Hero> heroData, int playerId)
         {
             string playerDirectory = Path.Combine(Program.outputDirectory, steamName);
             Directory.CreateDirectory(playerDirectory);
@@ -21,16 +21,6 @@ namespace OpenDotaRampage.Helpers
                 File.Delete(filePath);
             }
 
-            // Load cached rampage matches
-            var cachedRampageMatches = LoadRampageMatchesFromCache(steamName);
-
-            // Combine new and cached rampage matches, ensuring distinct matches
-            var allRampageMatches = newRampageMatches.Concat(cachedRampageMatches)
-                .GroupBy(m => m.MatchId)
-                .Select(g => g.First())
-                .Distinct()
-                .ToList();
-
             using (var writer = new StreamWriter(filePath))
             {
                 writer.WriteLine($"Player {steamName} has got {allRampageMatches.Count} total Rampages\n");
@@ -38,7 +28,7 @@ namespace OpenDotaRampage.Helpers
                 var groupedRampages = allRampageMatches
                     .SelectMany(match => match.Players
                         .Where(player => player.AccountId == playerId) // Filter to include only the player's hero
-                        .Select(player => new { match.MatchId, player.HeroId, IsNew = newRampageMatches.Any(m => m.MatchId == match.MatchId) }))
+                        .Select(player => new { match.MatchId, player.HeroId, IsNew = allRampageMatches.Any(m => m.MatchId == match.MatchId) }))
                     .GroupBy(x => x.HeroId)
                     .ToDictionary(g => (int)g.Key, g => g.Select(x => new { x.MatchId, x.IsNew }).ToList());
 
@@ -87,7 +77,7 @@ namespace OpenDotaRampage.Helpers
         }
 
        
-        public static void GenerateMainReadme(Dictionary<string, (string SteamName, string AvatarUrl)> steamProfiles)
+        public static void GenerateMainReadme(Dictionary<string, (string SteamName, string AvatarUrl, Dictionary<string, int> Totals, CountsResponse Counts)> steamProfiles, Dictionary<int, string> gameModes, Dictionary<int, string> lobbyTypes, Dictionary<int, string> patches)
         {
             string rootDirectory = Directory.GetCurrentDirectory();
             string filePath = Path.Combine(rootDirectory, "README.md");
@@ -100,22 +90,38 @@ namespace OpenDotaRampage.Helpers
                 writer.WriteLine("This repository contains rampage tracking data for various Dota 2 players.\n");
 
                 writer.WriteLine("## Players");
-                writer.WriteLine("| Player Name | Profile Picture | Rampage File |");
-                writer.WriteLine("|-------------|-----------------|--------------|");
+                writer.WriteLine("| Player Name | Profile Picture | Rampage Percentage | Win Rate (Total) | Win Rate (Unranked) | Win Rate (Ranked) | Rampage File |");
+                writer.WriteLine("|-------------|-----------------|--------------------|------------------|---------------------|-------------------|--------------|");
 
                 foreach (var steamProfile in steamProfiles)
                 {
                     string playerName = steamProfile.Value.SteamName;
                     string avatarUrl = steamProfile.Value.AvatarUrl;
+                    var totals = steamProfile.Value.Totals;
+                    var counts = steamProfile.Value.Counts;
+
+                    int totalMatches = totals.ContainsKey("matches") ? totals["matches"] : 0;
+                    int unrankedMatches = counts.LobbyType.ContainsKey("0") ? counts.LobbyType["0"].Games : 0;
+                    int unrankedWins = counts.LobbyType.ContainsKey("0") ? counts.LobbyType["0"].Win : 0;
+                    int rankedMatches = counts.LobbyType.ContainsKey("7") ? counts.LobbyType["7"].Games : 0;
+                    int rankedWins = counts.LobbyType.ContainsKey("7") ? counts.LobbyType["7"].Win : 0;       
+                    int totalWins = rankedWins + unrankedWins;
+
+
+                    double winRateTotal = totalMatches > 0 ? (double)totalWins / totalMatches * 100 : 0;
+                    double winRateUnranked = unrankedMatches > 0 ? (double)unrankedWins / unrankedMatches * 100 : 0;
+                    double winRateRanked = rankedMatches > 0 ? (double)rankedWins / rankedMatches * 100 : 0;
+
                     string rampageFilePath = Path.Combine(Program.outputDirectory, steamProfile.Key, "Rampages.md").Replace("\\", "/");
-                    writer.WriteLine($"| {playerName} | ![Profile Picture]({avatarUrl}) | [Rampages](./{rampageFilePath}) |");
+                    writer.WriteLine($"| {playerName} | ![Profile Picture]({avatarUrl}) | {totals["rampages"]}/{totals["matches"]}| {winRateTotal:F2}% | {winRateUnranked:F2}% | {winRateRanked:F2}% | [Rampages](./{rampageFilePath}) |");
                 }
             }
 
             Console.WriteLine("Main README generated successfully.");
         }
 
-        private static List<Match> LoadRampageMatchesFromCache(string playerName)
+
+        public static List<Match> LoadRampageMatchesFromCache(string playerName)
         {
             string playerDirectory = Path.Combine(Program.outputDirectory, playerName);
             string cacheFilePath = Path.Combine(playerDirectory, "RampageMatchesCache.json");

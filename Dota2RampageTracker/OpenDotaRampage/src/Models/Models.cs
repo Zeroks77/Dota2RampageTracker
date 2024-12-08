@@ -60,4 +60,36 @@ namespace OpenDotaRampage.Models
         [JsonProperty("jobId")]
         public string JobId { get; set; }
     }
+     public class CountsResponse
+    {
+        [JsonProperty("leaver_status")]
+        public Dictionary<string, WinLoss> LeaverStatus { get; set; }
+
+        [JsonProperty("game_mode")]
+        public Dictionary<string, WinLoss> GameMode { get; set; }
+
+        [JsonProperty("lobby_type")]
+        public Dictionary<string, WinLoss> LobbyType { get; set; }
+
+        [JsonProperty("lane_role")]
+        public Dictionary<string, WinLoss> LaneRole { get; set; }
+
+        [JsonProperty("region")]
+        public Dictionary<string, WinLoss> Region { get; set; }
+
+        [JsonProperty("patch")]
+        public Dictionary<string, WinLoss> Patch { get; set; }
+
+        [JsonProperty("is_radiant")]
+        public Dictionary<string, WinLoss> IsRadiant { get; set; }
+    }
+
+    public class WinLoss
+    {
+        [JsonProperty("games")]
+        public int Games { get; set; }
+
+        [JsonProperty("win")]
+        public int Win { get; set; }
+    }
 }
