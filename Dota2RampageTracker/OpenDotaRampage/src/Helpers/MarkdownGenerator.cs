@@ -28,6 +28,7 @@ namespace OpenDotaRampage.Helpers
             var allRampageMatches = newRampageMatches.Concat(cachedRampageMatches)
                 .GroupBy(m => m.MatchId)
                 .Select(g => g.First())
+                .Distinct()
                 .ToList();
 
             using (var writer = new StreamWriter(filePath))
@@ -104,7 +105,7 @@ namespace OpenDotaRampage.Helpers
                 foreach (var steamName in steamNames)
                 {
                     string playerName = steamName.Value;
-                    string rampageFilePath = Path.Combine(Program.outputDirectory, steamName.Key, "Rampages.md").Replace("\\", "/");
+                    string rampageFilePath = Path.Combine(Program.outputDirectory, steamName.Value, "Rampages.md").Replace("\\", "/");
                     writer.WriteLine($"| {playerName} | [Rampages](./{rampageFilePath}) |");
                 }
             }

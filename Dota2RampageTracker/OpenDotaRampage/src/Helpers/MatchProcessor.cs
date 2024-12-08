@@ -39,7 +39,7 @@ namespace OpenDotaRampage.Helpers
                 .Select((match, index) => new { match, index })
                 .GroupBy(x => x.index / 500)
                 .Select(g => g.Select(x => x.match).ToList())
-                .Reverse()
+                .Reverse() // Process from oldest to newest
                 .ToList();
 
             foreach (var batch in matchBatches)
@@ -83,28 +83,6 @@ namespace OpenDotaRampage.Helpers
             }
 
             return rampageMatches.ToList();
-        }
-
-        public static async Task CheckSpecificMatch(HttpClient client, long playerId, long matchId)
-        {
-            var matchDetails = await GetMatchDetails(client, matchId);
-
-            if (matchDetails != null)
-            {
-                foreach (var player in matchDetails.Players)
-                {
-                    if (player.AccountId == playerId)
-                    {
-                        Console.WriteLine($"Match ID: {matchDetails.MatchId}, Player ID: {player.AccountId}, Multikills: {string.Join(", ", player.MultiKills.Select(m => $"{m.Key}x: {m.Value}"))}");
-                        return;
-                    }
-                }
-                Console.WriteLine("Player not found in the specified match.");
-            }
-            else
-            {
-                Console.WriteLine("Match not found.");
-            }
         }
 
         private static void DisplayProgress(int processed, int total)
@@ -193,13 +171,28 @@ namespace OpenDotaRampage.Helpers
             File.WriteAllText(lastCheckedMatchFile, matchId.ToString());
         }
 
-        private static void SaveRampageMatchesToCache(string playerName, List<Match> rampageMatches)
+        private static void SaveRampageMatchesToCache(string playerName, List<Match> newRampageMatches)
         {
             string playerDirectory = Path.Combine(Program.outputDirectory, playerName);
             Directory.CreateDirectory(playerDirectory);
             string cacheFilePath = Path.Combine(playerDirectory, "RampageMatchesCache.json");
 
-            File.WriteAllText(cacheFilePath, JsonConvert.SerializeObject(rampageMatches, Formatting.Indented));
+            // Load existing rampage matches from cache
+            List<Match> cachedRampageMatches = new List<Match>();
+            if (File.Exists(cacheFilePath))
+            {
+                var jsonData = File.ReadAllText(cacheFilePath);
+                cachedRampageMatches = JsonConvert.DeserializeObject<List<Match>>(jsonData);
+            }
+
+            // Combine new and cached rampage matches, ensuring distinct matches
+            var allRampageMatches = cachedRampageMatches.Concat(newRampageMatches)
+                .GroupBy(m => m.MatchId)
+                .Select(g => g.First())
+                .Distinct()
+                .ToList();
+
+            File.WriteAllText(cacheFilePath, JsonConvert.SerializeObject(allRampageMatches, Formatting.Indented));
         }
     }
 }

@@ -20,7 +20,6 @@ class Program
     private static Dictionary<int, Hero> heroData;
     private static Dictionary<string, string> steamNames = new Dictionary<string, string>();
 
-
     static async Task Main(string[] args)
     {
         // Load environment variables from .env file
@@ -32,7 +31,7 @@ class Program
         // Start the stopwatch to track total time spent
         stopwatch.Start();
 
-        //Check if the API is alive
+        // Check if the API is alive
         if (!await IsApiAlive())
         {
             Console.WriteLine("The OpenDota API is currently unavailable. Please try again later.");
@@ -55,7 +54,7 @@ class Program
 
         // Fetch hero data
         heroData = await HeroDataFetcher.FetchHeroData(client);
-
+    
         // Determine the total number of new matches for all players
         int totalNewMatches = 0;
         var playerMatches = new Dictionary<long, List<Match>>();
@@ -63,7 +62,7 @@ class Program
         {
             // Fetch player's Steam name
             string steamName = await HeroDataFetcher.GetPlayerSteamName(client, playerId);
-
+            steamNames[playerId.ToString()] = steamName;
             long lastCheckedMatchId = MatchProcessor.ReadLastCheckedMatchId(steamName);
             var matches = await MatchProcessor.GetPlayerMatches(client, playerId, lastCheckedMatchId);
             int playerMatchesCount = matches.Count();
@@ -72,24 +71,30 @@ class Program
             Console.WriteLine($"Player ID: {playerId}, Steam Name: {steamName}, New Matches: {playerMatchesCount}");
         }
 
-        Console.WriteLine($"Total New Matches: {totalNewMatches}");
 
         // Set the rate limit based on the total number of new matches
-        if (totalNewMatches > 2000)
+        if (totalNewMatches < 2000)
         {
-            RateLimiter.SetRateLimit(true); // Use API key and existing rate limiting logic
+            RateLimiter.SetRateLimit(false); // 60 calls per minute without API key
         }
         else
         {
-            RateLimiter.SetRateLimit(false); // 60 calls per minute without API key
+            RateLimiter.SetRateLimit(true); // Use API key and existing rate limiting logic
         }
 
         // Process each player
         foreach (var playerId in players)
         {
             // Fetch player's Steam name
-            string steamName = await HeroDataFetcher.GetPlayerSteamName(client, playerId);
-            steamNames[playerId.ToString()] = steamName;
+            string steamName = steamNames[playerId.ToString()];
+
+            // Check if the directory name has changed
+            string oldDirectoryPath = Path.Combine(outputDirectory, playerId.ToString());
+            string newDirectoryPath = Path.Combine(outputDirectory, steamName);
+            if (Directory.Exists(oldDirectoryPath) && oldDirectoryPath != newDirectoryPath)
+            {
+                Directory.Move(oldDirectoryPath, newDirectoryPath);
+            }
 
             var rampageMatches = await MatchProcessor.GetRampageMatches(client, playerId, steamName, playerMatches[playerId]);
 
@@ -101,7 +106,8 @@ class Program
             MarkdownGenerator.GenerateMarkdown(steamName, rampageMatches, heroData, (int)playerId);
         }
 
-         MarkdownGenerator.GenerateMainReadme(steamNames);
+        // Generate the main README file
+        MarkdownGenerator.GenerateMainReadme(steamNames);
 
         // Stop the stopwatch
         stopwatch.Stop();
