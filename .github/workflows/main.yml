@@ -15,41 +15,40 @@ jobs:
       PLAYERS: ${{ secrets.PLAYERS }}
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Set up .NET
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: '9.0.x' # Use the appropriate .NET version
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '9.0.x' # Use the appropriate .NET version
 
-    - name: Restore dependencies
-      run: dotnet restore Dota2RampageTracker/RampageTracker.sln
+      - name: Restore dependencies
+        run: dotnet restore Dota2RampageTracker/RampageTracker.sln
 
-    - name: Build the project
-      run: dotnet build --configuration Release Dota2RampageTracker/RampageTracker.sln
+      - name: Build the project
+        run: dotnet build --configuration Release Dota2RampageTracker/RampageTracker.sln
 
-    - name: Run Rampage Tracker
-      run: dotnet run --project Dota2RampageTracker/OpenDotaRampage/OpenDotaRampage.csproj
-      env:
-        ApiKey: ${{ secrets.API_KEY }}
-        Players: ${{ secrets.PLAYERS }}
-        GitHubToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run Rampage Tracker
+        run: dotnet run --project Dota2RampageTracker/OpenDotaRampage/OpenDotaRampage.csproj
+        env:
+          ApiKey: ${{ secrets.API_KEY }}
+          Players: ${{ secrets.PLAYERS }}
+          GitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Configure git
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Configure git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-   - name: Check for changes and commit
-  run: |
-    git status --porcelain
-    if [ -n "$(git status --porcelain)" ]; then
-      git add .
-      git commit -m "Daily update"
-      git push
-    else
-      echo "No changes to commit"
-    fi
-  env:
-    GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Check for changes and commit
+        run: |
+          git status --porcelain
+          if [ -n "$(git status --porcelain)" ]; then
+            git add .
+            git commit -m "Daily update"
+            git push
+          else
+            echo "No changes to commit"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
