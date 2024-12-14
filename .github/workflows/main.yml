@@ -1,55 +1,50 @@
 name: Daily Run
-
-on:
+'on':
   schedule:
-    - cron: '0 0 * * *' # Runs at midnight UTC every day
-  workflow_dispatch: # Allows manual triggering of the workflow
-
+    - cron: 0 0 * * *
+  workflow_dispatch: null
 jobs:
   run-rampage-tracker:
     runs-on: ubuntu-latest
-
     env:
-      API_KEY: ${{ secrets.API_KEY }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      PLAYERS: ${{ secrets.PLAYERS }}
-
+      API_KEY: '${{ secrets.API_KEY }}'
+      GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+      PLAYERS: '${{ secrets.PLAYERS }}'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
       - name: Set up .NET
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: '9.0.x' # Use the appropriate .NET version
-
+          dotnet-version: 9.0.x
       - name: Restore dependencies
         run: dotnet restore Dota2RampageTracker/RampageTracker.sln
-
       - name: Build the project
-        run: dotnet build --configuration Release Dota2RampageTracker/RampageTracker.sln
-
+        run: >-
+          dotnet build --configuration Release
+          Dota2RampageTracker/RampageTracker.sln
       - name: Run Rampage Tracker
-        run: dotnet run --project Dota2RampageTracker/OpenDotaRampage/OpenDotaRampage.csproj
+        run: >-
+          dotnet run --project
+          Dota2RampageTracker/OpenDotaRampage/OpenDotaRampage.csproj
         env:
-          ApiKey: ${{ secrets.API_KEY }}
-          Players: ${{ secrets.PLAYERS }}
-          GitHubToken: ${{ secrets.GITHUB_TOKEN }}
-
+          ApiKey: '${{ secrets.API_KEY }}'
+          Players: '${{ secrets.PLAYERS }}'
+          GitHubToken: '${{ secrets.GITHUB_TOKEN }}'
       - name: Configure git
-        run: |
+        run: >
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
+          git config --global user.email
+          "github-actions[bot]@users.noreply.github.com"
       - name: Check for changes and commit
         run: |
-          echo git status --porcelain
-          if [ -n "$(git status --porcelain)" ]; 
-          then
-            git add .
-            git commit -m "Daily update"
-            git push
+          echo $(git status --porcelain)
+          if [ -n "$(git status --porcelain)" ]; then
+             git add .
+             git commit -m "Daily update"
+             git push
           else
-            echo "No changes to commit"
+           echo "No changes to commit"
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: '${{ secrets.GH_TOKEN }}'
