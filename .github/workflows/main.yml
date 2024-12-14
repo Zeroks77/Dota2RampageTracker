@@ -43,7 +43,7 @@ jobs:
 
       - name: Check for changes and commit
         run: |
-          git status --porcelain
+          echo (git status --porcelain)
           if [ -n "$(git status --porcelain)" ]; 
           then
             git add .
