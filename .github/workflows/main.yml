@@ -44,7 +44,5 @@ jobs:
              git add .
              git commit -m "Daily update"
              git push
-          else
-           echo "No changes to commit"
         env:
           GITHUB_TOKEN: '${{ secrets.GH_TOKEN }}'
