@@ -39,7 +39,7 @@ jobs:
           "github-actions[bot]@users.noreply.github.com"
       - name: Check for changes and commit
         run: |
-          echo $(git status --porcelain)
+          echo $([ -n "$(git status --porcelain)" ])
           if [ -n "$(git status --porcelain)" ]; then
              git add .
              git commit -m "Daily update"
