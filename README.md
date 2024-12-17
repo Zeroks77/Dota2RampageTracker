@@ -5,6 +5,6 @@ This repository contains rampage tracking data for various Dota 2 players.
 | Player Name | Profile Picture | Rampage Percentage | Win Rate (Total) | Win Rate (Unranked) | Win Rate (Ranked) | Rampage File |
 |-------------|-----------------|--------------------|------------------|---------------------|-------------------|--------------|
 | Zero | ![Profile Picture](https://avatars.steamstatic.com/c0a975434fc5b15f662cbe8214fc898c493b55ea_full.jpg) | 7/6946| 51.08% | 52.02% | 50.75% | [Rampages](./Players/183063377/Rampages.md) |
-| Lucky | ![Profile Picture](https://avatars.steamstatic.com/1191c81a57194f64acfcda94f0fd0cb94e92eff7_full.jpg) | 25/5158| 54.21% | 55.74% | 52.39% | [Rampages](./Players/308948139/Rampages.md) |
-| just smile | ![Profile Picture](https://avatars.steamstatic.com/16392e7c2bf30770c48c4b989eef4a19f237d548_full.jpg) | 12/5471| 55.07% | 57.00% | 52.88% | [Rampages](./Players/181342370/Rampages.md) |
+| Lucky | ![Profile Picture](https://avatars.steamstatic.com/1191c81a57194f64acfcda94f0fd0cb94e92eff7_full.jpg) | 25/5159| 54.22% | 55.75% | 52.39% | [Rampages](./Players/308948139/Rampages.md) |
+| just smile | ![Profile Picture](https://avatars.steamstatic.com/16392e7c2bf30770c48c4b989eef4a19f237d548_full.jpg) | 12/5472| 55.08% | 57.01% | 52.88% | [Rampages](./Players/181342370/Rampages.md) |
 | Mupfel | ![Profile Picture](https://avatars.steamstatic.com/5975408a7d136abfeb6160943f0db7743d542d54_full.jpg) | 6/3817| 54.76% | 56.54% | 52.94% | [Rampages](./Players/131232145/Rampages.md) |
