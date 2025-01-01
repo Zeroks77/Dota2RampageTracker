@@ -107,13 +107,62 @@ namespace OpenDotaRampage.Helpers
             return newMatches;
         }
 
+        private static async Task<bool> RequestMatchParse(HttpClient client, long matchId)
+        {
+            await RateLimiter.EnsureRateLimit();
+            string url = $"https://api.opendota.com/api/request/{matchId}";
+            if (RateLimiter.useApiKey)
+            {
+                url += apiKey;
+            }
+
+            try
+            {
+                var response = await client.PostAsync(url, null);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return false;
+                }
+
+                var content = await response.Content.ReadAsStringAsync();
+                var jobData = JsonConvert.DeserializeObject<JObject>(content);
+                var jobId = jobData["job"]["jobId"].Value<int>();
+
+                // Check parse status with delay
+                for (int attempt = 0; attempt < 10; attempt++)
+                {
+                    await Task.Delay(60000); // Wait 1 minute
+                    var statusUrl = $"https://api.opendota.com/api/request/{jobId}";
+                    if (RateLimiter.useApiKey)
+                    {
+                        statusUrl += apiKey;
+                    }
+                    
+                    var statusResponse = await client.GetAsync(statusUrl);
+                    if (statusResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError(matchId, $"Parse request failed: {ex.Message}");
+            }
+            return false;
+        }
+
         private static async Task<Match> GetMatchDetails(HttpClient client, long matchId)
         {
             await RateLimiter.EnsureRateLimit();
+            
+            // Request parse before getting details
+            await RequestMatchParse(client, matchId);
+            
             string url = $"https://api.opendota.com/api/matches/{matchId}";
             if (RateLimiter.useApiKey)
             {
-                url += $"?api_key={Program.apiKey}";
+                url += apiKey;
             }
             try
             {
