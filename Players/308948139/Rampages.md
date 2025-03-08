@@ -1,4 +1,4 @@
-Player Lucky has got 26 total Rampages
+Player Lucky has got 27 total Rampages
 
 ### Anti-Mage
 ![Anti-Mage](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/antimage.png)
@@ -113,6 +113,13 @@ Player Lucky has got 26 total Rampages
 | Match ID | Source |
 |----------|--------|
 | [Match URL](https://www.opendota.com/matches/3145462085) | New |
+
+### Tiny
+![Tiny](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/tiny.png)
+
+| Match ID | Source |
+|----------|--------|
+| [Match URL](https://www.opendota.com/matches/8205817086) | New |
 
 ### Viper
 ![Viper](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/viper.png)
