@@ -1,4 +1,4 @@
-Player just smile has got 12 total Rampages
+Player Xenas23 has got 12 total Rampages
 
 ### Centaur Warrunner
 ![Centaur Warrunner](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/centaur.png)
