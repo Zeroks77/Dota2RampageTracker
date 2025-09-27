@@ -1,6 +1,33 @@
 # Dota 2 Rampage Tracker
 This repository contains rampage tracking data for various Dota 2 players.
 
+## Spieler hinzufügen (How to add players)
+So fügst du neue Spieler zum Tracker hinzu:
+
+- Du brauchst die Steam32-Account-ID des Spielers (die OpenDota „account_id“ – meist 8–9 Stellen, z. B. 183063377). Wie findest du sie?
+  - Über OpenDota: Profil suchen und die Zahl in der URL kopieren (https://www.opendota.com/players/<account_id>).
+  - Oder aus Steam64-ID umrechnen: Steam32 = Steam64 − 76561197960265728.
+
+### Variante A: Über GitHub Actions (empfohlen)
+1) Öffne dein Repository auf GitHub → Settings → Secrets and variables → Actions → New repository secret.
+2) Lege/aktualisiere folgende Secrets:
+	- `API_KEY` (dein OpenDota API Key)
+	- `PLAYERS` (kommagetrennte Liste der Steam32-IDs, z. B. `183063377,308948139,181342370,131232145,NEUE_ID`)
+3) Der tägliche Workflow „Daily Run“ fügt den/die Spieler automatisch hinzu und aktualisiert `README.md` sowie `Players/<ID>/Rampages.md`.
+	- Optional kannst du den Lauf manuell unter „Actions → Daily Run → Run workflow“ starten.
+
+Hinweis: Du musst keine Ordner selbst anlegen. Das Tool erzeugt `Players/<ID>/` automatisch und pflegt `player_directory_mapping.json` selbst.
+
+### Variante B: Lokal testen (ohne CI)
+1) Erstelle im Ordner `Dota2RampageTracker/OpenDotaRampage/` eine Datei `.env` mit:
+	- `API_KEY=DEIN_API_KEY`
+	- `PLAYERS=183063377,308948139,181342370,131232145,NEUE_ID`
+2) Projekt lokal ausführen (Beispiel):
+	- `dotnet restore Dota2RampageTracker/RampageTracker.sln`
+	- `dotnet build --configuration Release Dota2RampageTracker/RampageTracker.sln`
+	- `dotnet run --project Dota2RampageTracker/OpenDotaRampage/OpenDotaRampage.csproj`
+3) Die Ergebnisse findest du in `Players/<ID>/Rampages.md`. Die Hauptübersicht (`README.md`) wird ebenfalls aktualisiert.
+
 ## Players
 | Player Name | Profile Picture | Rampage Percentage | Win Rate (Total) | Win Rate (Unranked) | Win Rate (Ranked) | Rampage File |
 |-------------|-----------------|--------------------|------------------|---------------------|-------------------|--------------|

@@ -7,15 +7,16 @@ using OpenDotaRampage.Models;
 
 class Program
 {
-    public static readonly string outputDirectory = "Players";
+    // Resolve repo root and always write into the repo-level Players folder
+    public static readonly string outputDirectory = ResolveOutputDirectory();
     public static readonly HttpClient client = new HttpClient();
-    public static string apiKey;
+    public static string? apiKey;
     public static readonly Stopwatch stopwatch = new Stopwatch();
-    private static List<long> players;
-    private static Dictionary<int, Hero> heroData;
+    private static List<long> players = new List<long>();
+    private static Dictionary<int, Hero> heroData = new Dictionary<int, Hero>();
    private static Dictionary<string, (string SteamName, string AvatarUrl, Dictionary<string, int> Totals, CountsResponse Counts)> steamProfiles = new Dictionary<string, (string SteamName, string AvatarUrl, Dictionary<string, int> Totals, CountsResponse Counts)>();
-     private static Dictionary<long, string> playerDirectoryMapping = new Dictionary<long, string>();
-    private static readonly string mappingFilePath = "player_directory_mapping.json";
+    private static Dictionary<long, string> playerDirectoryMapping = new Dictionary<long, string>();
+    private static readonly string mappingFilePath = Path.Combine(Directory.GetParent(outputDirectory)!.FullName, "player_directory_mapping.json");
 
     static async Task Main(string[] args)
     {
@@ -36,7 +37,7 @@ class Program
         }
 
         // Load configuration from environment variables
-        apiKey = Environment.GetEnvironmentVariable("API_KEY");
+    apiKey = Environment.GetEnvironmentVariable("API_KEY");
         var playersCsv = Environment.GetEnvironmentVariable("PLAYERS");
 
         // Check if the required environment variables exist
@@ -46,8 +47,9 @@ class Program
             return;
         }
 
-        // Parse the players CSV into a list of long
-        players = playersCsv.Split(',').Select(long.Parse).ToList();
+    // Parse the players CSV into a list of long
+    players = playersCsv.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrWhiteSpace(s)).Select(long.Parse).ToList();
+    Console.WriteLine($"Loaded PLAYERS: {string.Join(",", players)}");
 
         // Load player directory mapping from JSON file
         LoadPlayerDirectoryMapping();
@@ -56,9 +58,9 @@ class Program
         heroData = await HeroDataFetcher.FetchHeroData(client);
 
         // Fetch game modes, lobby types, and patches
-        var gameModes = await HeroDataFetcher.GetGameModes(client);
-        var lobbyTypes = await HeroDataFetcher.GetLobbyTypes(client);
-        var patches = await HeroDataFetcher.GetPatches(client);
+    var gameModes = await HeroDataFetcher.GetGameModes(client);
+    var lobbyTypes = await HeroDataFetcher.GetLobbyTypes(client);
+    var patches = await HeroDataFetcher.GetPatches(client);
 
         // Determine the total number of new matches for all players
         int totalNewMatches = 0;
@@ -144,12 +146,27 @@ class Program
         Console.WriteLine($"Total time spent: {stopwatch.Elapsed:hh\\:mm\\:ss}");
     }
 
+    private static string ResolveOutputDirectory()
+    {
+        // Walk up to find the repo root (directory containing .git). If not found, fall back to CWD.
+        var dir = new DirectoryInfo(Directory.GetCurrentDirectory());
+        while (dir != null)
+        {
+            if (Directory.Exists(Path.Combine(dir.FullName, ".git")))
+            {
+                return Path.Combine(dir.FullName, "Players");
+            }
+            dir = dir.Parent;
+        }
+        return Path.Combine(Directory.GetCurrentDirectory(), "Players");
+    }
+
    static void LoadPlayerDirectoryMapping()
 {
     if (File.Exists(mappingFilePath))
     {
         var jsonData = File.ReadAllText(mappingFilePath);
-        playerDirectoryMapping = JsonConvert.DeserializeObject<Dictionary<long, string>>(jsonData);
+    playerDirectoryMapping = JsonConvert.DeserializeObject<Dictionary<long, string>>(jsonData) ?? new Dictionary<long, string>();
     }
 }
 

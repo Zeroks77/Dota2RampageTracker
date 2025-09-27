@@ -22,7 +22,11 @@ namespace OpenDotaRampage.Helpers
             // Ensure the error log file is created
             if (!File.Exists(errorLogFilePath))
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(errorLogFilePath));
+                var dir = Path.GetDirectoryName(errorLogFilePath);
+                if (!string.IsNullOrEmpty(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
                 File.Create(errorLogFilePath).Dispose();
             }
             apiKey = "?api_key=" + Program.apiKey;
@@ -99,7 +103,7 @@ namespace OpenDotaRampage.Helpers
             await RateLimiter.EnsureRateLimit();
             string url = $"https://api.opendota.com/api/players/{playerId}/matches";
             var response = await client.GetStringAsync(url);
-            var matches = JsonConvert.DeserializeObject<List<Match>>(response);
+            var matches = JsonConvert.DeserializeObject<List<Match>>(response) ?? new List<Match>();
 
             // Filter matches to only include those after the last checked match ID
             var newMatches = matches.Where(match => match.MatchId > lastCheckedMatchId).Reverse();
@@ -126,7 +130,12 @@ namespace OpenDotaRampage.Helpers
 
                 var content = await response.Content.ReadAsStringAsync();
                 var jobData = JsonConvert.DeserializeObject<JObject>(content);
-                var jobId = jobData["job"]["jobId"].Value<int>();
+                var jobIdToken = jobData?["job"]?["jobId"];
+                if (jobIdToken == null)
+                {
+                    return false;
+                }
+                var jobId = jobIdToken.Value<int>();
 
                 // Check parse status with delay
                 for (int attempt = 0; attempt < 10; attempt++)
@@ -152,7 +161,7 @@ namespace OpenDotaRampage.Helpers
             return false;
         }
 
-        private static async Task<Match> GetMatchDetails(HttpClient client, long matchId)
+    private static async Task<Match?> GetMatchDetails(HttpClient client, long matchId)
         {
             await RateLimiter.EnsureRateLimit();
             
@@ -238,7 +247,7 @@ namespace OpenDotaRampage.Helpers
             if (File.Exists(cacheFilePath))
             {
                 var jsonData = File.ReadAllText(cacheFilePath);
-                cachedRampageMatches = JsonConvert.DeserializeObject<List<Match>>(jsonData);
+                cachedRampageMatches = JsonConvert.DeserializeObject<List<Match>>(jsonData) ?? new List<Match>();
             }
 
             // Combine new and cached rampage matches, ensuring distinct matches

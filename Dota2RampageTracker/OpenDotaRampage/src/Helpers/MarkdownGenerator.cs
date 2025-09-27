@@ -27,10 +27,10 @@ namespace OpenDotaRampage.Helpers
 
                 var groupedRampages = allRampageMatches
                     .SelectMany(match => match.Players
-                        .Where(player => player.AccountId == playerId) // Filter to include only the player's hero
-                        .Select(player => new { match.MatchId, player.HeroId, IsNew = allRampageMatches.Any(m => m.MatchId == match.MatchId) }))
+                        .Where(player => player.AccountId == playerId && player.HeroId.HasValue) // only entries with hero id
+                        .Select(player => new { match.MatchId, HeroId = player.HeroId!.Value, IsNew = allRampageMatches.Any(m => m.MatchId == match.MatchId) }))
                     .GroupBy(x => x.HeroId)
-                    .ToDictionary(g => (int)g.Key, g => g.Select(x => new { x.MatchId, x.IsNew }).ToList());
+                    .ToDictionary(g => g.Key, g => g.Select(x => new { x.MatchId, x.IsNew }).ToList());
 
                 var sortedGroupedRampages = groupedRampages
                     .OrderBy(g => heroData.ContainsKey(g.Key) ? heroData[g.Key].LocalizedName : $"Hero ID {g.Key} (Name not found)")
@@ -39,7 +39,7 @@ namespace OpenDotaRampage.Helpers
                 foreach (var group in sortedGroupedRampages)
                 {
                     int heroId = group.Key;
-                    if (heroData.TryGetValue(heroId, out Hero hero))
+                    if (heroData.TryGetValue(heroId, out var hero) && hero != null)
                     {
                         string heroName = hero.Name.Replace("npc_dota_hero_", "");
                         string heroIconUrl = $"https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/{heroName}.png";
@@ -113,8 +113,9 @@ namespace OpenDotaRampage.Helpers
                     double winRateUnranked = unrankedMatches > 0 ? (double)unrankedWins / unrankedMatches * 100 : 0;
                     double winRateRanked = rankedMatches > 0 ? (double)rankedWins / rankedMatches * 100 : 0;
 
+                    int rampagesTotal = totals.ContainsKey("rampages") ? totals["rampages"] : 0;
                     string rampageFilePath = Path.Combine(Program.outputDirectory, playerId, "Rampages.md").Replace("\\", "/");
-                    writer.WriteLine($"| {playerName} | ![Profile Picture]({avatarUrl}) | {totals["rampages"]}/{totals["matches"]}| {winRateTotal:F2}% | {winRateUnranked:F2}% | {winRateRanked:F2}% | [Rampages](./{rampageFilePath}) |");
+                    writer.WriteLine($"| {playerName} | ![Profile Picture]({avatarUrl}) | {rampagesTotal}/{totalMatches}| {winRateTotal:F2}% | {winRateUnranked:F2}% | {winRateRanked:F2}% | [Rampages](./{rampageFilePath}) |");
                 }
             }
 
@@ -130,7 +131,7 @@ namespace OpenDotaRampage.Helpers
             if (File.Exists(cacheFilePath))
             {
                 var jsonData = File.ReadAllText(cacheFilePath);
-                return JsonConvert.DeserializeObject<List<Match>>(jsonData);
+                return JsonConvert.DeserializeObject<List<Match>>(jsonData) ?? new List<Match>();
             }
 
             return new List<Match>();
