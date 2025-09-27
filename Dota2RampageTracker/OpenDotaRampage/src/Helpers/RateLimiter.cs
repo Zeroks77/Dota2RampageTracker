@@ -11,7 +11,7 @@ public static class RateLimiter
     private static DateTime lastApiCallReset = DateTime.UtcNow;
     private static TimeSpan resetInterval = TimeSpan.FromMinutes(1);
 
-    public static SemaphoreSlim concurrencyLimiter = new SemaphoreSlim(10, 10); // Adjust as needed
+    public static SemaphoreSlim concurrencyLimiter = new SemaphoreSlim(20, 20); // more parallelism, API limiter governs QPS
 
     static RateLimiter()
     {
@@ -26,13 +26,13 @@ public static class RateLimiter
     public static void SetRateLimit(bool useKey)
     {
         useApiKey = useKey;
-        maxCallsPerMinute = useApiKey ? 120 : 60;
+        maxCallsPerMinute = useApiKey ? 1000 : 60;
         rateLimitSemaphore = new SemaphoreSlim(maxCallsPerMinute, maxCallsPerMinute);
     }
 
     public static async Task EnsureRateLimit()
     {
-        await rateLimitSemaphore.WaitAsync();
+    await rateLimitSemaphore.WaitAsync();
 
         TimeSpan timeUntilReset = resetInterval - (DateTime.UtcNow - lastApiCallReset);
 
@@ -58,7 +58,7 @@ public static class RateLimiter
             }
         }
 
-        rateLimitSemaphore.Release();
+    rateLimitSemaphore.Release();
     }
 
     public static void ResetRateLimiter()

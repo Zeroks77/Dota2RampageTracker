@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OpenDotaRampage.Models;
 
 namespace OpenDotaRampage.Helpers
@@ -15,7 +14,7 @@ namespace OpenDotaRampage.Helpers
     public static class MatchProcessor
     {
         private static readonly string errorLogFilePath = Path.Combine(Program.outputDirectory, $"{DateTime.UtcNow:HH_mm_ss}_error_log.txt");
-        private static string apiKey;
+        private static readonly ConcurrentDictionary<long, bool> parseRequested = new ConcurrentDictionary<long, bool>();
 
         static MatchProcessor()
         {
@@ -29,13 +28,12 @@ namespace OpenDotaRampage.Helpers
                 }
                 File.Create(errorLogFilePath).Dispose();
             }
-            apiKey = "?api_key=" + Program.apiKey;
         }
 
         public static async Task<List<Match>> GetRampageMatches(HttpClient client, long playerId, List<Match> matches)
         {
             var rampageMatches = new ConcurrentBag<Match>();
-            int totalMatches = matches.Count();
+            int totalMatches = matches.Count;
             int processedMatches = 0;
 
             var matchBatches = matches
@@ -62,13 +60,13 @@ namespace OpenDotaRampage.Helpers
                                 if (player.AccountId == playerId && player.MultiKills != null && player.MultiKills.ContainsKey(5))
                                 {
                                     rampageMatches.Add(matchDetails);
+                                    break;
                                 }
                             }
                         }
 
-                        Interlocked.Increment(ref processedMatches);
-                        DisplayProgress(processedMatches, totalMatches);
-                        Console.WriteLine($"Processed match {matchId}. Total processed: {processedMatches}/{totalMatches}");
+                        int done = Interlocked.Increment(ref processedMatches);
+                        DisplayProgress(done, totalMatches);
                     }
                     catch (Exception ex)
                     {
@@ -94,15 +92,17 @@ namespace OpenDotaRampage.Helpers
 
         private static void DisplayProgress(int processed, int total)
         {
+            if (total <= 0) return;
+            if (processed % 50 != 0 && processed != total) return; // throttle console spam
             TimeSpan timeSpent = Program.stopwatch.Elapsed;
-            Console.Write($"\rProcessing matches: {processed}/{total} ({(processed * 100) / total}%) - Time spent: {timeSpent:hh\\:mm\\:ss}");
+            Console.Write($"\rProcessing matches: {processed}/{total} ({(processed * 100) / Math.Max(1, total)}%) - Time spent: {timeSpent:hh\\:mm\\:ss}");
         }
 
         public static async Task<IEnumerable<Match>> GetPlayerMatches(HttpClient client, long playerId, long lastCheckedMatchId)
         {
             await RateLimiter.EnsureRateLimit();
             string url = $"https://api.opendota.com/api/players/{playerId}/matches";
-            var response = await client.GetStringAsync(url);
+            var response = await ApiHelper.GetStringWith429Retry(client, url);
             var matches = JsonConvert.DeserializeObject<List<Match>>(response) ?? new List<Match>();
 
             // Filter matches to only include those after the last checked match ID
@@ -115,44 +115,17 @@ namespace OpenDotaRampage.Helpers
         {
             await RateLimiter.EnsureRateLimit();
             string url = $"https://api.opendota.com/api/request/{matchId}";
-            if (RateLimiter.useApiKey)
-            {
-                url += apiKey;
-            }
 
             try
             {
-                var response = await client.PostAsync(url, null);
+                var response = await ApiHelper.PostWith429Retry(client, url, null);
                 if (!response.IsSuccessStatusCode)
                 {
                     return false;
                 }
 
-                var content = await response.Content.ReadAsStringAsync();
-                var jobData = JsonConvert.DeserializeObject<JObject>(content);
-                var jobIdToken = jobData?["job"]?["jobId"];
-                if (jobIdToken == null)
-                {
-                    return false;
-                }
-                var jobId = jobIdToken.Value<int>();
-
-                // Check parse status with delay
-                for (int attempt = 0; attempt < 10; attempt++)
-                {
-                    await Task.Delay(60000); // Wait 1 minute
-                    var statusUrl = $"https://api.opendota.com/api/request/{jobId}";
-                    if (RateLimiter.useApiKey)
-                    {
-                        statusUrl += apiKey;
-                    }
-                    
-                    var statusResponse = await client.GetAsync(statusUrl);
-                    if (statusResponse.StatusCode == System.Net.HttpStatusCode.OK)
-                    {
-                        return true;
-                    }
-                }
+                // Parser kann asynchron dauern. Nicht sofort pollen; Folgeläufe holen Details.
+                return true;
             }
             catch (Exception ex)
             {
@@ -161,26 +134,19 @@ namespace OpenDotaRampage.Helpers
             return false;
         }
 
-    private static async Task<Match?> GetMatchDetails(HttpClient client, long matchId)
+        private static async Task<Match?> GetMatchDetails(HttpClient client, long matchId)
         {
             await RateLimiter.EnsureRateLimit();
-            
-            // Request parse before getting details
-            await RequestMatchParse(client, matchId);
-            
+
             string url = $"https://api.opendota.com/api/matches/{matchId}";
-            if (RateLimiter.useApiKey)
-            {
-                url += apiKey;
-            }
             try
             {
-                var response = await client.GetAsync(url);
+                var response = await ApiHelper.GetAsyncWith429Retry(client, url);
                 if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
                 {
-                    // Requeue the match and wait for 10 seconds
-                    await Task.Delay(10000);
-                    Console.WriteLine($"TooManyrequests. Delaying for 10 seconds.");
+                    // Requeue the match and wait briefly
+                    await Task.Delay(3000);
+                    Console.WriteLine($"Too many requests (429). Retrying in 3 seconds.");
                     return await GetMatchDetails(client, matchId);
                 }
                 if (!response.IsSuccessStatusCode)
@@ -188,7 +154,20 @@ namespace OpenDotaRampage.Helpers
                     return null;
                 }
                 response.EnsureSuccessStatusCode();
-                return JsonConvert.DeserializeObject<Match>(await response.Content.ReadAsStringAsync());
+                var body = await response.Content.ReadAsStringAsync();
+                var match = JsonConvert.DeserializeObject<Match>(body);
+
+                // Wenn keine MultiKills vorhanden sind, einmalig Parse anstoßen und später erneut versuchen
+                if (match != null && (match.Players == null || match.Players.All(p => p.MultiKills == null)))
+                {
+                    if (parseRequested.TryAdd(matchId, true))
+                    {
+                        _ = RequestMatchParse(client, matchId); // Fire-and-forget
+                    }
+                    return null; // späterer Durchlauf/Run holt die Daten
+                }
+
+                return match;
             }
             catch (Exception ex)
             {

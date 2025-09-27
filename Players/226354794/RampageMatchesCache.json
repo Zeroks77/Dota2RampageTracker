@@ -1,0 +1,157 @@
+[
+  {
+    "match_id": 8375961807,
+    "players": [
+      {
+        "match_id": 0,
+        "account_id": 226354794,
+        "hero_id": 76,
+        "multi_kills": {
+          "2": 4,
+          "3": 1,
+          "4": 1,
+          "5": 1
+        }
+      },
+      {
+        "match_id": 0,
+        "account_id": 1877318782,
+        "hero_id": 27,
+        "multi_kills": {}
+      },
+      {
+        "match_id": 0,
+        "account_id": 183063377,
+        "hero_id": 135,
+        "multi_kills": {}
+      },
+      {
+        "match_id": 0,
+        "account_id": 67031198,
+        "hero_id": 37,
+        "multi_kills": {
+          "2": 1
+        }
+      },
+      {
+        "match_id": 0,
+        "account_id": 1127238076,
+        "hero_id": 3,
+        "multi_kills": {}
+      },
+      {
+        "match_id": 0,
+        "account_id": 1072039492,
+        "hero_id": 97,
+        "multi_kills": {}
+      },
+      {
+        "match_id": 0,
+        "account_id": 1072096196,
+        "hero_id": 30,
+        "multi_kills": {}
+      },
+      {
+        "match_id": 0,
+        "account_id": 1429202597,
+        "hero_id": 19,
+        "multi_kills": {}
+      },
+      {
+        "match_id": 0,
+        "account_id": 1058314871,
+        "hero_id": 44,
+        "multi_kills": {}
+      },
+      {
+        "match_id": 0,
+        "account_id": 1162805967,
+        "hero_id": 98,
+        "multi_kills": {}
+      }
+    ]
+  },
+  {
+    "match_id": 8478392509,
+    "players": [
+      {
+        "match_id": 0,
+        "account_id": 57839727,
+        "hero_id": 22,
+        "multi_kills": {
+          "2": 1
+        }
+      },
+      {
+        "match_id": 0,
+        "account_id": 226354794,
+        "hero_id": 36,
+        "multi_kills": {
+          "2": 6,
+          "3": 2,
+          "4": 1,
+          "5": 1
+        }
+      },
+      {
+        "match_id": 0,
+        "account_id": 169325410,
+        "hero_id": 14,
+        "multi_kills": {}
+      },
+      {
+        "match_id": 0,
+        "account_id": 468420619,
+        "hero_id": 28,
+        "multi_kills": {
+          "2": 1
+        }
+      },
+      {
+        "match_id": 0,
+        "account_id": 1804070588,
+        "hero_id": 87,
+        "multi_kills": {
+          "2": 1
+        }
+      },
+      {
+        "match_id": 0,
+        "account_id": 85463573,
+        "hero_id": 136,
+        "multi_kills": {
+          "2": 4,
+          "3": 1
+        }
+      },
+      {
+        "match_id": 0,
+        "account_id": 110890648,
+        "hero_id": 63,
+        "multi_kills": {}
+      },
+      {
+        "match_id": 0,
+        "account_id": 78508150,
+        "hero_id": 131,
+        "multi_kills": {
+          "2": 1
+        }
+      },
+      {
+        "match_id": 0,
+        "account_id": 160515405,
+        "hero_id": 96,
+        "multi_kills": {
+          "2": 1
+        }
+      },
+      {
+        "match_id": 0,
+        "account_id": 447593221,
+        "hero_id": 16,
+        "multi_kills": {}
+      }
+    ]
+  }
+]

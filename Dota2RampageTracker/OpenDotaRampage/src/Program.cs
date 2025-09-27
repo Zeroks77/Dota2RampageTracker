@@ -9,7 +9,7 @@ class Program
 {
     // Resolve repo root and always write into the repo-level Players folder
     public static readonly string outputDirectory = ResolveOutputDirectory();
-    public static readonly HttpClient client = new HttpClient();
+    public static readonly HttpClient client = CreateHttpClient();
     public static string? apiKey;
     public static readonly Stopwatch stopwatch = new Stopwatch();
     private static List<long> players = new List<long>();
@@ -30,14 +30,14 @@ class Program
         stopwatch.Start();
 
         // Check if the API is alive
-        if (!await IsApiAlive())
-        {
-            Console.WriteLine("The OpenDota API is currently unavailable. Please try again later.");
-            return;
-        }
+        //if (!await IsApiAlive())
+        //{
+        //    Console.WriteLine("The OpenDota API is currently unavailable. Please try again later.");
+        //    return;
+        //}
 
         // Load configuration from environment variables
-    apiKey = Environment.GetEnvironmentVariable("API_KEY");
+        apiKey = Environment.GetEnvironmentVariable("API_KEY");
         var playersCsv = Environment.GetEnvironmentVariable("PLAYERS");
 
         // Check if the required environment variables exist
@@ -103,15 +103,8 @@ class Program
 
         Console.WriteLine($"Total New Matches: {totalNewMatches}");
 
-        // Set the rate limit based on the total number of new matches
-        if (totalNewMatches < 2000)
-        {
-            RateLimiter.SetRateLimit(false); // 60 calls per minute without API key
-        }
-        else
-        {
-            RateLimiter.SetRateLimit(true); // Use API key and existing rate limiting logic
-        }
+        // Set the rate limit based on API key availability
+        RateLimiter.SetRateLimit(!string.IsNullOrWhiteSpace(apiKey)); // 1000/min with API key, 60/min otherwise
 
         // Process each player
         foreach (var playerId in players)
@@ -146,6 +139,23 @@ class Program
         Console.WriteLine($"Total time spent: {stopwatch.Elapsed:hh\\:mm\\:ss}");
     }
 
+    private static HttpClient CreateHttpClient()
+    {
+        var handler = new SocketsHttpHandler
+        {
+            AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate,
+            MaxConnectionsPerServer = 100,
+            EnableMultipleHttp2Connections = true,
+            PooledConnectionLifetime = TimeSpan.FromMinutes(2)
+        };
+        var http = new HttpClient(handler)
+        {
+            Timeout = TimeSpan.FromSeconds(100)
+        };
+        http.DefaultRequestHeaders.UserAgent.ParseAdd("Dota2RampageTracker/1.0 (+https://github.com/Zeroks77/Dota2RampageTracker)");
+        return http;
+    }
+
     private static string ResolveOutputDirectory()
     {
         // Walk up to find the repo root (directory containing .git). If not found, fall back to CWD.
@@ -178,7 +188,7 @@ static void SavePlayerDirectoryMapping()
 
     static async Task<bool> IsApiAlive()
     {
-        string url = "https://api.opendota.com/api/health";
+        string url = OpenDotaRampage.Helpers.ApiHelper.AppendApiKey("https://api.opendota.com/api/health");
         try
         {
             var response = await client.GetAsync(url);
