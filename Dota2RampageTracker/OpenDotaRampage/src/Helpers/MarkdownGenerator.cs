@@ -79,8 +79,8 @@ namespace OpenDotaRampage.Helpers
        
         public static void GenerateMainReadme(Dictionary<string, (string SteamName, string AvatarUrl, Dictionary<string, int> Totals, CountsResponse Counts)> steamProfiles, Dictionary<int, string> gameModes, Dictionary<int, string> lobbyTypes, Dictionary<int, string> patches)
         {
-            string rootDirectory = Directory.GetCurrentDirectory();
-            string filePath = Path.Combine(rootDirectory, "README.md");
+            string repoRoot = ResolveRepoRoot();
+            string filePath = Path.Combine(repoRoot, "README.md");
 
             Console.WriteLine($"Generating main README at: {filePath}");
 
@@ -112,14 +112,30 @@ namespace OpenDotaRampage.Helpers
                     double winRateTotal = totalMatches > 0 ? (double)totalWins / totalMatches * 100 : 0;
                     double winRateUnranked = unrankedMatches > 0 ? (double)unrankedWins / unrankedMatches * 100 : 0;
                     double winRateRanked = rankedMatches > 0 ? (double)rankedWins / rankedMatches * 100 : 0;
-
                     int rampagesTotal = totals.ContainsKey("rampages") ? totals["rampages"] : 0;
-                    string rampageFilePath = Path.Combine(Program.outputDirectory, playerId, "Rampages.md").Replace("\\", "/");
-                    writer.WriteLine($"| {playerName} | ![Profile Picture]({avatarUrl}) | {rampagesTotal}/{totalMatches}| {winRateTotal:F2}% | {winRateUnranked:F2}% | {winRateRanked:F2}% | [Rampages](./{rampageFilePath}) |");
+                    // Always use a repo-relative path for links so they work on GitHub and locally
+                    string rampageRelativePath = $"Players/{playerId}/Rampages.md";
+                    writer.WriteLine($"| {playerName} | ![Profile Picture]({avatarUrl}) | {rampagesTotal}/{totalMatches}| {winRateTotal:F2}% | {winRateUnranked:F2}% | {winRateRanked:F2}% | [Rampages](./{rampageRelativePath}) |");
                 }
             }
 
             Console.WriteLine("Main README generated successfully.");
+        }
+
+        private static string ResolveRepoRoot()
+        {
+            // Walk up from CWD to locate the repo root (directory containing .git)
+            var dir = new DirectoryInfo(Directory.GetCurrentDirectory());
+            while (dir != null)
+            {
+                if (Directory.Exists(Path.Combine(dir.FullName, ".git")))
+                {
+                    return dir.FullName;
+                }
+                dir = dir.Parent!;
+            }
+            // Fallback to CWD if .git not found
+            return Directory.GetCurrentDirectory();
         }
 
 
