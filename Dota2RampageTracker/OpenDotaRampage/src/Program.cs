@@ -119,13 +119,18 @@ class Program
             var allRampageMatches = rampageMatches.Concat(cachedRampageMatches)
                 .GroupBy(m => m.MatchId)
                 .Select(g => g.First())
-                .Distinct()
                 .ToList();
+
+            // Enrich missing StartTime and write back to cache so markdown can show dates
+            allRampageMatches = await MatchProcessor.EnrichStartTimes(client, allRampageMatches);
+            MatchProcessor.WriteRampageCache(playerId.ToString(), allRampageMatches);
 
             steamProfiles[playerId.ToString()].Totals["rampages"] = allRampageMatches.Count;
             foreach (var match in rampageMatches)
             {
-                Console.WriteLine($"Match ID: {match.MatchId}, Rampages: {match.Players[0].MultiKills}");
+                var firstPlayer = match.Players?.FirstOrDefault();
+                var mk = firstPlayer?.MultiKills != null ? string.Join(",", firstPlayer.MultiKills.Select(kv => $"{kv.Key}:{kv.Value}")) : "-";
+                Console.WriteLine($"Match ID: {match.MatchId}, MultiKills: {mk}");
             }
 
             MarkdownGenerator.GenerateMarkdown(steamName, allRampageMatches, heroData, (int)playerId);

@@ -12,4 +12,4 @@ This repository contains rampage tracking data for various Dota 2 players.
 | Xenas23 | ![Profile Picture](https://avatars.steamstatic.com/16392e7c2bf30770c48c4b989eef4a19f237d548_full.jpg) | 12/5736| 55,13% | 56,78% | 53,19% | [Rampages](./Players/181342370/Rampages.md) |
 | Mupfel | ![Profile Picture](https://avatars.steamstatic.com/5975408a7d136abfeb6160943f0db7743d542d54_full.jpg) | 6/3923| 54,78% | 56,56% | 52,89% | [Rampages](./Players/131232145/Rampages.md) |
 | jarjeer | ![Profile Picture](https://avatars.steamstatic.com/2c33a4d4725158a4546f3414b2a76891d0abb218_full.jpg) | 0/1371| 49,23% | 62,07% | 49,62% | [Rampages](./Players/1002536896/Rampages.md) |
-| HUNDSCHeiSSE | ![Profile Picture](https://avatars.steamstatic.com/4de25690c67e56aa772c438c4eeb4f949647c827_full.jpg) | 0/187| 47,59% | 0,00% | 56,33% | [Rampages](./Players/188889560/Rampages.md) |
+| HUNDSCHeiSSE | ![Profile Picture](https://avatars.steamstatic.com/4de25690c67e56aa772c438c4eeb4f949647c827_full.jpg) | 0/188| 47,34% | 0,00% | 55,97% | [Rampages](./Players/188889560/Rampages.md) |

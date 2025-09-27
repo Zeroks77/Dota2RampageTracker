@@ -53,7 +53,7 @@ namespace OpenDotaRampage.Helpers
                         long matchId = match.MatchId;
                         var matchDetails = await GetMatchDetails(client, matchId);
 
-                        if (matchDetails != null)
+                        if (matchDetails != null && matchDetails.Players != null)
                         {
                             foreach (var player in matchDetails.Players)
                             {
@@ -229,13 +229,52 @@ namespace OpenDotaRampage.Helpers
                 cachedRampageMatches = JsonConvert.DeserializeObject<List<Match>>(jsonData) ?? new List<Match>();
             }
 
-            // Combine new and cached rampage matches, ensuring distinct matches
-            var allRampageMatches = cachedRampageMatches.Concat(newRampageMatches)
+            // Combine new and cached rampage matches, preferring new (which likely contain StartTime)
+            var allRampageMatches = newRampageMatches
+                .Concat(cachedRampageMatches)
                 .GroupBy(m => m.MatchId)
                 .Select(g => g.First())
-                .Distinct()
                 .ToList();
 
+            File.WriteAllText(cacheFilePath, JsonConvert.SerializeObject(allRampageMatches, Formatting.Indented));
+        }
+
+        public static async Task<List<Match>> EnrichStartTimes(HttpClient client, List<Match> matches)
+        {
+            var list = matches.ToList();
+            var missing = list.Where(m => !m.StartTime.HasValue).Select(m => m.MatchId).Distinct().ToList();
+            if (!missing.Any()) return list;
+
+            var tasks = missing.Select(async matchId =>
+            {
+                await RateLimiter.EnsureRateLimit();
+                await RateLimiter.concurrencyLimiter.WaitAsync();
+                try
+                {
+                    var details = await GetMatchDetails(client, matchId);
+                    if (details != null && details.StartTime.HasValue)
+                    {
+                        foreach (var m in list.Where(x => x.MatchId == matchId))
+                        {
+                            m.StartTime = details.StartTime;
+                        }
+                    }
+                }
+                finally
+                {
+                    RateLimiter.concurrencyLimiter.Release();
+                }
+            });
+
+            await Task.WhenAll(tasks);
+            return list;
+        }
+
+        public static void WriteRampageCache(string playerID, List<Match> allRampageMatches)
+        {
+            string playerDirectory = Path.Combine(Program.outputDirectory, playerID);
+            Directory.CreateDirectory(playerDirectory);
+            string cacheFilePath = Path.Combine(playerDirectory, "RampageMatchesCache.json");
             File.WriteAllText(cacheFilePath, JsonConvert.SerializeObject(allRampageMatches, Formatting.Indented));
         }
     }

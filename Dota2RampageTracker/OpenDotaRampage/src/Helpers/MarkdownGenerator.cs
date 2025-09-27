@@ -26,11 +26,11 @@ namespace OpenDotaRampage.Helpers
                 writer.WriteLine($"Player {steamName} has got {allRampageMatches.Count} total Rampages\n");
 
                 var groupedRampages = allRampageMatches
-                    .SelectMany(match => match.Players
+                    .SelectMany(match => (match.Players ?? new List<Player>())
                         .Where(player => player.AccountId == playerId && player.HeroId.HasValue) // only entries with hero id
-                        .Select(player => new { match.MatchId, HeroId = player.HeroId!.Value, IsNew = allRampageMatches.Any(m => m.MatchId == match.MatchId) }))
+                        .Select(player => new { match.MatchId, match.StartTime, HeroId = player.HeroId!.Value }))
                     .GroupBy(x => x.HeroId)
-                    .ToDictionary(g => g.Key, g => g.Select(x => new { x.MatchId, x.IsNew }).ToList());
+                    .ToDictionary(g => g.Key, g => g.Select(x => new { x.MatchId, x.StartTime }).ToList());
 
                 var sortedGroupedRampages = groupedRampages
                     .OrderBy(g => heroData.ContainsKey(g.Key) ? heroData[g.Key].LocalizedName : $"Hero ID {g.Key} (Name not found)")
@@ -47,13 +47,15 @@ namespace OpenDotaRampage.Helpers
                         writer.WriteLine($"### {hero.LocalizedName}");
                         writer.WriteLine($"![{hero.LocalizedName}]({heroIconUrl})\n");
 
-                        writer.WriteLine("| Match ID | Source |");
-                        writer.WriteLine("|----------|--------|");
+                        writer.WriteLine("| Match ID | Date |");
+                        writer.WriteLine("|----------|------|");
 
                         foreach (var match in group.Value)
                         {
-                            string source = match.IsNew ? "New" : "Cached";
-                            writer.WriteLine($"| [Match URL](https://www.opendota.com/matches/{match.MatchId}) | {source} |");
+                            string dateStr = match.StartTime.HasValue
+                                ? DateTimeOffset.FromUnixTimeSeconds(match.StartTime.Value).ToLocalTime().ToString("yyyy-MM-dd")
+                                : "-";
+                            writer.WriteLine($"| [Match URL](https://www.opendota.com/matches/{match.MatchId}) | {dateStr} |");
                         }
 
                         writer.WriteLine();
@@ -61,13 +63,15 @@ namespace OpenDotaRampage.Helpers
                     else
                     {
                         writer.WriteLine($"### Hero ID {heroId} (Name not found)");
-                        writer.WriteLine("| Match ID | Source |");
-                        writer.WriteLine("|----------|--------|");
+                        writer.WriteLine("| Match ID | Date |");
+                        writer.WriteLine("|----------|------|");
 
                         foreach (var match in group.Value)
                         {
-                            string source = match.IsNew ? "New" : "Cached";
-                            writer.WriteLine($"| [Match URL](https://www.opendota.com/matches/{match.MatchId}) | {source} |");
+                            string dateStr = match.StartTime.HasValue
+                                ? DateTimeOffset.FromUnixTimeSeconds(match.StartTime.Value).ToLocalTime().ToString("yyyy-MM-dd")
+                                : "-";
+                            writer.WriteLine($"| [Match URL](https://www.opendota.com/matches/{match.MatchId}) | {dateStr} |");
                         }
 
                         writer.WriteLine();
