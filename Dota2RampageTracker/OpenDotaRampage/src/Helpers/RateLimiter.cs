@@ -10,6 +10,8 @@ public static class RateLimiter
     private static int apiCallCount = 0;
     private static DateTime lastApiCallReset = DateTime.UtcNow;
     private static TimeSpan resetInterval = TimeSpan.FromMinutes(1);
+    private static long totalDelayMs = 0;
+    private static int waitCount = 0;
 
     public static SemaphoreSlim concurrencyLimiter = new SemaphoreSlim(20, 20); // more parallelism, API limiter governs QPS
 
@@ -42,14 +44,14 @@ public static class RateLimiter
             {
                 lastApiCallReset = DateTime.UtcNow;
                 apiCallCount = 0;
-                Console.WriteLine("Rate limiter reset due to time interval.");
             }
         }
 
         if (Interlocked.Increment(ref apiCallCount) >= maxCallsPerMinute)
         {
             TimeSpan delay = TimeSpan.FromMinutes(1) - (DateTime.UtcNow - lastApiCallReset);
-            Console.WriteLine($"\r\nRate limit exceeded. Delaying for {delay.TotalSeconds} seconds.");
+            Interlocked.Increment(ref waitCount);
+            Interlocked.Add(ref totalDelayMs, (long)delay.TotalMilliseconds);
             await Task.Delay(delay);
             lock (concurrencyLimiter)
             {
@@ -65,5 +67,10 @@ public static class RateLimiter
     {
         lastApiCallReset = DateTime.UtcNow;
         apiCallCount = 0;
+    }
+
+    public static (int waits, TimeSpan totalDelay) Snapshot()
+    {
+        return (waitCount, TimeSpan.FromMilliseconds(Interlocked.Read(ref totalDelayMs)));
     }
 }

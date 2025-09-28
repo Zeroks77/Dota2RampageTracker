@@ -92,12 +92,14 @@ namespace OpenDotaRampage.Helpers
             {
                 writer.WriteLine("# Dota 2 Rampage Tracker");
                 writer.WriteLine("This repository contains rampage tracking data for various Dota 2 players.\n");
+                writer.WriteLine($"> Last updated: {DateTime.UtcNow:yyyy-MM-dd HH:mm} UTC\n");
 
                 writer.WriteLine("## Players");
                 writer.WriteLine("| Player Name | Profile Picture | Rampage Percentage | Win Rate (Total) | Win Rate (Unranked) | Win Rate (Ranked) | Rampage File |");
                 writer.WriteLine("|-------------|-----------------|--------------------|------------------|---------------------|-------------------|--------------|");
 
-                foreach (var steamProfile in steamProfiles)
+                foreach (var steamProfile in steamProfiles
+                    .OrderByDescending(kv => kv.Value.Totals.ContainsKey("rampages") ? kv.Value.Totals["rampages"] : 0))
                 {
                     string playerName = steamProfile.Value.SteamName;
                     string playerId  = steamProfile.Key;
@@ -119,7 +121,7 @@ namespace OpenDotaRampage.Helpers
                     int rampagesTotal = totals.ContainsKey("rampages") ? totals["rampages"] : 0;
                     // Always use a repo-relative path for links so they work on GitHub and locally
                     string rampageRelativePath = $"Players/{playerId}/Rampages.md";
-                    writer.WriteLine($"| {playerName} | ![Profile Picture]({avatarUrl}) | {rampagesTotal}/{totalMatches}| {winRateTotal:F2}% | {winRateUnranked:F2}% | {winRateRanked:F2}% | [Rampages](./{rampageRelativePath}) |");
+                    writer.WriteLine($"| {playerName} | ![Profile Picture]({avatarUrl}) | {rampagesTotal}/{totalMatches}| {winRateTotal.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)}% | {winRateUnranked.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)}% | {winRateRanked.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)}% | [Rampages](./{rampageRelativePath}) |");
                 }
             }
 
