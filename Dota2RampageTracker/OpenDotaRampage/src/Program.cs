@@ -171,8 +171,8 @@ class Program
 
         // Skip metadata fetches entirely in pending-only mode to start scanning faster
 
-        // Fetch hero data unless we only want to regenerate README from cache (and not in pending-only)
-        if (!pendingOnly && !regenReadmeOnly)
+        // Fetch hero data in all active modes (even regenReadmeOnly) so hero names/icons render correctly
+        if (!pendingOnly)
         {
             heroData = await HeroDataFetcher.FetchHeroData(client);
         }
@@ -393,7 +393,16 @@ class Program
                 allRampageMatches = cachedRampageMatches;
             }
 
-            steamProfiles[playerId.ToString()].Totals["rampages"] = allRampageMatches.Count;
+            // Compute rampage total as unique matches where this player actually has a Rampage (MultiKills contains 5)
+            var rampageTotal = allRampageMatches
+                .SelectMany(m => (m.Players ?? new List<Player>()).Where(p => p.AccountId == (int)playerId && p.MultiKills != null && p.MultiKills.ContainsKey(5))
+                                 .Select(_ => m.MatchId))
+                .Distinct()
+                .Count();
+            Logger.Info("readme input", ctx: new Dictionary<string, object?> {
+                {"player", playerId }, {"cached", cachedRampageMatches.Count }, {"using", allRampageMatches.Count }, {"rampageFiltered", rampageTotal }
+            });
+            steamProfiles[playerId.ToString()].Totals["rampages"] = rampageTotal;
             MarkdownGenerator.GenerateMarkdown(steamName, allRampageMatches, heroData, (int)playerId);
         }
 

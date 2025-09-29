@@ -23,14 +23,24 @@ namespace OpenDotaRampage.Helpers
 
             using (var writer = new StreamWriter(filePath))
             {
-                writer.WriteLine($"Player {steamName} has got {allRampageMatches.Count} total Rampages\n");
-
-                var groupedRampages = allRampageMatches
+                // Only include matches where this player truly has a Rampage (MultiKills contains key 5)
+                var rampageEntries = allRampageMatches
                     .SelectMany(match => (match.Players ?? new List<Player>())
-                        .Where(player => player.AccountId == playerId && player.HeroId.HasValue) // only entries with hero id
+                        .Where(player => player.AccountId == playerId && player.HeroId.HasValue && player.MultiKills != null && player.MultiKills.ContainsKey(5))
                         .Select(player => new { match.MatchId, match.StartTime, HeroId = player.HeroId!.Value }))
+                    .ToList();
+
+                int totalRampageMatches = rampageEntries.Select(e => e.MatchId).Distinct().Count();
+                writer.WriteLine($"Player {steamName} has got {totalRampageMatches} total Rampages\n");
+
+                var groupedRampages = rampageEntries
                     .GroupBy(x => x.HeroId)
-                    .ToDictionary(g => g.Key, g => g.Select(x => new { x.MatchId, x.StartTime }).ToList());
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.Select(x => new { x.MatchId, x.StartTime })
+                              .OrderByDescending(m => m.StartTime ?? 0)
+                              .ToList()
+                    );
 
                 var sortedGroupedRampages = groupedRampages
                     .OrderBy(g => heroData.ContainsKey(g.Key) ? heroData[g.Key].LocalizedName : $"Hero ID {g.Key} (Name not found)")
@@ -95,8 +105,8 @@ namespace OpenDotaRampage.Helpers
                 writer.WriteLine($"> Last updated: {DateTime.UtcNow:yyyy-MM-dd HH:mm} UTC\n");
 
                 writer.WriteLine("## Players");
-                writer.WriteLine("| Player Name | Profile Picture | Rampage Percentage | Win Rate (Total) | Win Rate (Unranked) | Win Rate (Ranked) | Rampage File |");
-                writer.WriteLine("|-------------|-----------------|--------------------|------------------|---------------------|-------------------|--------------|");
+                writer.WriteLine("| Player Name | Profile Picture | Rampages | Rampage Rate | Win Rate (Total) | Win Rate (Unranked) | Win Rate (Ranked) | Rampage File |");
+                writer.WriteLine("|-------------|-----------------|----------|--------------|------------------|---------------------|-------------------|--------------|");
 
                 foreach (var steamProfile in steamProfiles
                     .OrderByDescending(kv => kv.Value.Totals.ContainsKey("rampages") ? kv.Value.Totals["rampages"] : 0))
@@ -119,9 +129,10 @@ namespace OpenDotaRampage.Helpers
                     double winRateUnranked = unrankedMatches > 0 ? (double)unrankedWins / unrankedMatches * 100 : 0;
                     double winRateRanked = rankedMatches > 0 ? (double)rankedWins / rankedMatches * 100 : 0;
                     int rampagesTotal = totals.ContainsKey("rampages") ? totals["rampages"] : 0;
+                    double rampageRate = totalMatches > 0 ? (double)rampagesTotal / totalMatches * 100 : 0;
                     // Always use a repo-relative path for links so they work on GitHub and locally
                     string rampageRelativePath = $"Players/{playerId}/Rampages.md";
-                    writer.WriteLine($"| {playerName} | ![Profile Picture]({avatarUrl}) | {rampagesTotal}/{totalMatches}| {winRateTotal.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)}% | {winRateUnranked.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)}% | {winRateRanked.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)}% | [Rampages](./{rampageRelativePath}) |");
+                    writer.WriteLine($"| {playerName} | ![Profile Picture]({avatarUrl}) | {rampagesTotal} | {rampageRate.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)}% | {winRateTotal.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)}% | {winRateUnranked.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)}% | {winRateRanked.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)}% | [Rampages](./{rampageRelativePath}) |");
                 }
             }
 
