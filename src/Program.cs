@@ -17,13 +17,20 @@ namespace RampageTracker
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-            // Args
-            var mode = args.FirstOrDefault()?.ToLowerInvariant() ?? "new"; // new | parse | full
-            if (mode == "help" || mode == "--help" || mode == "-h")
+            // Accept mode flags anywhere: --full | --parse | --new or positional "full|parse|new"
+            var mode = "new";
+            var firstNonFlag = args.FirstOrDefault(a => !string.IsNullOrWhiteSpace(a) && !a.StartsWith("-"))?.ToLowerInvariant();
+            if (!string.IsNullOrEmpty(firstNonFlag)) mode = firstNonFlag;
+            else if (args.Any(a => string.Equals(a, "--full", StringComparison.OrdinalIgnoreCase))) mode = "full";
+            else if (args.Any(a => string.Equals(a, "--parse", StringComparison.OrdinalIgnoreCase))) mode = "parse";
+            else if (args.Any(a => string.Equals(a, "--new", StringComparison.OrdinalIgnoreCase))) mode = "new";
+
+            if (args.Any(a => a is "help" or "--help" or "-h"))
             {
                 Console.WriteLine("Usage: dotnet run -- [new|parse|full] [--workers N] [--apikey KEY]");
                 return 0;
             }
+
             var workersArg = args.SkipWhile(a => a != "--workers").Skip(1).FirstOrDefault();
             int workers = int.TryParse(workersArg, out var w) ? Math.Max(1, w) : 32;
 
@@ -49,7 +56,6 @@ namespace RampageTracker
 
             RateLimiter.Initialize(useApiKey: !string.IsNullOrWhiteSpace(apiKey));
             using var http = new HttpClient();
-            // Optional: identify client a bit nicer
             http.DefaultRequestHeaders.UserAgent.ParseAdd("RampageTracker/1.0 (+https://opendota.com)");
             var api = new ApiManager(http, apiKey);
 

@@ -12,6 +12,14 @@ namespace RampageTracker.Rendering
         public static async Task UpdateMainAsync(IEnumerable<long> playerIds)
         {
             var root = Directory.GetCurrentDirectory();
+            // If executed from ...\src, write README.md to parent folder
+            var dirName = new DirectoryInfo(root).Name;
+            if (dirName.Equals("src", StringComparison.OrdinalIgnoreCase))
+            {
+                var parent = Directory.GetParent(root);
+                if (parent != null) root = parent.FullName;
+            }
+
             var path = Path.Combine(root, "README.md");
             var now = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm 'UTC'");
             var lines = new List<string>

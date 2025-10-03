@@ -4,6 +4,8 @@ VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RampageTracker", "src\RampageTracker.csproj", "{C5C3C7C3-5C5F-4D2E-9B5C-9A2B9E2A1B11}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RampageTracker.Tests", "tests\RampageTracker.Tests.csproj", "{2F6B4C2B-7C41-4D4E-9E6A-5E8FE7A0B9C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,5 +16,9 @@ Global
 		{C5C3C7C3-5C5F-4D2E-9B5C-9A2B9E2A1B11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5C3C7C3-5C5F-4D2E-9B5C-9A2B9E2A1B11}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5C3C7C3-5C5F-4D2E-9B5C-9A2B9E2A1B11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F6B4C2B-7C41-4D4E-9E6A-5E8FE7A0B9C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F6B4C2B-7C41-4D4E-9E6A-5E8FE7A0B9C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F6B4C2B-7C41-4D4E-9E6A-5E8FE7A0B9C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F6B4C2B-7C41-4D4E-9E6A-5E8FE7A0B9C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

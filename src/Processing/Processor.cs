@@ -12,8 +12,13 @@ namespace RampageTracker.Processing
 {
     public static class Processor
     {
-        private static readonly TimeSpan InitialDelay = TimeSpan.FromMinutes(3);
-        private const int InitialTries = 2;
+    private static readonly TimeSpan InitialDelay =
+#if DEBUG
+        TimeSpan.FromMilliseconds(50);
+#else
+        TimeSpan.FromMinutes(3);
+#endif
+    private const int InitialTries = 1;
         private const int MaxQueueTries = 15;
 
         public static async Task RunNewOnlyAsync(ApiManager api, DataManager data, List<long> players, int workers, CancellationToken ct)
