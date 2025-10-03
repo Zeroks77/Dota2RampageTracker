@@ -40,46 +40,66 @@ namespace RampageTracker.Processing
                 var foundRampages = new List<long>();
 
                 int processed = 0;
+                var throttler = new System.Threading.SemaphoreSlim(Math.Max(1, workers));
+                var tasks = new List<Task>();
+
                 foreach (var s in newMatches)
                 {
-                    if (ct.IsCancellationRequested) break;
-
-                    processed++;
-                    if (processed % 10 == 1 || processed == newMatches.Count)
+                    await throttler.WaitAsync(ct);
+                    var sLocal = s;
+                    tasks.Add(Task.Run(async () =>
                     {
-                        Logger.Info($"[new] Player {playerId}: verarbeite {processed}/{newMatches.Count} (Match {s.MatchId})");
-                    }
-
-                    var hasParsed = await api.GetHasParsedAsync(s.MatchId);
-                    if (hasParsed == true)
-                    {
-                        var isRampage = await IsRampageAsync(api, s.MatchId, playerId);
-                        if (isRampage) foundRampages.Add(s.MatchId);
-                    }
-                    else
-                    {
-                        var jobId = await api.RequestParseAsync(s.MatchId);
-                        if (jobId == null)
+                        try
                         {
-                            await EnqueueParseAsync(data, playerId, s.MatchId, null, InitialTries, DateTime.UtcNow.Add(InitialDelay));
-                            goto watermark; // lastChecked aktualisieren
-                        }
+                            if (ct.IsCancellationRequested) return;
 
-                        var success = await PollJobTwiceAsync(api, jobId.Value, InitialDelay, ct);
-                        if (success)
-                        {
-                            var isRampage = await IsRampageAsync(api, s.MatchId, playerId);
-                            if (isRampage) foundRampages.Add(s.MatchId);
-                        }
-                        else
-                        {
-                            await EnqueueParseAsync(data, playerId, s.MatchId, jobId, InitialTries, DateTime.UtcNow.Add(InitialDelay));
-                        }
-                    }
+                            var idx = Interlocked.Increment(ref processed);
+                            if (idx % 10 == 1 || idx == newMatches.Count)
+                            {
+                                Logger.Info($"[new] Player {playerId}: verarbeite {idx}/{newMatches.Count} (Match {sLocal.MatchId})");
+                            }
 
-                watermark:
-                    data.SetLastChecked(playerId, s.MatchId);
+                            var hasParsed = await api.GetHasParsedAsync(sLocal.MatchId);
+                            if (hasParsed == true)
+                            {
+                                var isRampage = await IsRampageAsync(api, sLocal.MatchId, playerId);
+                                if (isRampage)
+                                {
+                                    lock (foundRampages) foundRampages.Add(sLocal.MatchId);
+                                }
+                            }
+                            else
+                            {
+                                var jobId = await api.RequestParseAsync(sLocal.MatchId);
+#if DEBUG
+                                if (jobId != null)
+                                {
+                                    var success = await PollJobTwiceAsync(api, jobId.Value, InitialDelay, ct);
+                                    if (success)
+                                    {
+                                        var isRampage = await IsRampageAsync(api, sLocal.MatchId, playerId);
+                                        if (isRampage)
+                                        {
+                                            lock (foundRampages) foundRampages.Add(sLocal.MatchId);
+                                        }
+                                        data.SetLastChecked(playerId, sLocal.MatchId);
+                                        return;
+                                    }
+                                }
+#endif
+                                await EnqueueParseAsync(data, playerId, sLocal.MatchId, jobId, InitialTries, DateTime.UtcNow.Add(InitialDelay));
+                            }
+
+                            data.SetLastChecked(playerId, sLocal.MatchId);
+                        }
+                        finally
+                        {
+                            try { throttler.Release(); } catch { }
+                        }
+                    }, ct));
                 }
+
+                await Task.WhenAll(tasks);
 
                 if (foundRampages.Count > 0)
                 {

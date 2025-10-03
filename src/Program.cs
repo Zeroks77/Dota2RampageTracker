@@ -54,7 +54,7 @@ namespace RampageTracker
                 return 1;
             }
 
-            RateLimiter.Initialize(useApiKey: !string.IsNullOrWhiteSpace(apiKey));
+            RateLimiter.Initialize(useApiKey: !string.IsNullOrWhiteSpace(apiKey), maxConcurrency: workers);
             using var http = new HttpClient();
             http.DefaultRequestHeaders.UserAgent.ParseAdd("RampageTracker/1.0 (+https://opendota.com)");
             var api = new ApiManager(http, apiKey);

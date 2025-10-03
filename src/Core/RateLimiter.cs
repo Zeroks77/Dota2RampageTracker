@@ -10,11 +10,16 @@ namespace RampageTracker.Core
         private static int _count = 0;
         private static DateTime _window = DateTime.UtcNow;
         private static readonly SemaphoreSlim _gate = new(1, 1);
-        private static readonly SemaphoreSlim _concurrency = new(16, 16);
+        private static SemaphoreSlim _concurrency = new(16, 16);
 
-        public static void Initialize(bool useApiKey)
+        public static void Initialize(bool useApiKey, int? maxConcurrency = null)
         {
             _maxPerMinute = useApiKey ? 120 : 60;
+            var target = Math.Max(1, maxConcurrency ?? 16);
+            // Replace the concurrency gate at startup
+            var old = _concurrency;
+            _concurrency = new SemaphoreSlim(target, target);
+            try { old?.Dispose(); } catch { }
         }
 
         public static async Task EnsureRateAsync()
