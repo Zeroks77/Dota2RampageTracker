@@ -32,8 +32,17 @@ namespace RampageTracker.Core
                 _count++;
                 if (_count > _maxPerMinute)
                 {
-                    var delay = TimeSpan.FromSeconds(Math.Max(0, 60 - (now - _window).TotalSeconds));
-                    if (delay > TimeSpan.Zero) await Task.Delay(delay);
+                    var secondsLeft = Math.Max(0, 60 - (now - _window).TotalSeconds);
+                    var delay = TimeSpan.FromSeconds(secondsLeft);
+                    if (delay > TimeSpan.Zero)
+                    {
+                        // Heartbeat log to prevent long silent periods in CI
+                        if (delay.TotalSeconds >= 5)
+                        {
+                            Logger.Info($"Rate limit reached, sleeping {delay.TotalSeconds:F0}s to reset window...");
+                        }
+                        await Task.Delay(delay);
+                    }
                     _window = DateTime.UtcNow;
                     _count = 0;
                 }

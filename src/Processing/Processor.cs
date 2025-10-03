@@ -39,9 +39,16 @@ namespace RampageTracker.Processing
 
                 var foundRampages = new List<long>();
 
+                int processed = 0;
                 foreach (var s in newMatches)
                 {
                     if (ct.IsCancellationRequested) break;
+
+                    processed++;
+                    if (processed % 10 == 1 || processed == newMatches.Count)
+                    {
+                        Logger.Info($"[new] Player {playerId}: verarbeite {processed}/{newMatches.Count} (Match {s.MatchId})");
+                    }
 
                     var hasParsed = await api.GetHasParsedAsync(s.MatchId);
                     if (hasParsed == true)
@@ -96,12 +103,19 @@ namespace RampageTracker.Processing
                 var foundRampages = new List<long>();
                 var now = DateTime.UtcNow;
 
+                int handled = 0;
                 foreach (var entry in queue.ToList())
                 {
                     if (ct.IsCancellationRequested) break;
 
                     if (entry.NextCheckAtUtc.HasValue && entry.NextCheckAtUtc.Value > now)
                         continue;
+
+                    handled++;
+                    if (handled % 10 == 1 || handled == queue.Count)
+                    {
+                        Logger.Info($"[parse] Player {playerId}: prüfe {handled}/{queue.Count} (Match {entry.MatchId}, tries={entry.Tries})");
+                    }
 
                     bool? done = null;
                     if (entry.JobId.HasValue)
@@ -129,6 +143,10 @@ namespace RampageTracker.Processing
                             Logger.Warn($"[parse] Drop {entry.MatchId} nach {entry.Tries} Tries");
                             queue.Remove(entry);
                         }
+                        else
+                        {
+                            Logger.Info($"[parse] Re-queue {entry.MatchId} (job={(newJob.HasValue ? newJob.ToString() : "null")}, next in {InitialDelay.TotalSeconds:F0}s)");
+                        }
                     }
                     else
                     {
@@ -139,6 +157,10 @@ namespace RampageTracker.Processing
                         {
                             Logger.Warn($"[parse] Drop {entry.MatchId} nach {entry.Tries} Tries");
                             queue.Remove(entry);
+                        }
+                        else
+                        {
+                            Logger.Info($"[parse] Noch nicht fertig: {entry.MatchId} (tries={entry.Tries}, next in {InitialDelay.TotalSeconds:F0}s)");
                         }
                     }
                 }
