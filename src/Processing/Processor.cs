@@ -59,10 +59,20 @@ namespace RampageTracker.Processing
                                 Logger.Info($"[new] Player {playerId}: verarbeite {idx}/{newMatches.Count} (Match {sLocal.MatchId})");
                             }
 
-                            var hasParsed = await api.GetHasParsedAsync(sLocal.MatchId);
+                            bool? hasParsed = null;
+                            try
+                            {
+                                hasParsed = await api.GetHasParsedAsync(sLocal.MatchId);
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Warn($"[new] has_parsed failed for {sLocal.MatchId}: {ex.Message}");
+                            }
                             if (hasParsed == true)
                             {
-                                var isRampage = await IsRampageAsync(api, sLocal.MatchId, playerId);
+                                bool isRampage = false;
+                                try { isRampage = await IsRampageAsync(api, sLocal.MatchId, playerId); }
+                                catch (Exception ex) { Logger.Warn($"[new] get match failed for {sLocal.MatchId}: {ex.Message}"); }
                                 if (isRampage)
                                 {
                                     lock (foundRampages) foundRampages.Add(sLocal.MatchId);
@@ -70,14 +80,20 @@ namespace RampageTracker.Processing
                             }
                             else
                             {
-                                var jobId = await api.RequestParseAsync(sLocal.MatchId);
+                                long? jobId = null;
+                                try { jobId = await api.RequestParseAsync(sLocal.MatchId); }
+                                catch (Exception ex) { Logger.Warn($"[new] request parse failed for {sLocal.MatchId}: {ex.Message}"); }
                                 if (eagerPoll && jobId != null)
                                 {
                                     var quickDelay = TimeSpan.FromMilliseconds(25);
-                                    var success = await PollJobTwiceAsync(api, jobId.Value, quickDelay, ct);
+                                    bool success = false;
+                                    try { success = await PollJobTwiceAsync(api, jobId.Value, quickDelay, ct); }
+                                    catch (Exception ex) { Logger.Warn($"[new] poll failed for job {jobId}: {ex.Message}"); }
                                     if (success)
                                     {
-                                        var isRampage = await IsRampageAsync(api, sLocal.MatchId, playerId);
+                                        bool isRampage = false;
+                                        try { isRampage = await IsRampageAsync(api, sLocal.MatchId, playerId); }
+                                        catch (Exception ex) { Logger.Warn($"[new] get match after poll failed for {sLocal.MatchId}: {ex.Message}"); }
                                         if (isRampage)
                                         {
                                             lock (foundRampages) foundRampages.Add(sLocal.MatchId);
