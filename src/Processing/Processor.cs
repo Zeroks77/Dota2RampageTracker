@@ -21,7 +21,7 @@ namespace RampageTracker.Processing
     private const int InitialTries = 1;
         private const int MaxQueueTries = 15;
 
-        public static async Task RunNewOnlyAsync(ApiManager api, DataManager data, List<long> players, int workers, CancellationToken ct)
+    public static async Task RunNewOnlyAsync(ApiManager api, DataManager data, List<long> players, int workers, CancellationToken ct, bool eagerPoll = false)
         {
             foreach (var playerId in players)
             {
@@ -71,10 +71,10 @@ namespace RampageTracker.Processing
                             else
                             {
                                 var jobId = await api.RequestParseAsync(sLocal.MatchId);
-#if DEBUG
-                                if (jobId != null)
+                                if (eagerPoll && jobId != null)
                                 {
-                                    var success = await PollJobTwiceAsync(api, jobId.Value, InitialDelay, ct);
+                                    var quickDelay = TimeSpan.FromMilliseconds(25);
+                                    var success = await PollJobTwiceAsync(api, jobId.Value, quickDelay, ct);
                                     if (success)
                                     {
                                         var isRampage = await IsRampageAsync(api, sLocal.MatchId, playerId);
@@ -86,7 +86,6 @@ namespace RampageTracker.Processing
                                         return;
                                     }
                                 }
-#endif
                                 await EnqueueParseAsync(data, playerId, sLocal.MatchId, jobId, InitialTries, DateTime.UtcNow.Add(InitialDelay));
                             }
 

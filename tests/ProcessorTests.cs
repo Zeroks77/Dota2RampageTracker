@@ -72,7 +72,7 @@ namespace RampageTracker.Tests
             await System.IO.File.WriteAllTextAsync(System.IO.Path.Combine(tmp, "players.json"), JsonConvert.SerializeObject(new List<long>{ playerId }));
 
             // Act
-            await Processor.RunNewOnlyAsync(api, data, new List<long>{ playerId }, workers: 1, ct: CancellationToken.None);
+            await Processor.RunNewOnlyAsync(api, data, new List<long>{ playerId }, workers: 1, ct: CancellationToken.None, eagerPoll: true);
 
             // Assert: Rampages.json contains 1001
             var rpath = System.IO.Path.Combine(tmp, "data", playerId.ToString(), "Rampages.json");

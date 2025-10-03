@@ -77,7 +77,7 @@ namespace RampageTracker
                         goto case "new";
 
                     case "new":
-                        await Processor.RunNewOnlyAsync(api, data, players, workers, cts.Token);
+                        await Processor.RunNewOnlyAsync(api, data, players, workers, cts.Token, eagerPoll: false);
                         break;
 
                     case "parse":
