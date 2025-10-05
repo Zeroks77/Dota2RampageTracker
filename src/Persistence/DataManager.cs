@@ -482,5 +482,20 @@ namespace RampageTracker.Data
             }
             Directory.CreateDirectory(_dataDir);
         }
+
+        public async Task EnsureHeroesAsync(ApiManager api)
+        {
+            try
+            {
+                var heroesPath = Path.Combine(_dataDir, "heroes.json");
+                if (File.Exists(heroesPath)) return;
+                var list = await api.GetHeroesAsync();
+                if (list == null || list.Count == 0) return;
+                var json = JsonConvert.SerializeObject(list, Formatting.Indented);
+                await File.WriteAllTextAsync(heroesPath, json);
+                Logger.Debug("💾 Saved heroes.json");
+            }
+            catch { }
+        }
     }
 }

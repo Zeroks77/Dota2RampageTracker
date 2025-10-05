@@ -17,18 +17,28 @@ namespace RampageTracker
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-            // Accept mode flags anywhere: --full | --parse | --new | --regen-readme or positional "full|parse|new|regen-readme"
+            // Accept mode via flags first (--full|--parse|--new|--regen-readme);
+            // only if absent, accept a positional mode token among the allowed set.
             var mode = "new";
-            var firstNonFlag = args.FirstOrDefault(a => !string.IsNullOrWhiteSpace(a) && !a.StartsWith("-"))?.ToLowerInvariant();
-            if (!string.IsNullOrEmpty(firstNonFlag)) mode = firstNonFlag;
-            else if (args.Any(a => string.Equals(a, "--full", StringComparison.OrdinalIgnoreCase))) mode = "full";
+            var allowedModes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            { "new", "parse", "full", "regen-readme" };
+            if (args.Any(a => string.Equals(a, "--full", StringComparison.OrdinalIgnoreCase))) mode = "full";
             else if (args.Any(a => string.Equals(a, "--parse", StringComparison.OrdinalIgnoreCase))) mode = "parse";
-            else if (args.Any(a => string.Equals(a, "--new", StringComparison.OrdinalIgnoreCase))) mode = "new";
             else if (args.Any(a => string.Equals(a, "--regen-readme", StringComparison.OrdinalIgnoreCase))) mode = "regen-readme";
+            else if (args.Any(a => string.Equals(a, "--new", StringComparison.OrdinalIgnoreCase))) mode = "new";
+            else
+            {
+                var firstNonFlag = args.FirstOrDefault(a => !string.IsNullOrWhiteSpace(a) && !a.StartsWith("-"))?.ToLowerInvariant();
+                if (!string.IsNullOrEmpty(firstNonFlag) && allowedModes.Contains(firstNonFlag))
+                {
+                    mode = firstNonFlag;
+                }
+            }
 
             if (args.Any(a => a is "help" or "--help" or "-h"))
             {
                 Console.WriteLine("Usage: dotnet run -- [new|parse|full|regen-readme] [--workers N] [--apikey KEY]");
+                Console.WriteLine("       dotnet run -- --regen-readme    # Recommended: always use -- to separate app args");
                 return 0;
             }
 
@@ -71,6 +81,8 @@ namespace RampageTracker
             using var http = new HttpClient();
             http.DefaultRequestHeaders.UserAgent.ParseAdd("RampageTracker/1.0 (+https://opendota.com)");
             var api = new ApiManager(http, apiKey);
+            // Ensure heroes.json exists for README hero icons/slugs
+            await data.EnsureHeroesAsync(api);
 
             var cts = new CancellationTokenSource();
             Console.CancelKeyPress += (_, e) =>

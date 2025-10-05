@@ -145,5 +145,21 @@ namespace RampageTracker.Core
             if ((int)resp.StatusCode == 404) return false;
             return null;
         }
+        
+        public async Task<List<HeroRef>?> GetHeroesAsync()
+        {
+            var url = WithKey($"{BaseUrl}/heroes");
+            using var resp = await SendWithRetryAsync(() => _http.GetAsync(url), nameof(GetHeroesAsync));
+            if (resp == null || !resp.IsSuccessStatusCode) return null;
+            var json = await resp.Content.ReadAsStringAsync();
+            try
+            {
+                return JsonConvert.DeserializeObject<List<HeroRef>>(json) ?? new List<HeroRef>();
+            }
+            catch
+            {
+                return new List<HeroRef>();
+            }
+        }
     }
 }
