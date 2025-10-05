@@ -1,44 +1,19 @@
-Player Mupfel has got 6 total Rampages
+# Rampages for Mupfel
+<img src="https://avatars.steamstatic.com/5975408a7d136abfeb6160943f0db7743d542d54_full.jpg" width="48" height="48"/>
 
-### Abaddon
-![Abaddon](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/abaddon.png)
+**Total Rampages:** 3
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/4123548638) | 2018-09-17 |
+[Back to Player](./README.md)
 
-### Ember Spirit
-![Ember Spirit](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ember_spirit.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Ember Spirit
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/3814988455) | 2018-04-03 |
+- [3814988455](https://www.opendota.com/matches/3814988455) — 2018-04-03
 
-### Pudge
-![Pudge](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/pudge.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Pudge
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/5086224038) | 2019-10-26 |
+- [5086224038](https://www.opendota.com/matches/5086224038) — 2019-10-26
 
-### Snapfire
-![Snapfire](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/snapfire.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Ursa
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/5231786877) | 2020-02-08 |
-
-### Troll Warlord
-![Troll Warlord](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/troll_warlord.png)
-
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/4858576020) | 2019-06-23 |
-
-### Ursa
-![Ursa](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ursa.png)
-
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/2685986024) | 2016-10-03 |
+- [2685986024](https://www.opendota.com/matches/2685986024) — 2016-10-03
 

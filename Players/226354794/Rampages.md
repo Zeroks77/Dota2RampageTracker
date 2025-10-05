@@ -1,16 +1,11 @@
-Player Kret has got 2 total Rampages
+# Rampages for Kret
+<img src="https://avatars.steamstatic.com/c0710d11651022f0fbcd99159677a7acfc6e6a18_full.jpg" width="48" height="48"/>
 
-### Necrophos
-![Necrophos](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/necrolyte.png)
+**Total Rampages:** 1
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/8478392509) | 2025-09-24 |
+[Back to Player](./README.md)
 
-### Outworld Destroyer
-![Outworld Destroyer](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/obsidian_destroyer.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Outworld Destroyer
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/8375961807) | 2025-07-15 |
+- [8375961807](https://www.opendota.com/matches/8375961807) — 2025-07-15
 

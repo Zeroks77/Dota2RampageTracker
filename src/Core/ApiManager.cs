@@ -13,7 +13,6 @@ namespace RampageTracker.Core
         private readonly HttpClient _http;
         private readonly string? _apiKey;
         private const string BaseUrl = "https://api.opendota.com/api";
-        private const int MaxAttempts = 3;
 
         public ApiManager(HttpClient http, string? apiKey)
         {
@@ -27,93 +26,98 @@ namespace RampageTracker.Core
             return url.Contains("?") ? $"{url}&api_key={_apiKey}" : $"{url}?api_key={_apiKey}";
         }
 
-        private async Task<HttpResponseMessage?> SendWithRetriesAsync(Func<Task<HttpResponseMessage>> send)
+        // Zentraler Sender mit 429/5xx Backoff und Retry-After Unterstützung
+        private async Task<HttpResponseMessage?> SendWithRetryAsync(Func<Task<HttpResponseMessage>> send, string op)
         {
-            var attempt = 0;
-            var delayMs = 500;
-            while (true)
+            for (int attempt = 0; attempt < 3; attempt++)
             {
-                attempt++;
                 try
                 {
-                    await RateLimiter.EnsureRateAsync();
                     var resp = await send();
-                    if (resp.StatusCode == HttpStatusCode.TooManyRequests)
+                    if (resp.StatusCode == (HttpStatusCode)429)
                     {
-                        // Honor Retry-After if present
-                        var retryAfter = resp.Headers.RetryAfter?.Delta ?? TimeSpan.FromSeconds(5);
-                        Logger.Info($"429 received, retrying in {retryAfter.TotalSeconds:F0}s...");
-                        await Task.Delay(retryAfter);
-                        if (attempt < MaxAttempts) continue;
-                        return resp; // give up, caller decides how to handle
+                        var retry = resp.Headers.RetryAfter?.Delta ?? TimeSpan.FromSeconds(Math.Min(90, Math.Pow(2, attempt) * 2));
+                        try { resp.Dispose(); } catch { }
+                        await Task.Delay(retry + TimeSpan.FromMilliseconds(Random.Shared.Next(250, 750)));
+                        continue;
                     }
-                    if ((int)resp.StatusCode >= 500 && (int)resp.StatusCode <= 599)
+                    if ((int)resp.StatusCode >= 500)
                     {
-                        if (attempt < MaxAttempts)
+                        // transient server error -> backoff
+                        if (attempt < 2)
                         {
-                            Logger.Warn($"Server { (int)resp.StatusCode }, retry {attempt}/{MaxAttempts} in {delayMs}ms");
-                            await Task.Delay(delayMs);
-                            delayMs *= 2;
+                            var delay = TimeSpan.FromSeconds(Math.Pow(2, attempt + 1));
+                            try { resp.Dispose(); } catch { }
+                            await Task.Delay(delay + TimeSpan.FromMilliseconds(Random.Shared.Next(100, 400)));
                             continue;
                         }
                     }
                     return resp;
                 }
-                catch (TaskCanceledException ex)
+                catch (HttpRequestException)
                 {
-                    if (attempt < MaxAttempts)
-                    {
-                        Logger.Warn($"Timeout: {ex.Message}. Retry {attempt}/{MaxAttempts} in {delayMs}ms");
-                        await Task.Delay(delayMs);
-                        delayMs *= 2;
-                        continue;
-                    }
-                    Logger.Error($"HTTP timeout after {attempt} attempts: {ex.Message}");
-                    return null;
+                    if (attempt == 2) return null;
+                    await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, attempt + 1)));
                 }
-                catch (HttpRequestException ex)
+                catch (TaskCanceledException)
                 {
-                    if (attempt < MaxAttempts)
-                    {
-                        Logger.Warn($"Network error: {ex.Message}. Retry {attempt}/{MaxAttempts} in {delayMs}ms");
-                        await Task.Delay(delayMs);
-                        delayMs *= 2;
-                        continue;
-                    }
-                    Logger.Error($"HTTP error after {attempt} attempts: {ex.Message}");
-                    return null;
+                    if (attempt == 2) return null;
+                    await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, attempt + 1)));
                 }
             }
+            return null;
         }
 
         public async Task<Match?> GetMatchAsync(long matchId)
         {
+            Logger.LogApiRequest("GET /matches/{id}", matchId: matchId);
+            await RateLimiter.EnsureRateAsync();
             var url = WithKey($"{BaseUrl}/matches/{matchId}");
-            var resp = await SendWithRetriesAsync(() => _http.GetAsync(url));
-            if (resp == null) return null;
-            if (resp.StatusCode == HttpStatusCode.TooManyRequests) return null;
-            if (!resp.IsSuccessStatusCode) return null;
+            using var resp = await SendWithRetryAsync(() => _http.GetAsync(url), nameof(GetMatchAsync));
+            if (resp == null || !resp.IsSuccessStatusCode) 
+            {
+                Logger.Debug($"Match {matchId} failed: {resp?.StatusCode}");
+                return null;
+            }
             var json = await resp.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Match>(json);
         }
 
         public async Task<PlayerMatchSummary[]?> GetPlayerMatchesAsync(long playerId)
         {
+            Logger.LogApiRequest("GET /players/{id}/matches", playerId: playerId);
+            await RateLimiter.EnsureRateAsync();
             var url = WithKey($"{BaseUrl}/players/{playerId}/matches");
-            var resp = await SendWithRetriesAsync(() => _http.GetAsync(url));
-            if (resp == null) return System.Array.Empty<PlayerMatchSummary>();
-            if (resp.StatusCode == HttpStatusCode.TooManyRequests) return System.Array.Empty<PlayerMatchSummary>();
-            if (!resp.IsSuccessStatusCode) return System.Array.Empty<PlayerMatchSummary>();
+            using var resp = await SendWithRetryAsync(() => _http.GetAsync(url), nameof(GetPlayerMatchesAsync));
+            if (resp == null || !resp.IsSuccessStatusCode) 
+            {
+                Logger.Debug($"Player {playerId} matches failed: {resp?.StatusCode}");
+                return Array.Empty<PlayerMatchSummary>();
+            }
             var json = await resp.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<PlayerMatchSummary[]>(json) ?? System.Array.Empty<PlayerMatchSummary>();
+            var matches = JsonConvert.DeserializeObject<PlayerMatchSummary[]>(json) ?? Array.Empty<PlayerMatchSummary>();
+            Logger.Debug($"Player {playerId}: {matches.Length} matches retrieved");
+            return matches;
+        }
+
+        public async Task<PlayerProfile?> GetPlayerProfileAsync(long playerId)
+        {
+            Logger.LogApiRequest("GET /players/{id}", playerId: playerId);
+            await RateLimiter.EnsureRateAsync();
+            var url = WithKey($"{BaseUrl}/players/{playerId}");
+            using var resp = await SendWithRetryAsync(() => _http.GetAsync(url), nameof(GetPlayerProfileAsync));
+            if (resp == null || !resp.IsSuccessStatusCode) return null;
+            var json = await resp.Content.ReadAsStringAsync();
+            var root = JsonConvert.DeserializeObject<PlayerProfileResponse>(json);
+            return root?.Profile;
         }
 
         public async Task<bool?> GetHasParsedAsync(long matchId)
         {
+            await RateLimiter.EnsureRateAsync();
             var url = WithKey($"{BaseUrl}/request/{matchId}");
-            var resp = await SendWithRetriesAsync(() => _http.GetAsync(url));
-            if (resp == null) return null;
-            if (!resp.IsSuccessStatusCode) return null;
+            using var resp = await SendWithRetryAsync(() => _http.GetAsync(url), nameof(GetHasParsedAsync));
+            if (resp == null || !resp.IsSuccessStatusCode) return null;
             var json = await resp.Content.ReadAsStringAsync();
             var jo = JsonConvert.DeserializeObject<JObject>(json);
             if (jo != null && jo.TryGetValue("has_parsed", out var v)) return v.Value<bool>();
@@ -122,10 +126,10 @@ namespace RampageTracker.Core
 
         public async Task<long?> RequestParseAsync(long matchId)
         {
+            await RateLimiter.EnsureRateAsync();
             var url = WithKey($"{BaseUrl}/request/{matchId}");
-            var resp = await SendWithRetriesAsync(() => _http.PostAsync(url, null));
-            if (resp == null) return null;
-            if (!resp.IsSuccessStatusCode) return null;
+            using var resp = await SendWithRetryAsync(() => _http.PostAsync(url, null), nameof(RequestParseAsync));
+            if (resp == null || !resp.IsSuccessStatusCode) return null;
             var json = await resp.Content.ReadAsStringAsync();
             var jo = JsonConvert.DeserializeObject<JObject>(json);
             return jo?["job"]?["jobId"]?.Value<long?>();
@@ -133,8 +137,9 @@ namespace RampageTracker.Core
 
         public async Task<bool?> CheckJobAsync(long jobId)
         {
+            await RateLimiter.EnsureRateAsync();
             var url = WithKey($"{BaseUrl}/request/{jobId}");
-            var resp = await SendWithRetriesAsync(() => _http.GetAsync(url));
+            using var resp = await SendWithRetryAsync(() => _http.GetAsync(url), nameof(CheckJobAsync));
             if (resp == null) return null;
             if (resp.StatusCode == HttpStatusCode.OK) return true;
             if ((int)resp.StatusCode == 404) return false;

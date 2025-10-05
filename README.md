@@ -1,37 +1,32 @@
 # Dota 2 Rampage Tracker
-This repository contains rampage tracking data for various Dota 2 players.
+Last updated: 2025-10-05 22:40 UTC
 
-> Last updated: 2025-10-02 19:35 UTC
+> Note: All game data is sourced via the OpenDota API. This project is not affiliated with Valve or OpenDota.
+> Data source: OpenDota (https://www.opendota.com)
 
 ## Players
-| Player Name | Profile Picture | Rampages | Rampage Rate | Win Rate (Total) | Win Rate (Unranked) | Win Rate (Ranked) | Rampage File |
-|-------------|-----------------|----------|--------------|------------------|---------------------|-------------------|--------------|
-| Gary the Carry | ![Profile Picture](https://avatars.steamstatic.com/23f8ee4662d83a5959ef06b8cf948d66955997cc_full.jpg) | 24 | 0.80% | 59.31% | 62.47% | 58.97% | [Rampages](./Players/169325410/Rampages.md) |
 
-## Configuration (OpenDota API and Rate Limiting)
-- Set Program.apiKey to your OpenDota API key and enable RateLimiter.SetRateLimit(true) at startup.
-- Ensure every OpenDota request appends ?api_key=YOUR_KEY when enabled.
-- Keep concurrency modest: RateLimiter.concurrencyLimiter = new SemaphoreSlim(4, 4) is safer when hitting multiple endpoints.
+| Player | Profile | Rampages/Matches | Winrate | Radiant | Dire | Rampages |
+|:-------|:-------:|------------------:|--------:|--------:|-----:|:---------|
+| [Lucky](Players/308948139/README.md) | <img src="https://avatars.steamstatic.com/1191c81a57194f64acfcda94f0fd0cb94e92eff7_full.jpg" width="32" height="32"/> | 15/5459 | 54,52% | 55,06% | 53,98% | [View](Players/308948139/Rampages.md) |
+| [Gary the Carry](Players/169325410/README.md) | <img src="https://avatars.steamstatic.com/23f8ee4662d83a5959ef06b8cf948d66955997cc_full.jpg" width="32" height="32"/> | 13/3043 | 60,11% | 61,97% | 58,23% | [View](Players/169325410/Rampages.md) |
+| [Xenas23](Players/181342370/README.md) | <img src="https://avatars.steamstatic.com/16392e7c2bf30770c48c4b989eef4a19f237d548_full.jpg" width="32" height="32"/> | 7/5746 | 55,33% | 56,70% | 53,93% | [View](Players/181342370/Rampages.md) |
+| [Zero](Players/183063377/README.md) | <img src="https://avatars.steamstatic.com/c0a975434fc5b15f662cbe8214fc898c493b55ea_full.jpg" width="32" height="32"/> | 6/7710 | 50,93% | 52,37% | 49,44% | [View](Players/183063377/Rampages.md) |
+| [Mupfel](Players/131232145/README.md) | <img src="https://avatars.steamstatic.com/5975408a7d136abfeb6160943f0db7743d542d54_full.jpg" width="32" height="32"/> | 3/3923 | 55,11% | 54,95% | 55,27% | [View](Players/131232145/Rampages.md) |
+| [Kret](Players/226354794/README.md) | <img src="https://avatars.steamstatic.com/c0710d11651022f0fbcd99159677a7acfc6e6a18_full.jpg" width="32" height="32"/> | 1/932 | 58,58% | 62,97% | 53,96% | [View](Players/226354794/Rampages.md) |
+| [Virvacus](Players/1127238076/README.md) | <img src="https://avatars.steamstatic.com/45f83173783fdfe00f08ac4d7872856a2d82677e_full.jpg" width="32" height="32"/> | 0/2497 | 49,50% | 53,20% | 45,88% | [View](Players/1127238076/Rampages.md) |
 
-## Troubleshooting: 429 Too Many Requests
-If you see HttpRequestException 429:
-- Do not call EnsureSuccessStatusCode() before checking for 429.
-- Respect Retry-After header when present; otherwise back off with exponential delay + jitter.
-- Centralize all HTTP calls through a helper (e.g., ApiHelper.GetStringWithBackoff) and make every OpenDota call go through it.
-- Example retry approach you can apply in ApiHelper:
-  ```csharp
-  // Pseudocode pattern to apply inside ApiHelper.GetStringWithBackoff
-  for (var attempt = 0; attempt < maxRetries; attempt++) {
-      var resp = await client.SendAsync(req, ct);
-      if (resp.StatusCode == (HttpStatusCode)429) {
-          var retryAfter = resp.Headers.RetryAfter?.Delta ?? TimeSpan.FromSeconds(Math.Min(90, Math.Pow(2, attempt) * 2));
-          await Task.Delay(retryAfter + TimeSpan.FromMilliseconds(Random.Shared.Next(250, 750)), ct);
-          continue;
-      }
-      if (resp.IsSuccessStatusCode) return await resp.Content.ReadAsStringAsync(ct);
-      // transient 5xx -> backoff similarly, else break/throw
-  }
-  throw new HttpRequestException("Exceeded retries");
-  ```
-- Also apply the same backoff for HeroDataFetcher.GetGameModes and any other OpenDota endpoints.
-- Combine with RateLimiter.EnsureRateLimit() before each call.
+## How it works
+
+- For each player, the tool fetches recent match summaries from OpenDota (no replays).
+- For new/unparsed matches, it requests a parse job and later evaluates the full match payload.
+- A centralized parse queue avoids duplicate requests for matches shared by multiple tracked players.
+- Rampages are detected when multi_kills[5] > 0 for the player in match data.
+- Results are stored per player under `data/<playerId>/` (Rampages.json, Matches.json, profile.json, lastchecked.txt).
+- The README files are generated from these local files (no parsing required). 
+
+### Modes
+- `new`: checks new matches per player, requests parsing if necessary, writes rampages, updates READMEs.
+- `parse`: drains the global parse queue, writes found rampages, updates READMEs.
+- `full`: clears local data and runs like `new`.
+- `regen-readme`: generates only the READMEs from local files (no API/parsing).

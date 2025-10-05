@@ -1,75 +1,29 @@
-Player Xenas23 has got 13 total Rampages
+# Rampages for Xenas23
+<img src="https://avatars.steamstatic.com/16392e7c2bf30770c48c4b989eef4a19f237d548_full.jpg" width="48" height="48"/>
 
-### Centaur Warrunner
-![Centaur Warrunner](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/centaur.png)
+**Total Rampages:** 7
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/6493708345) | 2022-03-26 |
-| [Match URL](https://www.opendota.com/matches/5273421219) | 2020-03-03 |
+[Back to Player](./README.md)
 
-### Ember Spirit
-![Ember Spirit](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ember_spirit.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Ember Spirit
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/4555280119) | 2019-03-20 |
+- [4555280119](https://www.opendota.com/matches/4555280119) — 2019-03-20
 
-### Lifestealer
-![Lifestealer](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/life_stealer.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Lina
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/6226293249) | 2021-10-17 |
+- [7958472864](https://www.opendota.com/matches/7958472864) — 2024-09-24
 
-### Lina
-![Lina](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/lina.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Spectre
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/7958472864) | 2024-09-24 |
+- [3334037204](https://www.opendota.com/matches/3334037204) — 2017-07-24
+- [3252456543](https://www.opendota.com/matches/3252456543) — 2017-06-16
+- [3089917011](https://www.opendota.com/matches/3089917011) — 2017-03-31
 
-### Phantom Lancer
-![Phantom Lancer](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/phantom_lancer.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Underlord
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/6485997739) | 2022-03-20 |
+- [5086224038](https://www.opendota.com/matches/5086224038) — 2019-10-26
 
-### Sniper
-![Sniper](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/sniper.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Ursa
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/8400213123) | 2025-08-02 |
-
-### Spectre
-![Spectre](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/spectre.png)
-
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/3334037204) | 2017-07-24 |
-| [Match URL](https://www.opendota.com/matches/3252456543) | 2017-06-16 |
-| [Match URL](https://www.opendota.com/matches/3089917011) | 2017-03-31 |
-
-### Terrorblade
-![Terrorblade](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/terrorblade.png)
-
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/5779662795) | 2021-01-09 |
-
-### Underlord
-![Underlord](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/abyssal_underlord.png)
-
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/5086224038) | 2019-10-26 |
-
-### Ursa
-![Ursa](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ursa.png)
-
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/7523618604) | 2024-01-06 |
+- [7523618604](https://www.opendota.com/matches/7523618604) — 2024-01-06
 

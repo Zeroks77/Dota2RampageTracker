@@ -11,52 +11,77 @@ namespace RampageTracker.Core
         private static DateTime _window = DateTime.UtcNow;
         private static readonly SemaphoreSlim _gate = new(1, 1);
         private static SemaphoreSlim _concurrency = new(16, 16);
+        private static int _maxConcurrency = 16;
 
         public static void Initialize(bool useApiKey, int? maxConcurrency = null)
         {
-            _maxPerMinute = useApiKey ? 120 : 60;
-            var target = Math.Max(1, maxConcurrency ?? 16);
+            // Keep a safety buffer when using API key to reduce 429s
+            _maxPerMinute = useApiKey ? 1200 : 60;
+            _maxConcurrency = Math.Max(1, maxConcurrency ?? 16);
+            
+            // For high concurrency with API key, allow many parallel requests
+            var concurrencyLimit = useApiKey ? Math.Min(_maxConcurrency, 256) : Math.Min(_maxConcurrency, 16);
+            
             // Replace the concurrency gate at startup
             var old = _concurrency;
-            _concurrency = new SemaphoreSlim(target, target);
+            _concurrency = new SemaphoreSlim(concurrencyLimit, concurrencyLimit);
             try { old?.Dispose(); } catch { }
+            
+            Logger.Success($"⚡ RateLimiter initialized: {_maxPerMinute} req/min ({_maxPerMinute/60.0:F1} req/sec ideal), {concurrencyLimit} concurrent slots");
         }
 
         public static async Task EnsureRateAsync()
         {
-            await _concurrency.WaitAsync();
-            await _gate.WaitAsync();
-            try
+            // Fast path: Just count requests for monitoring, minimal throttling
+            var currentCount = Interlocked.Increment(ref _count);
+            var now = DateTime.UtcNow;
+            
+            // Reset counter every minute (lock-free in most cases)
+            if ((now - _window).TotalMinutes >= 1)
             {
-                var now = DateTime.UtcNow;
-                if ((now - _window).TotalMinutes >= 1)
+                if (await _gate.WaitAsync(10)) // Quick timeout
                 {
-                    _window = now;
-                    _count = 0;
-                }
-                _count++;
-                if (_count > _maxPerMinute)
-                {
-                    var secondsLeft = Math.Max(0, 60 - (now - _window).TotalSeconds);
-                    var delay = TimeSpan.FromSeconds(secondsLeft);
-                    if (delay > TimeSpan.Zero)
+                    try
                     {
-                        // Heartbeat log to prevent long silent periods in CI
-                        if (delay.TotalSeconds >= 5)
+                        if ((DateTime.UtcNow - _window).TotalMinutes >= 1)
                         {
-                            Logger.Info($"Rate limit reached, sleeping {delay.TotalSeconds:F0}s to reset window...");
+                            _window = DateTime.UtcNow;
+                            Interlocked.Exchange(ref _count, 1);
+                            currentCount = 1;
                         }
-                        await Task.Delay(delay);
                     }
-                    _window = DateTime.UtcNow;
-                    _count = 0;
+                    finally
+                    {
+                        _gate.Release();
+                    }
                 }
             }
-            finally
+            
+            // Very light throttling: Only if we're WAY over the limit (150%)
+            var windowAge = (now - _window).TotalSeconds;
+            if (windowAge > 0 && currentCount > (_maxPerMinute * 1.5))
             {
-                _gate.Release();
-                _concurrency.Release();
+                // Tiny delay to prevent API from rejecting
+                await Task.Delay(10); // Just 10ms
+                Logger.Debug($"⏱️ Mini-throttle: 10ms delay (req #{currentCount})");
             }
+            
+            // No concurrency limiting! Let all workers run in parallel!
+        }
+
+        // Expose target per minute for logging
+        public static int GetTargetPerMinute() => _maxPerMinute;
+
+        // Heuristic: suggest a good default worker count based on rate and environment
+        public static int GetSuggestedWorkers(bool useApiKey)
+        {
+            var target = useApiKey ? 1200 : 60;
+            var perSec = target / 60.0;
+            // IO-bound: allow several requests in flight to hide latency
+            var suggested = (int)Math.Ceiling(perSec * 8); // ~8x inflight
+            var cpuFactor = Environment.ProcessorCount * (useApiKey ? 16 : 4);
+            var cap = useApiKey ? 256 : 16;
+            return Math.Max(1, Math.Min(cap, Math.Min(cpuFactor, Math.Max(suggested, useApiKey ? 64 : 4))));
         }
     }
 }

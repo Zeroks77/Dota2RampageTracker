@@ -72,13 +72,24 @@ namespace RampageTracker.Tests
             await System.IO.File.WriteAllTextAsync(System.IO.Path.Combine(tmp, "players.json"), JsonConvert.SerializeObject(new List<long>{ playerId }));
 
             // Act
-            await Processor.RunNewOnlyAsync(api, data, new List<long>{ playerId }, workers: 1, ct: CancellationToken.None, eagerPoll: true);
+            // Speed up polling for tests
+            Environment.SetEnvironmentVariable("RT_FAST_DELAY", "1");
+            await Processor.RunNewOnlyAsync(api, data, new List<long>{ playerId }, workers: 1, ct: CancellationToken.None);
 
             // Assert: Rampages.json contains 1001
             var rpath = System.IO.Path.Combine(tmp, "data", playerId.ToString(), "Rampages.json");
             System.IO.File.Exists(rpath).Should().BeTrue();
-            var set = JsonConvert.DeserializeObject<HashSet<long>>(await System.IO.File.ReadAllTextAsync(rpath));
-            set.Should().Contain(1001L);
+            var entries = JsonConvert.DeserializeObject<List<RampageEntry>>(await System.IO.File.ReadAllTextAsync(rpath));
+            entries.Should().NotBeNull();
+            entries!.Select(e => e.MatchId).Should().Contain(1001L);
+            entries!.First(e => e.MatchId == 1001L).HeroName.Should().NotBeNullOrWhiteSpace();
+            entries!.First(e => e.MatchId == 1001L).StartTime.Should().BeNull();
+
+            // README artifacts get created (per-player and main)
+            var mainReadme = System.IO.Path.Combine(tmp, "README.md");
+            var perPlayerReadme = System.IO.Path.Combine(tmp, "Players", playerId.ToString(), "README.md");
+            System.IO.File.Exists(mainReadme).Should().BeTrue();
+            System.IO.File.Exists(perPlayerReadme).Should().BeTrue();
         }
 
         [Fact]

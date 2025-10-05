@@ -1,138 +1,58 @@
-Player Lucky has got 28 total Rampages
+# Rampages for Lucky
+<img src="https://avatars.steamstatic.com/1191c81a57194f64acfcda94f0fd0cb94e92eff7_full.jpg" width="48" height="48"/>
 
-### Anti-Mage
-![Anti-Mage](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/antimage.png)
+**Total Rampages:** 15
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/8105948931) | 2024-12-30 |
-| [Match URL](https://www.opendota.com/matches/3479575637) | 2017-10-02 |
+[Back to Player](./README.md)
 
-### Dragon Knight
-![Dragon Knight](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/dragon_knight.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Anti-Mage
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/3369803196) | 2017-08-11 |
+- [3479575637](https://www.opendota.com/matches/3479575637) — 2017-10-02
 
-### Drow Ranger
-![Drow Ranger](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/drow_ranger.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Gyrocopter
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/7032335457) | 2023-02-24 |
-| [Match URL](https://www.opendota.com/matches/6527866374) | 2022-04-16 |
+- [3885416530](https://www.opendota.com/matches/3885416530) — 2018-05-12
 
-### Gyrocopter
-![Gyrocopter](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/gyrocopter.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Mirana
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/3885416530) | 2018-05-12 |
+- [2643940604](https://www.opendota.com/matches/2643940604) — 2016-09-14
 
-### Juggernaut
-![Juggernaut](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/juggernaut.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Morphling
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/5285774966) | 2020-03-10 |
-| [Match URL](https://www.opendota.com/matches/3172084596) | 2017-05-11 |
+- [3990147009](https://www.opendota.com/matches/3990147009) — 2018-07-05
 
-### Luna
-![Luna](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/luna.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Phantom Assassin
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/3833036164) | 2018-04-14 |
+- [4256395173](https://www.opendota.com/matches/4256395173) — 2018-12-05
+- [3130305343](https://www.opendota.com/matches/3130305343) — 2017-04-21
 
-### Mirana
-![Mirana](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/mirana.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Razor
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/8332182784) | 2025-06-12 |
-| [Match URL](https://www.opendota.com/matches/2643940604) | 2016-09-14 |
+- [3517049658](https://www.opendota.com/matches/3517049658) — 2017-10-22
+- [3481105857](https://www.opendota.com/matches/3481105857) — 2017-10-03
 
-### Morphling
-![Morphling](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/morphling.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Shadow Fiend
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/5877613493) | 2021-03-09 |
-| [Match URL](https://www.opendota.com/matches/3990147009) | 2018-07-05 |
+- [3946899667](https://www.opendota.com/matches/3946899667) — 2018-06-11
 
-### Phantom Assassin
-![Phantom Assassin](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/phantom_assassin.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Sniper
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/4256395173) | 2018-12-05 |
-| [Match URL](https://www.opendota.com/matches/3130305343) | 2017-04-21 |
+- [7775916329](https://www.opendota.com/matches/7775916329) — 2024-06-03
+- [7049256916](https://www.opendota.com/matches/7049256916) — 2023-03-07
 
-### Phantom Lancer
-![Phantom Lancer](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/phantom_lancer.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Spectre
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/5207517392) | 2020-01-22 |
+- [3145462085](https://www.opendota.com/matches/3145462085) — 2017-04-28
 
-### Razor
-![Razor](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/razor.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Tiny
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/3517049658) | 2017-10-22 |
-| [Match URL](https://www.opendota.com/matches/3481105857) | 2017-10-03 |
+- [8205817086](https://www.opendota.com/matches/8205817086) — 2025-03-08
 
-### Shadow Fiend
-![Shadow Fiend](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/nevermore.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Viper
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/3946899667) | 2018-06-11 |
-| [Match URL](https://www.opendota.com/matches/3332186762) | 2017-07-23 |
+- [3428048921](https://www.opendota.com/matches/3428048921) — 2017-09-06
 
-### Slark
-![Slark](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/slark.png)
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/unknown.png" width="28" style="vertical-align:middle"/> Zeus
 
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/6813405022) | 2022-10-19 |
-
-### Sniper
-![Sniper](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/sniper.png)
-
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/7775916329) | 2024-06-03 |
-| [Match URL](https://www.opendota.com/matches/7049256916) | 2023-03-07 |
-| [Match URL](https://www.opendota.com/matches/3828105990) | 2018-04-11 |
-
-### Spectre
-![Spectre](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/spectre.png)
-
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/3145462085) | 2017-04-28 |
-
-### Tiny
-![Tiny](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/tiny.png)
-
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/8205817086) | 2025-03-08 |
-
-### Viper
-![Viper](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/viper.png)
-
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/3428048921) | 2017-09-06 |
-
-### Zeus
-![Zeus](https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/zuus.png)
-
-| Match ID | Date |
-|----------|------|
-| [Match URL](https://www.opendota.com/matches/5086224038) | 2019-10-26 |
+- [5086224038](https://www.opendota.com/matches/5086224038) — 2019-10-26
 

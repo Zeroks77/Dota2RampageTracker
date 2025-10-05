@@ -55,5 +55,26 @@ namespace RampageTracker.Tests
             var got = await api.GetMatchAsync(123);
             got!.Players!.First().MultiKills!.Should().ContainKey(5);
         }
+
+        [Fact]
+        public async Task GetPlayerProfile_Parses_Profile_Object()
+        {
+            var payload = new PlayerProfileResponse
+            {
+                Profile = new PlayerProfile { AccountId = 42, PersonaName = "Zero", AvatarFull = "http://avatar" }
+            };
+            var json = JsonConvert.SerializeObject(payload);
+            var handler = new FakeHttpMessageHandler(req => new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(json, Encoding.UTF8, "application/json")
+            });
+            var http = new HttpClient(handler);
+            var api = new ApiManager(http, null);
+
+            var prof = await api.GetPlayerProfileAsync(42);
+            prof.Should().NotBeNull();
+            prof!.PersonaName.Should().Be("Zero");
+            prof.AvatarFull.Should().Be("http://avatar");
+        }
     }
 }
