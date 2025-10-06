@@ -1,7 +1,7 @@
 # Rampages for Gary the Carry
 <img src="https://avatars.steamstatic.com/23f8ee4662d83a5959ef06b8cf948d66955997cc_full.jpg" width="48" height="48"/>
 
-**Total Rampages:** 14
+**Total Rampages:** 20
 
 [Back to Player](./README.md)
 
@@ -12,6 +12,10 @@
 ## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/faceless_void.png" width="28" style="vertical-align:middle"/> Faceless Void
 
 - [3646149408](https://www.opendota.com/matches/3646149408) — 2017-12-28
+
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/kunkka.png" width="28" style="vertical-align:middle"/> Kunkka
+
+- [2004539939](https://www.opendota.com/matches/2004539939) — 2015-12-15
 
 ## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/lina.png" width="28" style="vertical-align:middle"/> Lina
 
@@ -36,8 +40,10 @@
 
 ## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/phantom_assassin.png" width="28" style="vertical-align:middle"/> Phantom Assassin
 
+- [3208832396](https://www.opendota.com/matches/3208832396) — 2017-05-28
 - [3031617972](https://www.opendota.com/matches/3031617972) — 2017-03-03
 - [2713958796](https://www.opendota.com/matches/2713958796) — 2016-10-16
+- [2698655970](https://www.opendota.com/matches/2698655970) — 2016-10-09
 
 ## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/puck.png" width="28" style="vertical-align:middle"/> Puck
 
@@ -47,9 +53,21 @@
 
 - [2184804985](https://www.opendota.com/matches/2184804985) — 2016-02-28
 
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/slark.png" width="28" style="vertical-align:middle"/> Slark
+
+- [2420377222](https://www.opendota.com/matches/2420377222) — 2016-06-07
+
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/storm_spirit.png" width="28" style="vertical-align:middle"/> Storm Spirit
+
+- [3177034346](https://www.opendota.com/matches/3177034346) — 2017-05-14
+
 ## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/sven.png" width="28" style="vertical-align:middle"/> Sven
 
 - [2377839566](https://www.opendota.com/matches/2377839566) — 2016-05-21
+
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/tiny.png" width="28" style="vertical-align:middle"/> Tiny
+
+- [3117311400](https://www.opendota.com/matches/3117311400) — 2017-04-14
 
 ## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ursa.png" width="28" style="vertical-align:middle"/> Ursa
 

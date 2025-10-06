@@ -1,7 +1,7 @@
 # Rampages for Mupfel
 <img src="https://avatars.steamstatic.com/5975408a7d136abfeb6160943f0db7743d542d54_full.jpg" width="48" height="48"/>
 
-**Total Rampages:** 4
+**Total Rampages:** 5
 
 [Back to Player](./README.md)
 
@@ -16,6 +16,10 @@
 ## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/pudge.png" width="28" style="vertical-align:middle"/> Pudge
 
 - [5086224038](https://www.opendota.com/matches/5086224038) — 2019-10-26
+
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/snapfire.png" width="28" style="vertical-align:middle"/> Snapfire
+
+- [5231786877](https://www.opendota.com/matches/5231786877) — 2020-02-07
 
 ## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ursa.png" width="28" style="vertical-align:middle"/> Ursa
 

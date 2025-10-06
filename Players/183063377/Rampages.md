@@ -1,7 +1,7 @@
 # Rampages for Zero
 <img src="https://avatars.steamstatic.com/c0a975434fc5b15f662cbe8214fc898c493b55ea_full.jpg" width="48" height="48"/>
 
-**Total Rampages:** 7
+**Total Rampages:** 8
 
 [Back to Player](./README.md)
 
@@ -12,6 +12,10 @@
 ## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/broodmother.png" width="28" style="vertical-align:middle"/> Broodmother
 
 - [4033534317](https://www.opendota.com/matches/4033534317) — 2018-07-30
+
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/huskar.png" width="28" style="vertical-align:middle"/> Huskar
+
+- [5207599129](https://www.opendota.com/matches/5207599129) — 2020-01-23
 
 ## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/techies.png" width="28" style="vertical-align:middle"/> Techies
 

@@ -35,6 +35,34 @@
     "StartTime": 1572095129
   },
   {
+    "MatchId": 5273421219,
+    "HeroName": "Centaur Warrunner",
+    "HeroId": 96,
+    "MatchDate": "2020-03-03T19:53:31Z",
+    "StartTime": 1583265211
+  },
+  {
+    "MatchId": 5779662795,
+    "HeroName": "Terrorblade",
+    "HeroId": 109,
+    "MatchDate": "2021-01-09T20:53:15Z",
+    "StartTime": 1610225595
+  },
+  {
+    "MatchId": 6485997739,
+    "HeroName": "Phantom Lancer",
+    "HeroId": 12,
+    "MatchDate": "2022-03-20T18:38:59Z",
+    "StartTime": 1647801539
+  },
+  {
+    "MatchId": 6493708345,
+    "HeroName": "Centaur Warrunner",
+    "HeroId": 96,
+    "MatchDate": "2022-03-25T23:40:51Z",
+    "StartTime": 1648251651
+  },
+  {
     "MatchId": 7523618604,
     "HeroName": "Ursa",
     "HeroId": 70,
@@ -47,5 +75,12 @@
     "HeroId": 25,
     "MatchDate": "2024-09-24T20:59:22",
     "StartTime": 1727211562
+  },
+  {
+    "MatchId": 8400213123,
+    "HeroName": "Sniper",
+    "HeroId": 35,
+    "MatchDate": "2025-08-02T21:53:20Z",
+    "StartTime": 1754171600
   }
 ]
