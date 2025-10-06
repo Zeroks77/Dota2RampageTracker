@@ -1,0 +1,44 @@
+name: Daily New Run
+
+on:
+  schedule:
+    # GitHub Actions uses UTC. Run at 01:00 UTC (≈ 03:00 CEST) and at 02:00 UTC (≈ 03:00 CET)
+    - cron: '0 1 * * *'
+    - cron: '0 2 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  run-new:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore ./src/RampageTracker.csproj
+
+      - name: Run tracker (new)
+        env:
+          OPENDOTA_API_KEY: ${{ secrets.OPENDOTA_API_KEY }}
+        run: |
+          dotnet run --project ./src/RampageTracker.csproj -- new --apikey "$OPENDOTA_API_KEY"
+
+      - name: Commit and push changes (if any)
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "chore: daily new run ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))"
+            git push
+          else
+            echo "No changes to commit."
+          fi

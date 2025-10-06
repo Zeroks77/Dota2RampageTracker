@@ -11,6 +11,52 @@ namespace RampageTracker.Rendering
 {
     public static class ReadmeGenerator
     {
+        // Choose the best per-player data directory between repoRoot/data and repoRoot/src/data
+        private static string ChoosePlayerDataDir(string repoRoot, long playerId)
+        {
+            var c1 = Path.Combine(Path.Combine(repoRoot, "data"), playerId.ToString());
+            var c2 = Path.Combine(Path.Combine(repoRoot, "src", "data"), playerId.ToString());
+
+            var e1 = Directory.Exists(c1);
+            var e2 = Directory.Exists(c2);
+            if (e1 && !e2) return c1;
+            if (!e1 && e2) return c2;
+            if (!e1 && !e2)
+            {
+                // Neither exists, default to repoRoot/data/<id>
+                return Path.Combine(Path.Combine(repoRoot, "data"), playerId.ToString());
+            }
+
+            // Both exist: pick the one with the freshest known file among Matches.json, Rampages.json, profile.json
+            DateTime GetBestTime(string dir)
+            {
+                var times = new List<DateTime>();
+                var m = Path.Combine(dir, "Matches.json");
+                var r = Path.Combine(dir, "Rampages.json");
+                var p = Path.Combine(dir, "profile.json");
+                if (File.Exists(m)) times.Add(File.GetLastWriteTimeUtc(m));
+                if (File.Exists(r)) times.Add(File.GetLastWriteTimeUtc(r));
+                if (File.Exists(p)) times.Add(File.GetLastWriteTimeUtc(p));
+                return times.Count > 0 ? times.Max() : DateTime.MinValue;
+            }
+
+            // Prefer the directory that actually has Matches.json; if only one has it, choose that.
+            var c1HasMatches = File.Exists(Path.Combine(c1, "Matches.json"));
+            var c2HasMatches = File.Exists(Path.Combine(c2, "Matches.json"));
+            if (c1HasMatches && !c2HasMatches) return c1;
+            if (!c1HasMatches && c2HasMatches) return c2;
+
+            // Otherwise pick the one with the freshest timestamp among known files.
+            var t1 = GetBestTime(c1);
+            var t2 = GetBestTime(c2);
+            if (t1 == DateTime.MinValue && t2 == DateTime.MinValue)
+            {
+                // As a final tie-breaker, prefer src/data because current app writes there
+                return c2;
+            }
+            return t2 > t1 ? c2 : c1;
+        }
+
         public static async Task UpdateMainAsync(IEnumerable<long> playerIds)
         {
             var root = Directory.GetCurrentDirectory();
@@ -48,22 +94,7 @@ namespace RampageTracker.Rendering
             foreach (var pid in playerIds)
             {
                 // Gather stats; prefer the freshest per-player folder between root/data and src/data
-                var candidate1 = Path.Combine(Path.Combine(root, "data"), pid.ToString());
-                var candidate2 = Path.Combine(Path.Combine(root, "src", "data"), pid.ToString());
-                string pdir = Directory.Exists(candidate1) || Directory.Exists(candidate2) ? candidate1 : Path.Combine(dataDir, pid.ToString());
-                if (Directory.Exists(candidate1) && Directory.Exists(candidate2))
-                {
-                    DateTime t1 = DateTime.MinValue, t2 = DateTime.MinValue;
-                    var r1 = Path.Combine(candidate1, "Rampages.json");
-                    var r2 = Path.Combine(candidate2, "Rampages.json");
-                    if (File.Exists(r1)) t1 = File.GetLastWriteTimeUtc(r1);
-                    if (File.Exists(r2)) t2 = File.GetLastWriteTimeUtc(r2);
-                    pdir = t2 > t1 ? candidate2 : candidate1;
-                }
-                else if (Directory.Exists(candidate2))
-                {
-                    pdir = candidate2;
-                }
+                var pdir = ChoosePlayerDataDir(root, pid);
                 var rpath = Path.Combine(pdir, "Rampages.json");
                 var rampageCount = 0;
                 if (File.Exists(rpath))
@@ -129,7 +160,7 @@ namespace RampageTracker.Rendering
                 }
 
                 var playerLink = $"[{profileName}](Players/{pid}/README.md)";
-                var profilePic = $"<img src=\"{avatarUrl}\" width=\"32\" height=\"32\"/>";
+                var profilePic = string.IsNullOrWhiteSpace(avatarUrl) ? "" : $"<img src=\"{avatarUrl}\" width=\"32\" height=\"32\"/>";
                 var rampagesLink = $"[View](Players/{pid}/Rampages.md)";
                 var rr = radGames > 0 ? (100.0 * radWins / radGames).ToString("F2") + "%" : "-";
                 var dr = direGames > 0 ? (100.0 * direWins / direGames).ToString("F2") + "%" : "-";
@@ -177,23 +208,8 @@ namespace RampageTracker.Rendering
             Directory.CreateDirectory(playerDir);
             var playerReadme = Path.Combine(playerDir, "README.md");
 
-            // Choose freshest per-player folder
-            var c1 = Path.Combine(Path.Combine(root, "data"), playerId.ToString());
-            var c2 = Path.Combine(Path.Combine(root, "src", "data"), playerId.ToString());
-            string pdata = Directory.Exists(c1) || Directory.Exists(c2) ? c1 : Path.Combine(dataDir, playerId.ToString());
-            if (Directory.Exists(c1) && Directory.Exists(c2))
-            {
-                DateTime t1 = DateTime.MinValue, t2 = DateTime.MinValue;
-                var r1 = Path.Combine(c1, "Rampages.json");
-                var r2 = Path.Combine(c2, "Rampages.json");
-                if (File.Exists(r1)) t1 = File.GetLastWriteTimeUtc(r1);
-                if (File.Exists(r2)) t2 = File.GetLastWriteTimeUtc(r2);
-                pdata = t2 > t1 ? c2 : c1;
-            }
-            else if (Directory.Exists(c2))
-            {
-                pdata = c2;
-            }
+            // Choose freshest/most complete per-player folder
+            var pdata = ChoosePlayerDataDir(root, playerId);
 
             // Load profile info if present
             var profilePath = Path.Combine(pdata, "profile.json");

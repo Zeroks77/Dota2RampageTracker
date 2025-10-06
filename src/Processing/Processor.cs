@@ -258,11 +258,33 @@ namespace RampageTracker.Processing
         public static async Task RegenReadmeAsync(DataManager data, List<long> players)
         {
             // Only local files are used; no API calls
-            await Rendering.ReadmeGenerator.UpdateMainAsync(players);
-            foreach (var pid in players)
-            {
-                await Rendering.ReadmeGenerator.UpdatePlayerAsync(pid, newFound: 0);
-            }
+                // Best-effort: enrich missing local data (profiles and matches) without parsing
+                try
+                {
+                    using var http = new System.Net.Http.HttpClient();
+                    http.DefaultRequestHeaders.UserAgent.ParseAdd("RampageTracker/1.0 (+https://opendota.com)");
+                    var api = new ApiManager(http, data.GetApiKey());
+                    foreach (var playerId in players)
+                    {
+                        try
+                        {
+                            // Always refresh profile and matches to keep data current; safe and fast
+                            var prof = await api.GetPlayerProfileAsync(playerId);
+                            if (prof != null) await data.SavePlayerProfileAsync(playerId, prof);
+                            var matches = await api.GetPlayerMatchesAsync(playerId);
+                            if (matches != null) await data.SavePlayerMatchesAsync(playerId, matches);
+                        }
+                        catch { }
+                    }
+                }
+                catch { }
+
+                // Generate per-player pages for all known players
+                foreach (var playerId in players)
+                {
+                    await ReadmeGenerator.UpdatePlayerAsync(playerId, 0);
+                }
+                await ReadmeGenerator.UpdateMainAsync(players);
         }
     }
 }
