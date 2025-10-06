@@ -71,7 +71,30 @@ namespace RampageTracker.Processing
                             if (hasParsed == true)
                             {
                                 bool isRampage = false;
-                                try { isRampage = await IsRampageAsync(api, sLocal.MatchId, playerId); }
+                                try {
+                                    // Fetch and log evaluation details
+                                    var match = await api.GetMatchAsync(sLocal.MatchId);
+                                    if (match?.Players != null)
+                                    {
+                                        // per-match summary (all players that rampaged)
+                                        try
+                                        {
+                                            var rampagers = match.Players
+                                                .Where(p => p?.MultiKills != null && p.MultiKills.TryGetValue(5, out var v) && v > 0)
+                                                .Select(p => (AccountId: (long?)p.AccountId, HeroName: Core.HeroCatalog.GetLocalizedName(p.HeroId), Count: p.MultiKills![5]))
+                                                .ToList();
+                                            Logger.LogMatchRampageSummary(match.MatchId, rampagers);
+                                        }
+                                        catch { }
+
+                                        var mp = match.Players.FirstOrDefault(x => x.AccountId == (int)playerId);
+                                        var cnt = 0; if (mp?.MultiKills != null) mp.MultiKills.TryGetValue(5, out cnt);
+                                        var heroId = mp?.HeroId;
+                                        var heroName = Core.HeroCatalog.GetLocalizedName(heroId);
+                                        isRampage = cnt > 0;
+                                        Logger.LogMatchEvaluation(playerId, sLocal.MatchId, heroName, cnt, isRampage);
+                                    }
+                                }
                                 catch (Exception ex) { Logger.Warn($"[new] get match failed for {sLocal.MatchId}: {ex.Message}"); }
                                 if (isRampage)
                                 {
@@ -95,7 +118,29 @@ namespace RampageTracker.Processing
                                     if (success)
                                     {
                                         bool isRampage = false;
-                                        try { isRampage = await IsRampageAsync(api, sLocal.MatchId, playerId); }
+                                        try
+                                        {
+                                            var match = await api.GetMatchAsync(sLocal.MatchId);
+                                            if (match?.Players != null)
+                                            {
+                                                // per-match summary
+                                                try
+                                                {
+                                                    var rampagers = match.Players
+                                                        .Where(p => p?.MultiKills != null && p.MultiKills.TryGetValue(5, out var v) && v > 0)
+                                                        .Select(p => (AccountId: (long?)p.AccountId, HeroName: Core.HeroCatalog.GetLocalizedName(p.HeroId), Count: p.MultiKills![5]))
+                                                        .ToList();
+                                                    Logger.LogMatchRampageSummary(match.MatchId, rampagers);
+                                                }
+                                                catch { }
+
+                                                var mp = match.Players.FirstOrDefault(x => x.AccountId == (int)playerId);
+                                                var cnt = 0; if (mp?.MultiKills != null) mp.MultiKills.TryGetValue(5, out cnt);
+                                                var heroId = mp?.HeroId; var heroName = Core.HeroCatalog.GetLocalizedName(heroId);
+                                                isRampage = cnt > 0;
+                                                Logger.LogMatchEvaluation(playerId, sLocal.MatchId, heroName, cnt, isRampage);
+                                            }
+                                        }
                                         catch (Exception ex) { Logger.Warn($"[new] get match after poll failed for {sLocal.MatchId}: {ex.Message}"); }
                                         if (isRampage)
                                         {
@@ -185,13 +230,29 @@ namespace RampageTracker.Processing
                     var match = await api.GetMatchAsync(next.MatchId);
                     if (match?.Players != null)
                     {
+                        // Build a summary across all players (not only tracked) for visibility
+                        try
+                        {
+                            var rampagers = match.Players
+                                .Where(p => p?.MultiKills != null && p.MultiKills.TryGetValue(5, out var v) && v > 0)
+                                .Select(p => (AccountId: (long?)p.AccountId, HeroName: Core.HeroCatalog.GetLocalizedName(p.HeroId), Count: p.MultiKills![5]))
+                                .ToList();
+                            Logger.LogMatchRampageSummary(match.MatchId, rampagers);
+                        }
+                        catch { /* best effort summary */ }
+
                         foreach (var pid in players)
                         {
                             var mp = match.Players.FirstOrDefault(x => x.AccountId == (int)pid);
-                            if (mp?.MultiKills != null && mp.MultiKills.TryGetValue(5, out var cnt) && cnt > 0)
+                            var cnt = 0;
+                            if (mp?.MultiKills != null) mp.MultiKills.TryGetValue(5, out cnt);
+                            var heroId = mp?.HeroId;
+                            var heroNameForLog = Core.HeroCatalog.GetLocalizedName(heroId);
+                            var isRampage = cnt > 0;
+                            Logger.LogMatchEvaluation(pid, match.MatchId, heroNameForLog, cnt, isRampage);
+                            if (isRampage)
                             {
-                                var heroId = mp.HeroId;
-                                var heroName = Core.HeroCatalog.GetLocalizedName(heroId);
+                                var heroName = heroNameForLog;
                                 var ramp = new RampageEntry
                                 {
                                     MatchId = match.MatchId,

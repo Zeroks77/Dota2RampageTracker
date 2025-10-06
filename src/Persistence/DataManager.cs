@@ -180,7 +180,24 @@ namespace RampageTracker.Data
             await fileLock.WaitAsync();
             try
             {
-                await File.WriteAllTextAsync(path, matchId.ToString());
+                // Retry write with small backoff to handle transient sharing violations on Windows
+                const int maxRetries = 3;
+                for (int attempt = 0; attempt < maxRetries; attempt++)
+                {
+                    try
+                    {
+                        using var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+                        using var sw = new StreamWriter(fs);
+                        await sw.WriteAsync(matchId.ToString());
+                        await sw.FlushAsync();
+                        fs.Flush(true);
+                        break;
+                    }
+                    catch (IOException) when (attempt < maxRetries - 1)
+                    {
+                        await Task.Delay(25 * (attempt + 1));
+                    }
+                }
             }
             finally
             {
@@ -482,11 +499,79 @@ namespace RampageTracker.Data
 
         public async Task ClearAllAsync()
         {
-            if (Directory.Exists(_dataDir))
+            try
             {
-                await Task.Run(() => Directory.Delete(_dataDir, true));
+                if (!Directory.Exists(_dataDir))
+                {
+                    Directory.CreateDirectory(_dataDir);
+                    return;
+                }
+
+                // Delete files bottom-up and be resilient to Windows file locking.
+                // If deletion fails, try to neutralize content so a fresh run starts clean.
+                var allFiles = Directory.EnumerateFiles(_dataDir, "*", SearchOption.AllDirectories)
+                    .OrderByDescending(p => p.Length) // minor shuffle; not strictly needed
+                    .ToList();
+
+                foreach (var file in allFiles)
+                {
+                    try
+                    {
+                        // Reset attributes and try delete
+                        File.SetAttributes(file, FileAttributes.Normal);
+                        File.Delete(file);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Best effort fallback: overwrite content depending on file type
+                        try
+                        {
+                            var name = Path.GetFileName(file);
+                            if (string.Equals(name, "lastchecked.txt", StringComparison.OrdinalIgnoreCase))
+                            {
+                                await File.WriteAllTextAsync(file, "0");
+                                Logger.Warn($"Could not delete {file}. Reset to 0 instead. ({ex.Message})");
+                            }
+                            else if (name.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+                            {
+                                // Empty JSON array by default; for objects we can also write {} if needed later
+                                await File.WriteAllTextAsync(file, "[]");
+                                Logger.Warn($"Could not delete {file}. Emptied JSON instead. ({ex.Message})");
+                            }
+                            else
+                            {
+                                // Try truncate
+                                using var fs = new FileStream(file, FileMode.Truncate, FileAccess.Write, FileShare.ReadWrite);
+                                Logger.Warn($"Could not delete {file}. Truncated instead. ({ex.Message})");
+                            }
+                        }
+                        catch (Exception ex2)
+                        {
+                            Logger.Warn($"Failed to neutralize locked file {file}: {ex2.Message}");
+                        }
+                    }
+                }
+
+                // Now try to remove empty directories bottom-up
+                var dirs = Directory.EnumerateDirectories(_dataDir, "*", SearchOption.AllDirectories)
+                    .OrderByDescending(d => d.Length)
+                    .ToList();
+                foreach (var dir in dirs)
+                {
+                    try { Directory.Delete(dir, recursive: false); } catch { }
+                }
+
+                // Finally, ensure the data directory exists and is empty enough
+                try { Directory.Delete(_dataDir, recursive: false); } catch { }
+                Directory.CreateDirectory(_dataDir);
+                Logger.Debug("🧹 Cleared data directory (best-effort)");
             }
-            Directory.CreateDirectory(_dataDir);
+            catch (Exception ex)
+            {
+                Logger.Warn($"ClearAllAsync encountered an error: {ex.Message}");
+                // Ensure data dir still exists
+                try { Directory.CreateDirectory(_dataDir); } catch { }
+            }
         }
 
         public async Task EnsureHeroesAsync(ApiManager api)

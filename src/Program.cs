@@ -49,6 +49,8 @@ namespace RampageTracker
 
             // Init
             var root = Directory.GetCurrentDirectory();
+            // Initialize file logging (creates logs/run_*.log and logs/latest.log)
+            Logger.Initialize(root, fileNameSuffix: mode);
             var data = new DataManager(root);
             var apiKey = data.GetApiKey();
 
@@ -101,6 +103,7 @@ namespace RampageTracker
                 try { cts.Cancel(); } catch { }
                 Logger.Warn("⏹️  Graceful shutdown requested (Ctrl+C). All found rampages have been saved automatically!");
                 Logger.LogStatistics();
+                try { Logger.Close(); } catch { }
             };
 
             try
@@ -227,16 +230,19 @@ namespace RampageTracker
 
                 Logger.LogStatistics();
                 Logger.Success("✅ Processing completed successfully!");
+                try { Logger.Close(); } catch { }
                 return 0;
             }
             catch (OperationCanceledException)
             {
                 Logger.Warn("Cancelled.");
+                try { Logger.Close(); } catch { }
                 return 130;
             }
             catch (Exception ex)
             {
                 Logger.Error($"Fatal: {ex.Message}");
+                try { Logger.Close(); } catch { }
                 return 99;
             }
         }
