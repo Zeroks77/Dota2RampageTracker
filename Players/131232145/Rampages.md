@@ -1,7 +1,7 @@
-# Rampages for 131232145
-<img src="https://www.opendota.com/assets/images/dota2/rpg/portraits/default.png" width="48" height="48"/>
+# Rampages for Mupfel
+<img src="https://avatars.steamstatic.com/5975408a7d136abfeb6160943f0db7743d542d54_full.jpg" width="48" height="48"/>
 
-**Total Rampages:** 3
+**Total Rampages:** 6
 
 [Back to Player](./README.md)
 
@@ -13,7 +13,19 @@
 
 - [3814988455](https://www.opendota.com/matches/3814988455) — 2018-04-03
 
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/pudge.png" width="28" style="vertical-align:middle"/> Pudge
+
+- [5086224038](https://www.opendota.com/matches/5086224038) — 2019-10-26
+
 ## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/snapfire.png" width="28" style="vertical-align:middle"/> Snapfire
 
 - [5231786877](https://www.opendota.com/matches/5231786877) — 2020-02-07
+
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/troll_warlord.png" width="28" style="vertical-align:middle"/> Troll Warlord
+
+- [4858576020](https://www.opendota.com/matches/4858576020) — 2019-06-22
+
+## <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ursa.png" width="28" style="vertical-align:middle"/> Ursa
+
+- [2685986024](https://www.opendota.com/matches/2685986024) — 2016-10-03
 

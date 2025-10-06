@@ -24,157 +24,241 @@ namespace RampageTracker.Processing
 
     public static async Task RunNewOnlyAsync(ApiManager api, DataManager data, List<long> players, int workers, CancellationToken ct, bool eagerPoll = false)
         {
-            foreach (var playerId in players)
+            // 1) Load last-checked map per player
+            var lastChecked = new Dictionary<long, long>();
+            foreach (var pid in players)
             {
-                if (ct.IsCancellationRequested) break;
+                lastChecked[pid] = await data.GetLastCheckedAsync(pid);
+            }
 
-                Logger.Info($"[new] Player {playerId}");
-                var last = await data.GetLastCheckedAsync(playerId);
-                var newMatches = await FetchAllNewMatchesAsync(api, playerId, last, ct);
-                if (newMatches.Count == 0)
+            // 2) Single-request per player: fetch matches with a high limit (avoid pagination)
+            const int BigLimit = 100000; // attempt to fetch all in one request; fallback to paging if server caps
+            var playerMatches = new Dictionary<long, List<PlayerMatchSummary>>();
+            var fetchSem = new System.Threading.SemaphoreSlim(Math.Max(1, Math.Min(workers, 8)));
+            var fetchTasks = new List<Task>();
+            Logger.Info("[new] Fetching matches (one request per player, high limit) ...");
+            foreach (var pid in players)
+            {
+                await fetchSem.WaitAsync(ct);
+                var pidLocal = pid;
+                fetchTasks.Add(Task.Run(async () =>
                 {
-                    Logger.Info($"[new] Player {playerId}: keine neuen Matches.");
-                    continue;
-                }
-
-                var foundRampages = new List<long>();
-
-                int processed = 0;
-                var throttler = new System.Threading.SemaphoreSlim(Math.Max(1, workers));
-                var tasks = new List<Task>();
-
-                foreach (var s in newMatches)
-                {
-                    await throttler.WaitAsync(ct);
-                    var sLocal = s;
-                    tasks.Add(Task.Run(async () =>
+                    try
                     {
+                        var ms = await api.GetPlayerMatchesAsync(pidLocal, limit: BigLimit, offset: 0) ?? Array.Empty<PlayerMatchSummary>();
+                        var list = ms.ToList();
+                        Logger.Info($"[new] Player {pidLocal}: fetched {ms.Length} matches (limit={BigLimit})");
+                        // If we likely hit a cap (min match id still newer than lastchecked), fallback to paging
                         try
                         {
-                            if (ct.IsCancellationRequested) return;
-
-                            var idx = Interlocked.Increment(ref processed);
-                            if (idx % 10 == 1 || idx == newMatches.Count)
+                            if (ms.Length >= BigLimit)
                             {
-                                Logger.Info($"[new] Player {playerId}: verarbeite {idx}/{newMatches.Count} (Match {sLocal.MatchId})");
-                            }
-
-                            bool? hasParsed = null;
-                            try
-                            {
-                                hasParsed = await api.GetHasParsedAsync(sLocal.MatchId);
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.Warn($"[new] has_parsed failed for {sLocal.MatchId}: {ex.Message}");
-                            }
-                            if (hasParsed == true)
-                            {
-                                bool isRampage = false;
-                                try {
-                                    // Fetch and log evaluation details
-                                    var match = await api.GetMatchAsync(sLocal.MatchId);
-                                    if (match?.Players != null)
+                                var minId = ms.Min(m => m.MatchId);
+                                if (minId > lastChecked[pidLocal])
+                                {
+                                    Logger.Warn($"[new] Player {pidLocal}: limit {BigLimit} reached; continuing with pagination until lastchecked boundary...");
+                                    var offset = ms.Length;
+                                    while (!ct.IsCancellationRequested)
                                     {
-                                        // per-match summary (all players that rampaged)
-                                        try
-                                        {
-                                            var rampagers = match.Players
-                                                .Where(p => p?.MultiKills != null && p.MultiKills.TryGetValue(5, out var v) && v > 0)
-                                                .Select(p => (AccountId: (long?)p.AccountId, HeroName: Core.HeroCatalog.GetLocalizedName(p.HeroId), Count: p.MultiKills![5]))
-                                                .ToList();
-                                            Logger.LogMatchRampageSummary(match.MatchId, rampagers);
-                                        }
-                                        catch { }
-
-                                        var mp = match.Players.FirstOrDefault(x => x.AccountId == (int)playerId);
-                                        var cnt = 0; if (mp?.MultiKills != null) mp.MultiKills.TryGetValue(5, out cnt);
-                                        var heroId = mp?.HeroId;
-                                        var heroName = Core.HeroCatalog.GetLocalizedName(heroId);
-                                        isRampage = cnt > 0;
-                                        Logger.LogMatchEvaluation(playerId, sLocal.MatchId, heroName, cnt, isRampage);
+                                        var page = await api.GetPlayerMatchesAsync(pidLocal, limit: 5000, offset: offset) ?? Array.Empty<PlayerMatchSummary>();
+                                        if (page.Length == 0) break;
+                                        list.AddRange(page);
+                                        var pageMin = page.Min(m => m.MatchId);
+                                        if (pageMin <= lastChecked[pidLocal]) break;
+                                        offset += page.Length;
+                                        if (offset > 200_000) { Logger.Warn($"[new] Player {pidLocal}: paging safety cap reached at offset {offset}"); break; }
                                     }
                                 }
-                                catch (Exception ex) { Logger.Warn($"[new] get match failed for {sLocal.MatchId}: {ex.Message}"); }
+                            }
+                        }
+                        catch { }
+                        lock (playerMatches) playerMatches[pidLocal] = list;
+                    }
+                    finally
+                    {
+                        try { fetchSem.Release(); } catch { }
+                    }
+                }, ct));
+            }
+            await Task.WhenAll(fetchTasks);
+
+            // 3) Build a unique match map: matchId -> players (for whom this match is new)
+            var matchToPlayers = new Dictionary<long, List<long>>();
+            int totalNewPerPlayer = 0;
+            foreach (var kv in playerMatches)
+            {
+                var pid = kv.Key;
+                var last = lastChecked[pid];
+                var list = kv.Value;
+                var countNew = 0;
+                foreach (var m in list)
+                {
+                    if (m.MatchId > last)
+                    {
+                        if (!matchToPlayers.TryGetValue(m.MatchId, out var plist))
+                            matchToPlayers[m.MatchId] = plist = new List<long>(1);
+                        plist.Add(pid);
+                        countNew++;
+                    }
+                }
+                totalNewPerPlayer += countNew;
+                Logger.Info($"[new] Player {pid}: new matches since lastchecked: {countNew}");
+            }
+            var uniqueMatches = matchToPlayers.Keys.OrderBy(id => id).ToList();
+            Logger.Info($"[new] Unique new matches across players (deduped): {uniqueMatches.Count} (raw sum per-player: {totalNewPerPlayer})");
+
+            // 4) Process unique matches concurrently; avoid duplicate request/parse calls across players
+            var throttler = new System.Threading.SemaphoreSlim(Math.Max(1, workers));
+            var tasks = new List<Task>();
+            var rampageAddsPerPlayer = new System.Collections.Concurrent.ConcurrentDictionary<long, int>();
+
+            foreach (var matchId in uniqueMatches)
+            {
+                await throttler.WaitAsync(ct);
+                tasks.Add(Task.Run(async () =>
+                {
+                    try
+                    {
+                        // Preferred flow: try GET /matches/{id} first
+                        var match = await api.GetMatchAsync(matchId);
+                        var gotParsedData = match?.Players != null;
+                        if (gotParsedData)
+                        {
+                            // Summary across all players
+                            try
+                            {
+                                IEnumerable<(long? AccountId, string? HeroName, int Count)> rampagers = match!.Players!
+                                    .Where(p => p?.MultiKills != null && p.MultiKills.TryGetValue(5, out var v) && v > 0)
+                                    .Select(p => (AccountId: (long?)p.AccountId, HeroName: (string?)Core.HeroCatalog.GetLocalizedName(p.HeroId), Count: p!.MultiKills![5]))
+                                    .ToList();
+                                Logger.LogMatchRampageSummary(match.MatchId, rampagers);
+                            }
+                            catch { }
+
+                            foreach (var pid in matchToPlayers[matchId])
+                            {
+                                var mp = match!.Players!.FirstOrDefault(x => x.AccountId == (int)pid);
+                                var cnt = 0; if (mp?.MultiKills != null) mp.MultiKills.TryGetValue(5, out cnt);
+                                var heroId = mp?.HeroId; var heroName = Core.HeroCatalog.GetLocalizedName(heroId);
+                                var isRampage = cnt > 0;
+                                Logger.LogMatchEvaluation(pid, matchId, heroName, cnt, isRampage);
                                 if (isRampage)
                                 {
-                                    lock (foundRampages) foundRampages.Add(sLocal.MatchId);
-                                    await _rampageWrite.WaitAsync(ct);
-                                    try { await data.AppendRampagesAsync(playerId, new List<long> { sLocal.MatchId }); }
-                                    finally { _rampageWrite.Release(); }
+                                    var ramp = new RampageEntry
+                                    {
+                                        MatchId = matchId,
+                                        HeroId = heroId,
+                                        HeroName = heroName,
+                                        StartTime = match.StartTime,
+                                        MatchDate = match.StartTime.HasValue ? DateTimeOffset.FromUnixTimeSeconds(match.StartTime.Value).UtcDateTime : null
+                                    };
+                                    await data.AppendRampageAsync(pid, ramp);
+                                    Logger.LogRampageFound(pid, matchId, heroName);
+                                    rampageAddsPerPlayer.AddOrUpdate(pid, 1, (_, v) => v + 1);
                                 }
+                            }
+
+                            // Update lastchecked per involved player
+                            foreach (var pid in matchToPlayers[matchId])
+                            {
+                                await data.SetLastCheckedAsync(pid, matchId);
+                            }
+                        }
+                        else
+                        {
+                            // Not parsed/available yet -> request parse and enqueue
+                            long? jobId = null;
+                            try { jobId = await api.RequestParseAsync(matchId); }
+                            catch (Exception ex) { Logger.Warn($"[new] request parse failed for {matchId}: {ex.Message}"); }
+                            if (jobId != null)
+                            {
+                                Logger.Info($"[new] Requested parse for match {matchId}, jobId={jobId}");
                             }
                             else
                             {
-                                long? jobId = null;
-                                try { jobId = await api.RequestParseAsync(sLocal.MatchId); }
-                                catch (Exception ex) { Logger.Warn($"[new] request parse failed for {sLocal.MatchId}: {ex.Message}"); }
-                                if (eagerPoll && jobId != null)
-                                {
-                                    var quickDelay = TimeSpan.FromMilliseconds(25);
-                                    bool success = false;
-                                    try { success = await PollJobTwiceAsync(api, jobId.Value, quickDelay, ct); }
-                                    catch (Exception ex) { Logger.Warn($"[new] poll failed for job {jobId}: {ex.Message}"); }
-                                    if (success)
-                                    {
-                                        bool isRampage = false;
-                                        try
-                                        {
-                                            var match = await api.GetMatchAsync(sLocal.MatchId);
-                                            if (match?.Players != null)
-                                            {
-                                                // per-match summary
-                                                try
-                                                {
-                                                    var rampagers = match.Players
-                                                        .Where(p => p?.MultiKills != null && p.MultiKills.TryGetValue(5, out var v) && v > 0)
-                                                        .Select(p => (AccountId: (long?)p.AccountId, HeroName: Core.HeroCatalog.GetLocalizedName(p.HeroId), Count: p.MultiKills![5]))
-                                                        .ToList();
-                                                    Logger.LogMatchRampageSummary(match.MatchId, rampagers);
-                                                }
-                                                catch { }
-
-                                                var mp = match.Players.FirstOrDefault(x => x.AccountId == (int)playerId);
-                                                var cnt = 0; if (mp?.MultiKills != null) mp.MultiKills.TryGetValue(5, out cnt);
-                                                var heroId = mp?.HeroId; var heroName = Core.HeroCatalog.GetLocalizedName(heroId);
-                                                isRampage = cnt > 0;
-                                                Logger.LogMatchEvaluation(playerId, sLocal.MatchId, heroName, cnt, isRampage);
-                                            }
-                                        }
-                                        catch (Exception ex) { Logger.Warn($"[new] get match after poll failed for {sLocal.MatchId}: {ex.Message}"); }
-                                        if (isRampage)
-                                        {
-                                            lock (foundRampages) foundRampages.Add(sLocal.MatchId);
-                                            await _rampageWrite.WaitAsync(ct);
-                                            try { await data.AppendRampagesAsync(playerId, new List<long> { sLocal.MatchId }); }
-                                            finally { _rampageWrite.Release(); }
-                                        }
-                                        await data.SetLastCheckedAsync(playerId, sLocal.MatchId);
-                                        return;
-                                    }
-                                }
-                                await EnqueueParseAsync(data, playerId, sLocal.MatchId, jobId, InitialTries, DateTime.UtcNow.Add(InitialDelay));
+                                Logger.Warn($"[new] Request parse for match {matchId} returned no jobId");
                             }
 
-                            await data.SetLastCheckedAsync(playerId, sLocal.MatchId);
-                        }
-                        finally
-                        {
-                            try { throttler.Release(); } catch { }
-                        }
-                    }, ct));
-                }
+                            // Optional quick poll if enabled
+                            if (eagerPoll && jobId != null)
+                            {
+                                var quickDelay = TimeSpan.FromMilliseconds(25);
+                                bool success = false;
+                                try { success = await PollJobTwiceAsync(api, jobId.Value, quickDelay, ct); }
+                                catch (Exception ex) { Logger.Warn($"[new] poll failed for job {jobId}: {ex.Message}"); }
+                                if (success)
+                                {
+                                    // Fetch and process now
+                                    try
+                                    {
+                                        var m2 = await api.GetMatchAsync(matchId);
+                                        if (m2?.Players != null)
+                                        {
+                                            try
+                                            {
+                                                IEnumerable<(long? AccountId, string? HeroName, int Count)> rampagers = m2.Players
+                                                    .Where(p => p?.MultiKills != null && p.MultiKills.TryGetValue(5, out var v) && v > 0)
+                                                    .Select(p => (AccountId: (long?)p.AccountId, HeroName: (string?)Core.HeroCatalog.GetLocalizedName(p.HeroId), Count: p!.MultiKills![5]))
+                                                    .ToList();
+                                                Logger.LogMatchRampageSummary(m2.MatchId, rampagers);
+                                            }
+                                            catch { }
 
-                await Task.WhenAll(tasks);
+                                            foreach (var pid in matchToPlayers[matchId])
+                                            {
+                                                var mp = m2.Players.FirstOrDefault(x => x.AccountId == (int)pid);
+                                                var cnt = 0; if (mp?.MultiKills != null) mp.MultiKills.TryGetValue(5, out cnt);
+                                                var heroId = mp?.HeroId; var heroName = Core.HeroCatalog.GetLocalizedName(heroId);
+                                                var isRampage = cnt > 0;
+                                                Logger.LogMatchEvaluation(pid, matchId, heroName, cnt, isRampage);
+                                                if (isRampage)
+                                                {
+                                                    var ramp = new RampageEntry
+                                                    {
+                                                        MatchId = matchId,
+                                                        HeroId = heroId,
+                                                        HeroName = heroName,
+                                                        StartTime = m2.StartTime,
+                                                        MatchDate = m2.StartTime.HasValue ? DateTimeOffset.FromUnixTimeSeconds(m2.StartTime.Value).UtcDateTime : null
+                                                    };
+                                                    await data.AppendRampageAsync(pid, ramp);
+                                                    Logger.LogRampageFound(pid, matchId, heroName);
+                                                    rampageAddsPerPlayer.AddOrUpdate(pid, 1, (_, v) => v + 1);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    catch (Exception ex) { Logger.Warn($"[new] get match after poll failed for {matchId}: {ex.Message}"); }
 
-                if (foundRampages.Count > 0)
-                {
-                    await data.AppendRampagesAsync(playerId, foundRampages); // idempotent: bereits inkrementell geschrieben
-                    await ReadmeGenerator.UpdatePlayerAsync(playerId, foundRampages.Count);
-                    Logger.Info($"[new] Player {playerId}: {foundRampages.Count} Rampages gefunden.");
-                }
+                                    foreach (var pid in matchToPlayers[matchId])
+                                    {
+                                        await data.SetLastCheckedAsync(pid, matchId);
+                                    }
+                                    return;
+                                }
+                            }
+
+                            await data.EnqueueGlobalParseAsync(matchId, jobId, InitialTries, DateTime.UtcNow.Add(InitialDelay));
+                            foreach (var pid in matchToPlayers[matchId])
+                            {
+                                await data.SetLastCheckedAsync(pid, matchId);
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        try { throttler.Release(); } catch { }
+                    }
+                }, ct));
             }
 
+            await Task.WhenAll(tasks);
+
+            // 5) Update READMEs for players with new rampages and main page
+            foreach (var kv in rampageAddsPerPlayer)
+            {
+                await ReadmeGenerator.UpdatePlayerAsync(kv.Key, kv.Value);
+            }
             await ReadmeGenerator.UpdateMainAsync(players);
         }
 
@@ -233,9 +317,9 @@ namespace RampageTracker.Processing
                         // Build a summary across all players (not only tracked) for visibility
                         try
                         {
-                            var rampagers = match.Players
+                            IEnumerable<(long? AccountId, string? HeroName, int Count)> rampagers = match.Players
                                 .Where(p => p?.MultiKills != null && p.MultiKills.TryGetValue(5, out var v) && v > 0)
-                                .Select(p => (AccountId: (long?)p.AccountId, HeroName: Core.HeroCatalog.GetLocalizedName(p.HeroId), Count: p.MultiKills![5]))
+                                .Select(p => (AccountId: (long?)p.AccountId, HeroName: (string?)Core.HeroCatalog.GetLocalizedName(p.HeroId), Count: p!.MultiKills![5]))
                                 .ToList();
                             Logger.LogMatchRampageSummary(match.MatchId, rampagers);
                         }

@@ -373,16 +373,18 @@ namespace RampageTracker.Data
         public async Task SaveGlobalQueueAsync(List<ParseQueueEntry> entries)
         {
             var path = _globalQueuePath;
-            var json = JsonConvert.SerializeObject(entries
+            var unique = entries
                 .GroupBy(e => e.MatchId)
                 .Select(g => g.OrderByDescending(x => x.JobId.HasValue).ThenBy(x => x.Tries).First())
-                .OrderBy(e => e.NextCheckAtUtc ?? DateTime.MinValue), Formatting.Indented);
+                .OrderBy(e => e.NextCheckAtUtc ?? DateTime.MinValue)
+                .ToList();
+            var json = JsonConvert.SerializeObject(unique, Formatting.Indented);
             var fileLock = GetFileLock(path);
             await fileLock.WaitAsync();
             try
             {
                 await File.WriteAllTextAsync(path, json);
-                Logger.Debug($"📁 Saved GlobalParseQueue ({entries.Count} entries)");
+                Logger.Debug($"📁 Saved GlobalParseQueue (unique={unique.Count}, raw={entries.Count})");
             }
             finally
             {
@@ -403,12 +405,14 @@ namespace RampageTracker.Data
                     Tries = tries,
                     NextCheckAtUtc = nextCheck
                 });
+                Logger.Info($"[queue] Enqueued new match {matchId} (job={(jobId?.ToString() ?? "null")}, tries={tries}, next={nextCheck:O})");
             }
             else
             {
                 existing.JobId = jobId ?? existing.JobId;
                 existing.Tries = Math.Max(existing.Tries, tries);
                 existing.NextCheckAtUtc = nextCheck;
+                Logger.Debug($"[queue] Updated match {matchId} (job={(existing.JobId?.ToString() ?? "null")}, tries={existing.Tries}, next={existing.NextCheckAtUtc:O})");
             }
             await SaveGlobalQueueAsync(queue);
         }

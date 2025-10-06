@@ -11,6 +11,18 @@ namespace RampageTracker.Rendering
 {
     public static class ReadmeGenerator
     {
+        private static bool IsPlaceholderHeroName(string? name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return true;
+            var t = name.Trim();
+            if (string.Equals(t, "Unknown", StringComparison.OrdinalIgnoreCase)) return true;
+            if (t.StartsWith("Hero ", StringComparison.OrdinalIgnoreCase))
+            {
+                var rest = t.Substring(5).Trim();
+                if (int.TryParse(rest, out _)) return true;
+            }
+            return false;
+        }
         // Choose the best per-player data directory between repoRoot/data and repoRoot/src/data
         private static string ChoosePlayerDataDir(string repoRoot, long playerId)
         {
@@ -348,7 +360,7 @@ namespace RampageTracker.Rendering
 
                     // Group by hero name for sections, then sort each hero's rampages by date desc
                     var groups = rs
-                        .Select(x => new { Entry = x, Name = string.IsNullOrWhiteSpace(x.HeroName) || x.HeroName == "Unknown" ? HeroCatalog.GetLocalizedName(x.HeroId) : x.HeroName })
+                        .Select(x => new { Entry = x, Name = IsPlaceholderHeroName(x.HeroName) ? HeroCatalog.GetLocalizedName(x.HeroId) : x.HeroName })
                         .GroupBy(x => x.Name)
                         .OrderBy(g => g.Key);
 
