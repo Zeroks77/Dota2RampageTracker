@@ -83,11 +83,23 @@ namespace RampageTracker.Core
             return JsonConvert.DeserializeObject<Match>(json);
         }
 
-        public async Task<PlayerMatchSummary[]?> GetPlayerMatchesAsync(long playerId)
+        public async Task<PlayerMatchSummary[]?> GetPlayerMatchesAsync(long playerId, int? limit = null, int? offset = null)
         {
             Logger.LogApiRequest("GET /players/{id}/matches", playerId: playerId);
             await RateLimiter.EnsureRateAsync();
-            var url = WithKey($"{BaseUrl}/players/{playerId}/matches");
+            var url = $"{BaseUrl}/players/{playerId}/matches";
+            var hasQuery = false;
+            if (limit.HasValue)
+            {
+                url += hasQuery ? "&" : "?"; hasQuery = true;
+                url += $"limit={limit.Value}";
+            }
+            if (offset.HasValue)
+            {
+                url += hasQuery ? "&" : "?"; hasQuery = true;
+                url += $"offset={offset.Value}";
+            }
+            url = WithKey(url);
             using var resp = await SendWithRetryAsync(() => _http.GetAsync(url), nameof(GetPlayerMatchesAsync));
             if (resp == null || !resp.IsSuccessStatusCode) 
             {
@@ -114,6 +126,7 @@ namespace RampageTracker.Core
 
         public async Task<bool?> GetHasParsedAsync(long matchId)
         {
+            Logger.LogApiRequest("GET /request/{matchId}", matchId: matchId);
             await RateLimiter.EnsureRateAsync();
             var url = WithKey($"{BaseUrl}/request/{matchId}");
             using var resp = await SendWithRetryAsync(() => _http.GetAsync(url), nameof(GetHasParsedAsync));
@@ -126,6 +139,7 @@ namespace RampageTracker.Core
 
         public async Task<long?> RequestParseAsync(long matchId)
         {
+            Logger.LogApiRequest("POST /request/{matchId}", matchId: matchId);
             await RateLimiter.EnsureRateAsync();
             var url = WithKey($"{BaseUrl}/request/{matchId}");
             using var resp = await SendWithRetryAsync(() => _http.PostAsync(url, null), nameof(RequestParseAsync));
@@ -137,6 +151,7 @@ namespace RampageTracker.Core
 
         public async Task<bool?> CheckJobAsync(long jobId)
         {
+            Logger.LogApiRequest("GET /request/{jobId}", matchId: jobId);
             await RateLimiter.EnsureRateAsync();
             var url = WithKey($"{BaseUrl}/request/{jobId}");
             using var resp = await SendWithRetryAsync(() => _http.GetAsync(url), nameof(CheckJobAsync));
@@ -148,6 +163,7 @@ namespace RampageTracker.Core
         
         public async Task<List<HeroRef>?> GetHeroesAsync()
         {
+            Logger.LogApiRequest("GET /heroes");
             var url = WithKey($"{BaseUrl}/heroes");
             using var resp = await SendWithRetryAsync(() => _http.GetAsync(url), nameof(GetHeroesAsync));
             if (resp == null || !resp.IsSuccessStatusCode) return null;

@@ -418,11 +418,10 @@ namespace RampageTracker.Data
             if (global.Count > 0) return 0;
 
             var merged = new Dictionary<long, ParseQueueEntry>();
-            foreach (var pid in players.Distinct())
-            {
-                var path = Path.Combine(PlayerDir(pid), "ParseQueue.json");
-                if (!File.Exists(path)) continue;
 
+            async Task MergeQueueFileAsync(string path)
+            {
+                if (!File.Exists(path)) return;
                 List<ParseQueueEntry> entries;
                 var fileLock = GetFileLock(path);
                 await fileLock.WaitAsync();
@@ -431,14 +430,8 @@ namespace RampageTracker.Data
                     var json = await File.ReadAllTextAsync(path);
                     entries = JsonConvert.DeserializeObject<List<ParseQueueEntry>>(json) ?? new List<ParseQueueEntry>();
                 }
-                catch
-                {
-                    entries = new List<ParseQueueEntry>();
-                }
-                finally
-                {
-                    fileLock.Release();
-                }
+                catch { entries = new List<ParseQueueEntry>(); }
+                finally { fileLock.Release(); }
 
                 foreach (var e in entries)
                 {
@@ -448,7 +441,6 @@ namespace RampageTracker.Data
                     }
                     else
                     {
-                        // Prefer entries with JobId, then fewer tries, then earlier NextCheck
                         var candidate = new[] { existing, e }
                             .OrderByDescending(x => x.JobId.HasValue)
                             .ThenBy(x => x.Tries)
@@ -458,11 +450,25 @@ namespace RampageTracker.Data
                     }
                 }
 
-                // Optionally rename old file to avoid repeated migrations
                 try
                 {
-                    var bak = Path.Combine(PlayerDir(pid), "ParseQueue.migrated.json");
-                    if (File.Exists(path)) File.Move(path, bak, overwrite: true);
+                    var bak = Path.Combine(Path.GetDirectoryName(path)!, "ParseQueue.migrated.json");
+                    File.Move(path, bak, overwrite: true);
+                }
+                catch { }
+            }
+
+            foreach (var pid in players.Distinct())
+            {
+                // Primary root
+                var path = Path.Combine(PlayerDir(pid), "ParseQueue.json");
+                await MergeQueueFileAsync(path);
+
+                // Alternate root: repoRoot/src/data/<id>/ParseQueue.json
+                try
+                {
+                    var altPath = Path.Combine(_root, "src", "data", pid.ToString(), "ParseQueue.json");
+                    await MergeQueueFileAsync(altPath);
                 }
                 catch { }
             }

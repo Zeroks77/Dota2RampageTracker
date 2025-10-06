@@ -1,5 +1,5 @@
 # Dota 2 Rampage Tracker
-Last updated: 2025-10-06 11:51 UTC
+Last updated: 2025-10-06 13:28 UTC
 
 > Note: All game data is sourced via the OpenDota API. This project is not affiliated with Valve or OpenDota.
 > Data source: OpenDota (https://www.opendota.com)
@@ -8,15 +8,15 @@ Last updated: 2025-10-06 11:51 UTC
 
 | Player | Profile | Rampages/Matches | Winrate | Radiant | Dire | Rampages |
 |:-------|:-------:|------------------:|--------:|--------:|-----:|:---------|
-| [Gary the Carry](Players/169325410/README.md) | <img src="https://avatars.steamstatic.com/23f8ee4662d83a5959ef06b8cf948d66955997cc_full.jpg" width="32" height="32"/> | 0/3043 | 60,11% | 61,97% | 58,23% | [View](Players/169325410/Rampages.md) |
-| [HUNDSCHeiSSE](Players/188889560/README.md) | <img src="https://avatars.steamstatic.com/4de25690c67e56aa772c438c4eeb4f949647c827_full.jpg" width="32" height="32"/> | 0/251 | 56,97% | 58,40% | 55,56% | [View](Players/188889560/Rampages.md) |
-| [jarjeer](Players/1002536896/README.md) | <img src="https://avatars.steamstatic.com/2c33a4d4725158a4546f3414b2a76891d0abb218_full.jpg" width="32" height="32"/> | 0/1396 | 49,79% | 52,62% | 47,04% | [View](Players/1002536896/Rampages.md) |
-| [Kret](Players/226354794/README.md) | <img src="https://avatars.steamstatic.com/c0710d11651022f0fbcd99159677a7acfc6e6a18_full.jpg" width="32" height="32"/> | 0/932 | 58,58% | 62,97% | 53,96% | [View](Players/226354794/Rampages.md) |
-| [Lucky](Players/308948139/README.md) | <img src="https://avatars.steamstatic.com/1191c81a57194f64acfcda94f0fd0cb94e92eff7_full.jpg" width="32" height="32"/> | 0/5459 | 54,52% | 55,06% | 53,98% | [View](Players/308948139/Rampages.md) |
-| [Mupfel](Players/131232145/README.md) | <img src="https://avatars.steamstatic.com/5975408a7d136abfeb6160943f0db7743d542d54_full.jpg" width="32" height="32"/> | 0/3923 | 55,11% | 54,95% | 55,27% | [View](Players/131232145/Rampages.md) |
-| [Virvacus](Players/1127238076/README.md) | <img src="https://avatars.steamstatic.com/45f83173783fdfe00f08ac4d7872856a2d82677e_full.jpg" width="32" height="32"/> | 0/2497 | 49,50% | 53,20% | 45,88% | [View](Players/1127238076/Rampages.md) |
-| [Xenas23](Players/181342370/README.md) | <img src="https://avatars.steamstatic.com/16392e7c2bf30770c48c4b989eef4a19f237d548_full.jpg" width="32" height="32"/> | 0/5746 | 55,33% | 56,70% | 53,93% | [View](Players/181342370/Rampages.md) |
-| [Zero](Players/183063377/README.md) | <img src="https://avatars.steamstatic.com/c0a975434fc5b15f662cbe8214fc898c493b55ea_full.jpg" width="32" height="32"/> | 0/7710 | 50,93% | 52,37% | 49,44% | [View](Players/183063377/Rampages.md) |
+| [1002536896](Players/1002536896/README.md) | <img src="https://www.opendota.com/assets/images/dota2/rpg/portraits/default.png" width="32" height="32"/> | 0/0 | - | - | - | [View](Players/1002536896/Rampages.md) |
+| [1127238076](Players/1127238076/README.md) | <img src="https://www.opendota.com/assets/images/dota2/rpg/portraits/default.png" width="32" height="32"/> | 0/0 | - | - | - | [View](Players/1127238076/Rampages.md) |
+| [131232145](Players/131232145/README.md) | <img src="https://www.opendota.com/assets/images/dota2/rpg/portraits/default.png" width="32" height="32"/> | 0/0 | - | - | - | [View](Players/131232145/Rampages.md) |
+| [169325410](Players/169325410/README.md) | <img src="https://www.opendota.com/assets/images/dota2/rpg/portraits/default.png" width="32" height="32"/> | 0/0 | - | - | - | [View](Players/169325410/Rampages.md) |
+| [181342370](Players/181342370/README.md) | <img src="https://www.opendota.com/assets/images/dota2/rpg/portraits/default.png" width="32" height="32"/> | 0/0 | - | - | - | [View](Players/181342370/Rampages.md) |
+| [183063377](Players/183063377/README.md) | <img src="https://www.opendota.com/assets/images/dota2/rpg/portraits/default.png" width="32" height="32"/> | 0/0 | - | - | - | [View](Players/183063377/Rampages.md) |
+| [188889560](Players/188889560/README.md) | <img src="https://www.opendota.com/assets/images/dota2/rpg/portraits/default.png" width="32" height="32"/> | 0/0 | - | - | - | [View](Players/188889560/Rampages.md) |
+| [226354794](Players/226354794/README.md) | <img src="https://www.opendota.com/assets/images/dota2/rpg/portraits/default.png" width="32" height="32"/> | 0/0 | - | - | - | [View](Players/226354794/Rampages.md) |
+| [308948139](Players/308948139/README.md) | <img src="https://www.opendota.com/assets/images/dota2/rpg/portraits/default.png" width="32" height="32"/> | 0/0 | - | - | - | [View](Players/308948139/Rampages.md) |
 
 ## How it works
 

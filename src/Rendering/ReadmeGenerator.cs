@@ -27,15 +27,27 @@ namespace RampageTracker.Rendering
                 return Path.Combine(Path.Combine(repoRoot, "data"), playerId.ToString());
             }
 
-            // Both exist: pick the one with the freshest known file among Matches.json, Rampages.json, profile.json
+            // Both exist: prefer the directory that has Rampages.json; if both, pick newer Rampages.json
+            var r1 = Path.Combine(c1, "Rampages.json");
+            var r2 = Path.Combine(c2, "Rampages.json");
+            var r1Exists = File.Exists(r1);
+            var r2Exists = File.Exists(r2);
+            if (r1Exists && !r2Exists) return c1;
+            if (!r1Exists && r2Exists) return c2;
+            if (r1Exists && r2Exists)
+            {
+                var tR1 = File.GetLastWriteTimeUtc(r1);
+                var tR2 = File.GetLastWriteTimeUtc(r2);
+                return tR2 > tR1 ? c2 : c1;
+            }
+
+            // If no Rampages.json in either, pick the one with the freshest known file among Matches.json/profile.json
             DateTime GetBestTime(string dir)
             {
                 var times = new List<DateTime>();
                 var m = Path.Combine(dir, "Matches.json");
-                var r = Path.Combine(dir, "Rampages.json");
                 var p = Path.Combine(dir, "profile.json");
                 if (File.Exists(m)) times.Add(File.GetLastWriteTimeUtc(m));
-                if (File.Exists(r)) times.Add(File.GetLastWriteTimeUtc(r));
                 if (File.Exists(p)) times.Add(File.GetLastWriteTimeUtc(p));
                 return times.Count > 0 ? times.Max() : DateTime.MinValue;
             }
@@ -54,6 +66,33 @@ namespace RampageTracker.Rendering
                 // As a final tie-breaker, prefer src/data because current app writes there
                 return c2;
             }
+            return t2 > t1 ? c2 : c1;
+        }
+
+        private static int GetRampageCountFromBoth(string repoRoot, long playerId)
+        {
+            int CountIn(string path)
+            {
+                try
+                {
+                    if (!File.Exists(path)) return 0;
+                    var json = File.ReadAllText(path);
+                    try { return (JsonConvert.DeserializeObject<List<RampageEntry>>(json) ?? new List<RampageEntry>()).Count; }
+                    catch { return (JsonConvert.DeserializeObject<List<long>>(json) ?? new List<long>()).Count; }
+                }
+                catch { return 0; }
+            }
+
+            var r1 = Path.Combine(Path.Combine(repoRoot, "data"), playerId.ToString(), "Rampages.json");
+            var r2 = Path.Combine(Path.Combine(repoRoot, "src", "data"), playerId.ToString(), "Rampages.json");
+            var c1 = CountIn(r1);
+            var c2 = CountIn(r2);
+            if (c1 == 0 && c2 == 0) return 0;
+            if (c1 > 0 && c2 == 0) return c1;
+            if (c2 > 0 && c1 == 0) return c2;
+            // If both > 0, prefer the newer file
+            var t1 = File.Exists(r1) ? File.GetLastWriteTimeUtc(r1) : DateTime.MinValue;
+            var t2 = File.Exists(r2) ? File.GetLastWriteTimeUtc(r2) : DateTime.MinValue;
             return t2 > t1 ? c2 : c1;
         }
 
@@ -95,18 +134,8 @@ namespace RampageTracker.Rendering
             {
                 // Gather stats; prefer the freshest per-player folder between root/data and src/data
                 var pdir = ChoosePlayerDataDir(root, pid);
-                var rpath = Path.Combine(pdir, "Rampages.json");
-                var rampageCount = 0;
-                if (File.Exists(rpath))
-                {
-                    try
-                    {
-                        var json = await File.ReadAllTextAsync(rpath);
-                        var rampages = JsonConvert.DeserializeObject<List<RampageEntry>>(json) ?? new List<RampageEntry>();
-                        rampageCount = rampages.Count;
-                    }
-                    catch { }
-                }
+                // Determine rampage count considering both data roots (prefer dir with Rampages.json or newer file)
+                var rampageCount = GetRampageCountFromBoth(root, pid);
 
                 // Read match summaries for W/L and recent games
                 var matchesPath = Path.Combine(pdir, "Matches.json");

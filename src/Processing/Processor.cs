@@ -30,8 +30,7 @@ namespace RampageTracker.Processing
 
                 Logger.Info($"[new] Player {playerId}");
                 var last = await data.GetLastCheckedAsync(playerId);
-                var summaries = (await api.GetPlayerMatchesAsync(playerId)) ?? Array.Empty<PlayerMatchSummary>();
-                var newMatches = summaries.Where(s => s.MatchId > last).OrderBy(s => s.MatchId).ToList();
+                var newMatches = await FetchAllNewMatchesAsync(api, playerId, last, ct);
                 if (newMatches.Count == 0)
                 {
                     Logger.Info($"[new] Player {playerId}: keine neuen Matches.");
@@ -134,6 +133,27 @@ namespace RampageTracker.Processing
             await ReadmeGenerator.UpdateMainAsync(players);
         }
 
+        private static async Task<List<PlayerMatchSummary>> FetchAllNewMatchesAsync(ApiManager api, long playerId, long lastChecked, CancellationToken ct)
+        {
+            var all = new List<PlayerMatchSummary>(512);
+            var offset = 0;
+            const int pageSize = 500; // OpenDota supports limit param; default is 100
+            while (!ct.IsCancellationRequested)
+            {
+                var page = await api.GetPlayerMatchesAsync(playerId, limit: pageSize, offset: offset) ?? Array.Empty<PlayerMatchSummary>();
+                if (page.Length == 0) break;
+                all.AddRange(page);
+                // If the oldest match in this page is still newer than lastChecked, continue; else we can stop
+                var minId = page.Min(m => m.MatchId);
+                if (minId <= lastChecked) break;
+                offset += page.Length;
+                // Safety cap to avoid infinite loops if API ignores offset
+                if (offset > 100_000) break;
+            }
+            // Filter and sort strictly newer than lastChecked
+            return all.Where(s => s.MatchId > lastChecked).OrderBy(s => s.MatchId).ToList();
+        }
+
         public static async Task RunParsingOnlyAsync(ApiManager api, DataManager data, List<long> players, int workers, CancellationToken ct)
         {
             Logger.Info("[parse] Draining GlobalParseQueue.json ...");
@@ -234,25 +254,8 @@ namespace RampageTracker.Processing
 
         private static async Task EnqueueParseAsync(DataManager data, long playerId, long matchId, long? jobId, int tries, DateTime nextCheck)
         {
-            var queue = await data.LoadQueueAsync(playerId);
-            var existing = queue.FirstOrDefault(q => q.MatchId == matchId);
-            if (existing == null)
-            {
-                queue.Add(new ParseQueueEntry
-                {
-                    MatchId = matchId,
-                    JobId = jobId,
-                    Tries = tries,
-                    NextCheckAtUtc = nextCheck
-                });
-            }
-            else
-            {
-                existing.JobId = jobId;
-                existing.Tries = Math.Max(existing.Tries, tries);
-                existing.NextCheckAtUtc = nextCheck;
-            }
-            await data.SaveQueueAsync(playerId, queue);
+            // Centralized queue: write to GlobalParseQueue.json (per-player queue kept only for migration/back-compat)
+            await data.EnqueueGlobalParseAsync(matchId, jobId, tries, nextCheck);
         }
 
         public static async Task RegenReadmeAsync(DataManager data, List<long> players)
