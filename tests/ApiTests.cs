@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -24,7 +25,9 @@ namespace RampageTracker.Tests
                 Content = new StringContent("[]", Encoding.UTF8, "application/json")
             });
             var http = new HttpClient(handler);
-            var api = new ApiManager(http, "KEY123");
+            var tempPath = Path.Combine(Path.GetTempPath(), $"apikey-usage-{Guid.NewGuid():N}.json");
+            var tracker = new ApiKeyUsageTracker(tempPath, threshold: 0);
+            var api = new ApiManager(http, "KEY123", tracker);
 
             await api.GetPlayerMatchesAsync(169325410);
 
