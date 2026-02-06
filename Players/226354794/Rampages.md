@@ -1,5 +1,5 @@
-# Rampages for Kret
-<img src="https://avatars.steamstatic.com/c0710d11651022f0fbcd99159677a7acfc6e6a18_full.jpg" width="48" height="48"/>
+# Rampages for 226354794
+<img src="https://www.opendota.com/assets/images/dota2/rpg/portraits/default.png" width="48" height="48"/>
 
 **Total Rampages:** 2
 

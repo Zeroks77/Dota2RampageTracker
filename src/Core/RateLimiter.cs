@@ -16,7 +16,7 @@ namespace RampageTracker.Core
         public static void Initialize(bool useApiKey, int? maxConcurrency = null)
         {
             // Keep a safety buffer when using API key to reduce 429s
-            _maxPerMinute = useApiKey ? 1200 : 60;
+            _maxPerMinute = useApiKey ? 3000 : 60;
             _maxConcurrency = Math.Max(1, maxConcurrency ?? 16);
             
             // For high concurrency with API key, allow many parallel requests
@@ -27,7 +27,15 @@ namespace RampageTracker.Core
             _concurrency = new SemaphoreSlim(concurrencyLimit, concurrencyLimit);
             try { old?.Dispose(); } catch { }
             
-            Logger.Success($"⚡ RateLimiter initialized: {_maxPerMinute} req/min ({_maxPerMinute/60.0:F1} req/sec ideal), {concurrencyLimit} concurrent slots");
+            Logger.Success($"RateLimiter initialized: {_maxPerMinute} req/min ({_maxPerMinute/60.0:F1} req/sec ideal), {concurrencyLimit} concurrent slots");
+        }
+
+        public static void UpdateApiKeyMode(bool useApiKey)
+        {
+            var newMax = useApiKey ? 3000 : 60;
+            if (_maxPerMinute == newMax) return;
+            _maxPerMinute = newMax;
+            Logger.Info($"RateLimiter updated: {_maxPerMinute} req/min ({_maxPerMinute/60.0:F1} req/sec ideal)");
         }
 
         public static async Task EnsureRateAsync()
@@ -57,13 +65,28 @@ namespace RampageTracker.Core
                 }
             }
             
-            // Very light throttling: Only if we're WAY over the limit (150%)
+            // Throttle when over limit: wait for next window
             var windowAge = (now - _window).TotalSeconds;
-            if (windowAge > 0 && currentCount > (_maxPerMinute * 1.5))
+            if (windowAge >= 0 && currentCount > _maxPerMinute)
             {
-                // Tiny delay to prevent API from rejecting
-                await Task.Delay(10); // Just 10ms
-                Logger.Debug($"⏱️ Mini-throttle: 10ms delay (req #{currentCount})");
+                await _gate.WaitAsync();
+                try
+                {
+                    var now2 = DateTime.UtcNow;
+                    var age = (now2 - _window).TotalSeconds;
+                    if (age < 60 && _count > _maxPerMinute)
+                    {
+                        var delayMs = Math.Max(0, (int)((60 - age) * 1000));
+                        Logger.Warn($"Rate limit hit: waiting {delayMs}ms to reset window.");
+                        await Task.Delay(delayMs);
+                        _window = DateTime.UtcNow;
+                        Interlocked.Exchange(ref _count, 1);
+                    }
+                }
+                finally
+                {
+                    _gate.Release();
+                }
             }
             
             // No concurrency limiting! Let all workers run in parallel!
@@ -75,7 +98,7 @@ namespace RampageTracker.Core
         // Heuristic: suggest a good default worker count based on rate and environment
         public static int GetSuggestedWorkers(bool useApiKey)
         {
-            var target = useApiKey ? 1200 : 60;
+            var target = useApiKey ? 3000 : 60;
             var perSec = target / 60.0;
             // IO-bound: allow several requests in flight to hide latency
             var suggested = (int)Math.Ceiling(perSec * 8); // ~8x inflight

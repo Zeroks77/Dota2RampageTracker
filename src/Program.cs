@@ -86,10 +86,16 @@ namespace RampageTracker
                 // Pick a dynamic default based on API key and machine
                 workers = RateLimiter.GetSuggestedWorkers(usingKey);
             }
-            RateLimiter.Initialize(useApiKey: usingKey, maxConcurrency: workers);
+            RateLimiter.Initialize(useApiKey: false, maxConcurrency: workers);
             using var http = new HttpClient();
             http.DefaultRequestHeaders.UserAgent.ParseAdd("RampageTracker/1.0 (+https://opendota.com)");
-            var api = new ApiManager(http, apiKey);
+            ApiKeyUsageTracker? keyTracker = null;
+            if (usingKey)
+            {
+                var usagePath = Path.Combine(root, "data", "apikey-usage.json");
+                keyTracker = new ApiKeyUsageTracker(usagePath, threshold: 3000);
+            }
+            var api = new ApiManager(http, apiKey, keyTracker);
             // Ensure heroes.json exists for README hero icons/slugs (not needed for 'pending' mode)
             if (!string.Equals(mode, "pending", StringComparison.OrdinalIgnoreCase))
             {

@@ -1,5 +1,5 @@
-# Rampages for Xenas23
-<img src="https://avatars.steamstatic.com/16392e7c2bf30770c48c4b989eef4a19f237d548_full.jpg" width="48" height="48"/>
+# Rampages for 181342370
+<img src="https://www.opendota.com/assets/images/dota2/rpg/portraits/default.png" width="48" height="48"/>
 
 **Total Rampages:** 13
 

@@ -32,7 +32,8 @@ namespace RampageTracker.Processing
             }
 
             // 2) Single-request per player: fetch matches with a high limit (avoid pagination)
-            const int BigLimit = 100000; // attempt to fetch all in one request; fallback to paging if server caps
+            const int BigLimit = 1000; // OpenDota rejects very large limits; 1000 is a safer upper bound
+            const int PageLimit = 1000;
             var playerMatches = new Dictionary<long, List<PlayerMatchSummary>>();
             var fetchSem = new System.Threading.SemaphoreSlim(Math.Max(1, Math.Min(workers, 8)));
             var fetchTasks = new List<Task>();
@@ -45,22 +46,27 @@ namespace RampageTracker.Processing
                 {
                     try
                     {
-                        var ms = await api.GetPlayerMatchesAsync(pidLocal, limit: BigLimit, offset: 0) ?? Array.Empty<PlayerMatchSummary>();
-                        var list = ms.ToList();
-                        Logger.Info($"[new] Player {pidLocal}: fetched {ms.Length} matches (limit={BigLimit})");
-                        // If we likely hit a cap (min match id still newer than lastchecked), fallback to paging
+                        var ms = await api.GetPlayerMatchesAsync(pidLocal, limit: BigLimit, offset: 0);
+                        var list = (ms ?? Array.Empty<PlayerMatchSummary>()).ToList();
+                        if (ms == null)
+                        {
+                            Logger.Warn($"[new] Player {pidLocal}: initial match fetch failed; falling back to paging");
+                            list = await FetchAllNewMatchesAsync(api, pidLocal, lastChecked[pidLocal], ct);
+                        }
+                        Logger.Info($"[new] Player {pidLocal}: fetched {list.Count} matches (limit={BigLimit})");
+                        // If the oldest match is still newer than lastchecked, continue paging
                         try
                         {
-                            if (ms.Length >= BigLimit)
+                            if (list.Count > 0)
                             {
-                                var minId = ms.Min(m => m.MatchId);
+                                var minId = list.Min(m => m.MatchId);
                                 if (minId > lastChecked[pidLocal])
                                 {
-                                    Logger.Warn($"[new] Player {pidLocal}: limit {BigLimit} reached; continuing with pagination until lastchecked boundary...");
-                                    var offset = ms.Length;
+                                    Logger.Warn($"[new] Player {pidLocal}: continuing with pagination until lastchecked boundary...");
+                                    var offset = list.Count;
                                     while (!ct.IsCancellationRequested)
                                     {
-                                        var page = await api.GetPlayerMatchesAsync(pidLocal, limit: 5000, offset: offset) ?? Array.Empty<PlayerMatchSummary>();
+                                        var page = await api.GetPlayerMatchesAsync(pidLocal, limit: PageLimit, offset: offset) ?? Array.Empty<PlayerMatchSummary>();
                                         if (page.Length == 0) break;
                                         list.AddRange(page);
                                         var pageMin = page.Min(m => m.MatchId);
@@ -111,12 +117,19 @@ namespace RampageTracker.Processing
             var throttler = new System.Threading.SemaphoreSlim(Math.Max(1, workers));
             var tasks = new List<Task>();
             var rampageAddsPerPlayer = new System.Collections.Concurrent.ConcurrentDictionary<long, int>();
+            var lastCheckedUpdates = new System.Collections.Concurrent.ConcurrentDictionary<long, long>();
+
+            void UpdateLastCheckedMax(long playerId, long matchId)
+            {
+                lastCheckedUpdates.AddOrUpdate(playerId, matchId, (_, existing) => Math.Max(existing, matchId));
+            }
 
             foreach (var matchId in uniqueMatches)
             {
                 await throttler.WaitAsync(ct);
                 tasks.Add(Task.Run(async () =>
                 {
+                    var shouldUpdateLastChecked = false;
                     try
                     {
                         // Preferred flow: try GET /matches/{id} first
@@ -158,11 +171,7 @@ namespace RampageTracker.Processing
                                 }
                             }
 
-                            // Update lastchecked per involved player
-                            foreach (var pid in matchToPlayers[matchId])
-                            {
-                                await data.SetLastCheckedAsync(pid, matchId);
-                            }
+                            shouldUpdateLastChecked = true;
                         }
                         else
                         {
@@ -239,20 +248,31 @@ namespace RampageTracker.Processing
                             }
 
                             await data.EnqueueGlobalParseAsync(matchId, jobId, InitialTries, DateTime.UtcNow.Add(InitialDelay));
-                            foreach (var pid in matchToPlayers[matchId])
-                            {
-                                await data.SetLastCheckedAsync(pid, matchId);
-                            }
+                            shouldUpdateLastChecked = true;
                         }
                     }
                     finally
                     {
+                        if (shouldUpdateLastChecked)
+                        {
+                            foreach (var pid in matchToPlayers[matchId])
+                            {
+                                UpdateLastCheckedMax(pid, matchId);
+                            }
+                        }
                         try { throttler.Release(); } catch { }
                     }
                 }, ct));
             }
 
             await Task.WhenAll(tasks);
+
+            var lastCheckedTasks = new List<Task>();
+            foreach (var kv in lastCheckedUpdates)
+            {
+                lastCheckedTasks.Add(data.SetLastCheckedAsync(kv.Key, kv.Value));
+            }
+            await Task.WhenAll(lastCheckedTasks);
 
             // 5) Update READMEs for players with new rampages and main page
             foreach (var kv in rampageAddsPerPlayer)
@@ -266,7 +286,7 @@ namespace RampageTracker.Processing
         {
             var all = new List<PlayerMatchSummary>(512);
             var offset = 0;
-            const int pageSize = 500; // OpenDota supports limit param; default is 100
+            const int pageSize = 1000; // Balanced page size; ApiManager retries with lower limit if needed
             while (!ct.IsCancellationRequested)
             {
                 var page = await api.GetPlayerMatchesAsync(playerId, limit: pageSize, offset: offset) ?? Array.Empty<PlayerMatchSummary>();
