@@ -53,7 +53,24 @@ namespace RampageTracker.Processing
                             Logger.Warn($"[new] Player {pidLocal}: initial match fetch failed; falling back to paging");
                             list = await FetchAllNewMatchesAsync(api, pidLocal, lastChecked[pidLocal], ct);
                         }
+                        if (list.Count >= PageLimit)
+                        {
+                            Logger.Info($"[new] Player {pidLocal}: fetching full match history for accurate stats...");
+                            list = await FetchAllMatchesAsync(api, pidLocal, ct);
+                        }
                         Logger.Info($"[new] Player {pidLocal}: fetched {list.Count} matches (limit={BigLimit})");
+                        try
+                        {
+                            await data.SavePlayerMatchesAsync(pidLocal, list);
+                        }
+                        catch { }
+
+                        try
+                        {
+                            var prof = await api.GetPlayerProfileAsync(pidLocal);
+                            if (prof != null) await data.SavePlayerProfileAsync(pidLocal, prof);
+                        }
+                        catch { }
                         // If the oldest match is still newer than lastchecked, continue paging
                         try
                         {
@@ -275,11 +292,30 @@ namespace RampageTracker.Processing
             await Task.WhenAll(lastCheckedTasks);
 
             // 5) Update READMEs for players with new rampages and main page
-            foreach (var kv in rampageAddsPerPlayer)
+            var readmeTasks = new List<Task>();
+            foreach (var pid in players)
             {
-                await ReadmeGenerator.UpdatePlayerAsync(kv.Key, kv.Value);
+                var newCount = rampageAddsPerPlayer.TryGetValue(pid, out var v) ? v : 0;
+                readmeTasks.Add(ReadmeGenerator.UpdatePlayerAsync(pid, newCount));
             }
+            await Task.WhenAll(readmeTasks);
             await ReadmeGenerator.UpdateMainAsync(players);
+        }
+
+        private static async Task<List<PlayerMatchSummary>> FetchAllMatchesAsync(ApiManager api, long playerId, CancellationToken ct)
+        {
+            var all = new List<PlayerMatchSummary>(2048);
+            var offset = 0;
+            const int pageSize = 1000;
+            while (!ct.IsCancellationRequested)
+            {
+                var page = await api.GetPlayerMatchesAsync(playerId, limit: pageSize, offset: offset);
+                if (page == null || page.Length == 0) break;
+                all.AddRange(page);
+                offset += page.Length;
+                if (offset > 300_000) { Logger.Warn($"[new] Player {playerId}: paging safety cap reached at offset {offset}"); break; }
+            }
+            return all;
         }
 
         private static async Task<List<PlayerMatchSummary>> FetchAllNewMatchesAsync(ApiManager api, long playerId, long lastChecked, CancellationToken ct)

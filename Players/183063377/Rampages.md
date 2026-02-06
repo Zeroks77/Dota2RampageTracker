@@ -1,5 +1,5 @@
-# Rampages for 183063377
-<img src="https://www.opendota.com/assets/images/dota2/rpg/portraits/default.png" width="48" height="48"/>
+# Rampages for Zero
+<img src="https://avatars.steamstatic.com/c0a975434fc5b15f662cbe8214fc898c493b55ea_full.jpg" width="48" height="48"/>
 
 **Total Rampages:** 8
 

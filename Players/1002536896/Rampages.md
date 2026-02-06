@@ -1,5 +1,5 @@
-# Rampages for 1002536896
-<img src="https://www.opendota.com/assets/images/dota2/rpg/portraits/default.png" width="48" height="48"/>
+# Rampages for jarjeer
+<img src="https://avatars.steamstatic.com/2c33a4d4725158a4546f3414b2a76891d0abb218_full.jpg" width="48" height="48"/>
 
 **Total Rampages:** 2
 

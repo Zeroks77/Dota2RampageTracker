@@ -1,5 +1,5 @@
-# Rampages for 169325410
-<img src="https://www.opendota.com/assets/images/dota2/rpg/portraits/default.png" width="48" height="48"/>
+# Rampages for Gary the Carry
+<img src="https://avatars.steamstatic.com/23f8ee4662d83a5959ef06b8cf948d66955997cc_full.jpg" width="48" height="48"/>
 
 **Total Rampages:** 24
 

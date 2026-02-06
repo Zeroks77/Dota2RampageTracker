@@ -1,5 +1,5 @@
-# Rampages for 308948139
-<img src="https://www.opendota.com/assets/images/dota2/rpg/portraits/default.png" width="48" height="48"/>
+# Rampages for Lucky
+<img src="https://avatars.steamstatic.com/1191c81a57194f64acfcda94f0fd0cb94e92eff7_full.jpg" width="48" height="48"/>
 
 **Total Rampages:** 28
 

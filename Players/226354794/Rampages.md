@@ -1,5 +1,5 @@
-# Rampages for 226354794
-<img src="https://www.opendota.com/assets/images/dota2/rpg/portraits/default.png" width="48" height="48"/>
+# Rampages for Cheeki Breeki
+<img src="https://avatars.steamstatic.com/5950c327ef31040bf7caaab9fc576952204f4b9d_full.jpg" width="48" height="48"/>
 
 **Total Rampages:** 2
 
