@@ -12,5 +12,12 @@
     "HeroId": 36,
     "MatchDate": "2025-09-24T16:12:06Z",
     "StartTime": 1758730326
+  },
+  {
+    "MatchId": 8618580298,
+    "HeroName": "Outworld Destroyer",
+    "HeroId": 76,
+    "MatchDate": "2025-12-24T01:10:36Z",
+    "StartTime": 1766538636
   }
 ]

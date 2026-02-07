@@ -1,49 +1,42 @@
-# Cheeki Breeki <img src="https://avatars.steamstatic.com/5950c327ef31040bf7caaab9fc576952204f4b9d_full.jpg" width="48" height="48"/>
+# Kret <img src="https://avatars.steamstatic.com/c0710d11651022f0fbcd99159677a7acfc6e6a18_full.jpg" width="48" height="48"/>
 
 ## Heroes (grouped by winrate)
 
 | Hero | Games | W | L | Winrate |
 |:-----|-----:|--:|--:|--------:|
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/tiny.png" width="32"/> Tiny | 326 | 210 | 116 | 64,4% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/necrolyte.png" width="32"/> Necrophos | 158 | 98 | 60 | 62,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/obsidian_destroyer.png" width="32"/> Outworld Destroyer | 154 | 94 | 60 | 61,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/leshrac.png" width="32"/> Leshrac | 104 | 60 | 44 | 57,7% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/queenofpain.png" width="32"/> Queen of Pain | 103 | 60 | 43 | 58,3% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/storm_spirit.png" width="32"/> Storm Spirit | 82 | 43 | 39 | 52,4% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/puck.png" width="32"/> Puck | 47 | 19 | 28 | 40,4% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/warlock.png" width="32"/> Warlock | 45 | 28 | 17 | 62,2% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/furion.png" width="32"/> Nature's Prophet | 42 | 20 | 22 | 47,6% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/zuus.png" width="32"/> Zeus | 26 | 15 | 11 | 57,7% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/clinkz.png" width="32"/> Clinkz | 25 | 13 | 12 | 52,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/tiny.png" width="32"/> Tiny | 288 | 183 | 105 | 63,5% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/necrolyte.png" width="32"/> Necrophos | 128 | 82 | 46 | 64,1% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/obsidian_destroyer.png" width="32"/> Outworld Destroyer | 115 | 72 | 43 | 62,6% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/queenofpain.png" width="32"/> Queen of Pain | 83 | 49 | 34 | 59,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/storm_spirit.png" width="32"/> Storm Spirit | 66 | 36 | 30 | 54,5% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/leshrac.png" width="32"/> Leshrac | 23 | 9 | 14 | 39,1% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/warlock.png" width="32"/> Warlock | 23 | 18 | 5 | 78,3% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/zuus.png" width="32"/> Zeus | 23 | 13 | 10 | 56,5% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/clinkz.png" width="32"/> Clinkz | 19 | 11 | 8 | 57,9% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/spectre.png" width="32"/> Spectre | 18 | 10 | 8 | 55,6% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/dragon_knight.png" width="32"/> Dragon Knight | 14 | 6 | 8 | 42,9% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/juggernaut.png" width="32"/> Juggernaut | 14 | 6 | 8 | 42,9% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/earthshaker.png" width="32"/> Earthshaker | 11 | 6 | 5 | 54,5% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/skeleton_king.png" width="32"/> Wraith King | 9 | 5 | 4 | 55,6% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/furion.png" width="32"/> Nature's Prophet | 12 | 4 | 8 | 33,3% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/dragon_knight.png" width="32"/> Dragon Knight | 11 | 5 | 6 | 45,5% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/earthshaker.png" width="32"/> Earthshaker | 10 | 6 | 4 | 60,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/huskar.png" width="32"/> Huskar | 9 | 3 | 6 | 33,3% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/puck.png" width="32"/> Puck | 8 | 3 | 5 | 37,5% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/lina.png" width="32"/> Lina | 8 | 4 | 4 | 50,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/skeleton_king.png" width="32"/> Wraith King | 8 | 5 | 3 | 62,5% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ogre_magi.png" width="32"/> Ogre Magi | 8 | 4 | 4 | 50,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/life_stealer.png" width="32"/> Lifestealer | 8 | 2 | 6 | 25,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/sniper.png" width="32"/> Sniper | 7 | 4 | 3 | 57,1% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ember_spirit.png" width="32"/> Ember Spirit | 7 | 2 | 5 | 28,6% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/tidehunter.png" width="32"/> Tidehunter | 6 | 3 | 3 | 50,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/marci.png" width="32"/> Marci | 5 | 2 | 3 | 40,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/lich.png" width="32"/> Lich | 5 | 3 | 2 | 60,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/enigma.png" width="32"/> Enigma | 4 | 2 | 2 | 50,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/viper.png" width="32"/> Viper | 3 | 3 | 0 | 100,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/void_spirit.png" width="32"/> Void Spirit | 3 | 2 | 1 | 66,7% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/death_prophet.png" width="32"/> Death Prophet | 3 | 0 | 3 | 0,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/nevermore.png" width="32"/> Shadow Fiend | 3 | 2 | 1 | 66,7% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/enigma.png" width="32"/> Enigma | 3 | 1 | 2 | 33,3% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/shadow_shaman.png" width="32"/> Shadow Shaman | 3 | 1 | 2 | 33,3% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/monkey_king.png" width="32"/> Monkey King | 3 | 0 | 3 | 0,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/centaur.png" width="32"/> Centaur Warrunner | 2 | 1 | 1 | 50,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/medusa.png" width="32"/> Medusa | 2 | 1 | 1 | 50,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/templar_assassin.png" width="32"/> Templar Assassin | 2 | 0 | 2 | 0,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/crystal_maiden.png" width="32"/> Crystal Maiden | 2 | 1 | 1 | 50,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/venomancer.png" width="32"/> Venomancer | 2 | 2 | 0 | 100,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/morphling.png" width="32"/> Morphling | 2 | 1 | 1 | 50,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/omniknight.png" width="32"/> Omniknight | 1 | 1 | 0 | 100,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/riki.png" width="32"/> Riki | 1 | 0 | 1 | 0,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/slardar.png" width="32"/> Slardar | 1 | 0 | 1 | 0,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/silencer.png" width="32"/> Silencer | 1 | 0 | 1 | 0,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/jakiro.png" width="32"/> Jakiro | 1 | 1 | 0 | 100,0% |
@@ -58,53 +51,53 @@
 
 | Match | Date | Hero | Result |
 |:------|:-----|:-----|:-------|
-| [#8678789222](https://www.opendota.com/matches/8678789222) | 2026-02-05 | Omniknight | W |
-| [#8677606889](https://www.opendota.com/matches/8677606889) | 2026-02-04 | Tiny | W |
-| [#8677542829](https://www.opendota.com/matches/8677542829) | 2026-02-04 | Centaur Warrunner | W |
-| [#8677353457](https://www.opendota.com/matches/8677353457) | 2026-02-04 | Warlock | W |
-| [#8676586290](https://www.opendota.com/matches/8676586290) | 2026-02-03 | Centaur Warrunner | L |
-| [#8676258280](https://www.opendota.com/matches/8676258280) | 2026-02-03 | Tiny | W |
-| [#8675235917](https://www.opendota.com/matches/8675235917) | 2026-02-02 | Tiny | W |
-| [#8675083405](https://www.opendota.com/matches/8675083405) | 2026-02-02 | Storm Spirit | L |
-| [#8674871596](https://www.opendota.com/matches/8674871596) | 2026-02-02 | Storm Spirit | W |
-| [#8673517803](https://www.opendota.com/matches/8673517803) | 2026-02-01 | Outworld Destroyer | L |
-| [#8673422302](https://www.opendota.com/matches/8673422302) | 2026-02-01 | Outworld Destroyer | W |
-| [#8673352731](https://www.opendota.com/matches/8673352731) | 2026-02-01 | Marci | L |
-| [#8671761971](https://www.opendota.com/matches/8671761971) | 2026-01-31 | Tiny | W |
-| [#8670825620](https://www.opendota.com/matches/8670825620) | 2026-01-30 | Tiny | L |
-| [#8670769442](https://www.opendota.com/matches/8670769442) | 2026-01-30 | Puck | L |
-| [#8669536710](https://www.opendota.com/matches/8669536710) | 2026-01-29 | Storm Spirit | L |
-| [#8669494353](https://www.opendota.com/matches/8669494353) | 2026-01-29 | Puck | L |
-| [#8669277934](https://www.opendota.com/matches/8669277934) | 2026-01-29 | Puck | W |
-| [#8668201606](https://www.opendota.com/matches/8668201606) | 2026-01-28 | Viper | W |
-| [#8668034460](https://www.opendota.com/matches/8668034460) | 2026-01-28 | Warlock | L |
-| [#8667945843](https://www.opendota.com/matches/8667945843) | 2026-01-28 | Tidehunter | L |
-| [#8667123350](https://www.opendota.com/matches/8667123350) | 2026-01-27 | Tiny | W |
-| [#8667087230](https://www.opendota.com/matches/8667087230) | 2026-01-27 | Tidehunter | W |
-| [#8667043422](https://www.opendota.com/matches/8667043422) | 2026-01-27 | Tidehunter | L |
-| [#8666851754](https://www.opendota.com/matches/8666851754) | 2026-01-27 | Outworld Destroyer | L |
-| [#8666692824](https://www.opendota.com/matches/8666692824) | 2026-01-27 | Puck | L |
-| [#8666343547](https://www.opendota.com/matches/8666343547) | 2026-01-27 | Leshrac | L |
-| [#8666295637](https://www.opendota.com/matches/8666295637) | 2026-01-27 | Riki | L |
-| [#8665770023](https://www.opendota.com/matches/8665770023) | 2026-01-26 | Tidehunter | W |
-| [#8662991470](https://www.opendota.com/matches/8662991470) | 2026-01-24 | Leshrac | W |
-| [#8662889093](https://www.opendota.com/matches/8662889093) | 2026-01-24 | Leshrac | W |
-| [#8662396915](https://www.opendota.com/matches/8662396915) | 2026-01-24 | Tiny | L |
-| [#8662345444](https://www.opendota.com/matches/8662345444) | 2026-01-24 | Storm Spirit | L |
-| [#8661285280](https://www.opendota.com/matches/8661285280) | 2026-01-23 | Puck | L |
-| [#8661183423](https://www.opendota.com/matches/8661183423) | 2026-01-23 | Clinkz | W |
-| [#8655060358](https://www.opendota.com/matches/8655060358) | 2026-01-18 | Clinkz | L |
-| [#8654734893](https://www.opendota.com/matches/8654734893) | 2026-01-18 | Necrophos | W |
-| [#8654630847](https://www.opendota.com/matches/8654630847) | 2026-01-18 | Warlock | L |
-| [#8654515448](https://www.opendota.com/matches/8654515448) | 2026-01-18 | Tiny | W |
-| [#8653690185](https://www.opendota.com/matches/8653690185) | 2026-01-17 | Tiny | L |
-| [#8653492222](https://www.opendota.com/matches/8653492222) | 2026-01-17 | Puck | L |
-| [#8653437768](https://www.opendota.com/matches/8653437768) | 2026-01-17 | Necrophos | L |
-| [#8653366092](https://www.opendota.com/matches/8653366092) | 2026-01-17 | Tiny | W |
-| [#8645844162](https://www.opendota.com/matches/8645844162) | 2026-01-11 | Storm Spirit | L |
-| [#8645805137](https://www.opendota.com/matches/8645805137) | 2026-01-11 | Puck | W |
-| [#8645762918](https://www.opendota.com/matches/8645762918) | 2026-01-11 | Queen of Pain | W |
-| [#8645716333](https://www.opendota.com/matches/8645716333) | 2026-01-11 | Tiny | W |
-| [#8645123055](https://www.opendota.com/matches/8645123055) | 2026-01-11 | Puck | W |
-| [#8644289780](https://www.opendota.com/matches/8644289780) | 2026-01-10 | Tiny | W |
-| [#8644210492](https://www.opendota.com/matches/8644210492) | 2026-01-10 | Tiny | W |
+| [#8498810641](https://www.opendota.com/matches/8498810641) | 2025-10-06 | Outworld Destroyer | L |
+| [#8498739402](https://www.opendota.com/matches/8498739402) | 2025-10-06 | Leshrac | L |
+| [#8498653171](https://www.opendota.com/matches/8498653171) | 2025-10-06 | Necrophos | W |
+| [#8496440836](https://www.opendota.com/matches/8496440836) | 2025-10-05 | Leshrac | W |
+| [#8494616241](https://www.opendota.com/matches/8494616241) | 2025-10-04 | Necrophos | L |
+| [#8493784563](https://www.opendota.com/matches/8493784563) | 2025-10-03 | Necrophos | W |
+| [#8493715564](https://www.opendota.com/matches/8493715564) | 2025-10-03 | Necrophos | W |
+| [#8493645214](https://www.opendota.com/matches/8493645214) | 2025-10-03 | Necrophos | L |
+| [#8493545915](https://www.opendota.com/matches/8493545915) | 2025-10-03 | Leshrac | W |
+| [#8493477836](https://www.opendota.com/matches/8493477836) | 2025-10-03 | Puck | L |
+| [#8493347966](https://www.opendota.com/matches/8493347966) | 2025-10-03 | Nature's Prophet | L |
+| [#8491974029](https://www.opendota.com/matches/8491974029) | 2025-10-02 | Dragon Knight | W |
+| [#8491761932](https://www.opendota.com/matches/8491761932) | 2025-10-02 | Outworld Destroyer | W |
+| [#8491639401](https://www.opendota.com/matches/8491639401) | 2025-10-02 | Queen of Pain | W |
+| [#8491523439](https://www.opendota.com/matches/8491523439) | 2025-10-02 | Lich | L |
+| [#8490363038](https://www.opendota.com/matches/8490363038) | 2025-10-01 | Outworld Destroyer | W |
+| [#8490083591](https://www.opendota.com/matches/8490083591) | 2025-10-01 | Leshrac | L |
+| [#8489991893](https://www.opendota.com/matches/8489991893) | 2025-10-01 | Puck | W |
+| [#8489913660](https://www.opendota.com/matches/8489913660) | 2025-10-01 | Puck | W |
+| [#8488852687](https://www.opendota.com/matches/8488852687) | 2025-09-30 | Leshrac | L |
+| [#8488355357](https://www.opendota.com/matches/8488355357) | 2025-09-30 | Leshrac | L |
+| [#8485306727](https://www.opendota.com/matches/8485306727) | 2025-09-28 | Leshrac | W |
+| [#8485163211](https://www.opendota.com/matches/8485163211) | 2025-09-28 | Puck | L |
+| [#8483566532](https://www.opendota.com/matches/8483566532) | 2025-09-27 | Outworld Destroyer | L |
+| [#8483465438](https://www.opendota.com/matches/8483465438) | 2025-09-27 | Outworld Destroyer | W |
+| [#8483364006](https://www.opendota.com/matches/8483364006) | 2025-09-27 | Necrophos | L |
+| [#8483243580](https://www.opendota.com/matches/8483243580) | 2025-09-27 | Storm Spirit | L |
+| [#8481710262](https://www.opendota.com/matches/8481710262) | 2025-09-26 | Death Prophet | L |
+| [#8481587621](https://www.opendota.com/matches/8481587621) | 2025-09-26 | Necrophos | W |
+| [#8480972367](https://www.opendota.com/matches/8480972367) | 2025-09-26 | Queen of Pain | W |
+| [#8479907286](https://www.opendota.com/matches/8479907286) | 2025-09-25 | Earthshaker | W |
+| [#8478392509](https://www.opendota.com/matches/8478392509) | 2025-09-24 | Necrophos | W |
+| [#8478118246](https://www.opendota.com/matches/8478118246) | 2025-09-24 | Earthshaker | W |
+| [#8473757741](https://www.opendota.com/matches/8473757741) | 2025-09-21 | Leshrac | W |
+| [#8473357344](https://www.opendota.com/matches/8473357344) | 2025-09-21 | Necrophos | W |
+| [#8471887556](https://www.opendota.com/matches/8471887556) | 2025-09-20 | Queen of Pain | W |
+| [#8471784815](https://www.opendota.com/matches/8471784815) | 2025-09-20 | Leshrac | W |
+| [#8471696950](https://www.opendota.com/matches/8471696950) | 2025-09-20 | Slardar | L |
+| [#8471578768](https://www.opendota.com/matches/8471578768) | 2025-09-20 | Tiny | W |
+| [#8470117366](https://www.opendota.com/matches/8470117366) | 2025-09-19 | Necrophos | L |
+| [#8470063054](https://www.opendota.com/matches/8470063054) | 2025-09-19 | Necrophos | W |
+| [#8470002190](https://www.opendota.com/matches/8470002190) | 2025-09-19 | Outworld Destroyer | W |
+| [#8469784673](https://www.opendota.com/matches/8469784673) | 2025-09-19 | Leshrac | W |
+| [#8469659198](https://www.opendota.com/matches/8469659198) | 2025-09-19 | Queen of Pain | W |
+| [#8467647153](https://www.opendota.com/matches/8467647153) | 2025-09-18 | Leshrac | L |
+| [#8467586536](https://www.opendota.com/matches/8467586536) | 2025-09-18 | Leshrac | L |
+| [#8466403244](https://www.opendota.com/matches/8466403244) | 2025-09-17 | Leshrac | L |
+| [#8466233443](https://www.opendota.com/matches/8466233443) | 2025-09-17 | Nature's Prophet | L |
+| [#8466125431](https://www.opendota.com/matches/8466125431) | 2025-09-17 | Medusa | L |
+| [#8466049184](https://www.opendota.com/matches/8466049184) | 2025-09-17 | Queen of Pain | L |

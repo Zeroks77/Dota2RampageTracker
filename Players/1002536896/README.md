@@ -4,139 +4,136 @@
 
 | Hero | Games | W | L | Winrate |
 |:-----|-----:|--:|--:|--------:|
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/invoker.png" width="32"/> Invoker | 400 | 204 | 196 | 51,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/rubick.png" width="32"/> Rubick | 283 | 144 | 139 | 50,9% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/arc_warden.png" width="32"/> Arc Warden | 117 | 61 | 56 | 52,1% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/void_spirit.png" width="32"/> Void Spirit | 100 | 62 | 38 | 62,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ember_spirit.png" width="32"/> Ember Spirit | 97 | 57 | 40 | 58,8% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/tinker.png" width="32"/> Tinker | 86 | 39 | 47 | 45,3% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/earthshaker.png" width="32"/> Earthshaker | 76 | 37 | 39 | 48,7% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/brewmaster.png" width="32"/> Brewmaster | 73 | 34 | 39 | 46,6% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/tiny.png" width="32"/> Tiny | 49 | 19 | 30 | 38,8% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/undying.png" width="32"/> Undying | 48 | 29 | 19 | 60,4% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/shredder.png" width="32"/> Timbersaw | 44 | 19 | 25 | 43,2% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/spirit_breaker.png" width="32"/> Spirit Breaker | 34 | 19 | 15 | 55,9% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/elder_titan.png" width="32"/> Elder Titan | 30 | 15 | 15 | 50,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/viper.png" width="32"/> Viper | 29 | 19 | 10 | 65,5% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/mars.png" width="32"/> Mars | 28 | 11 | 17 | 39,3% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/centaur.png" width="32"/> Centaur Warrunner | 28 | 10 | 18 | 35,7% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/invoker.png" width="32"/> Invoker | 320 | 161 | 159 | 50,3% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/rubick.png" width="32"/> Rubick | 176 | 92 | 84 | 52,3% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/arc_warden.png" width="32"/> Arc Warden | 91 | 48 | 43 | 52,7% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/void_spirit.png" width="32"/> Void Spirit | 77 | 51 | 26 | 66,2% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/earthshaker.png" width="32"/> Earthshaker | 69 | 34 | 35 | 49,3% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ember_spirit.png" width="32"/> Ember Spirit | 66 | 42 | 24 | 63,6% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/undying.png" width="32"/> Undying | 42 | 25 | 17 | 59,5% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/tiny.png" width="32"/> Tiny | 42 | 17 | 25 | 40,5% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/brewmaster.png" width="32"/> Brewmaster | 42 | 20 | 22 | 47,6% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/tinker.png" width="32"/> Tinker | 32 | 12 | 20 | 37,5% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/monkey_king.png" width="32"/> Monkey King | 27 | 7 | 20 | 25,9% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/doom_bringer.png" width="32"/> Doom | 26 | 9 | 17 | 34,6% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/grimstroke.png" width="32"/> Grimstroke | 25 | 11 | 14 | 44,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/batrider.png" width="32"/> Batrider | 25 | 11 | 14 | 44,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ursa.png" width="32"/> Ursa | 24 | 14 | 10 | 58,3% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/abaddon.png" width="32"/> Abaddon | 24 | 13 | 11 | 54,2% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/pudge.png" width="32"/> Pudge | 17 | 6 | 11 | 35,3% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/meepo.png" width="32"/> Meepo | 16 | 4 | 12 | 25,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/shadow_demon.png" width="32"/> Shadow Demon | 15 | 8 | 7 | 53,3% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/tidehunter.png" width="32"/> Tidehunter | 15 | 8 | 7 | 53,3% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/vengefulspirit.png" width="32"/> Vengeful Spirit | 14 | 6 | 8 | 42,9% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/disruptor.png" width="32"/> Disruptor | 13 | 8 | 5 | 61,5% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/life_stealer.png" width="32"/> Lifestealer | 12 | 7 | 5 | 58,3% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/terrorblade.png" width="32"/> Terrorblade | 12 | 6 | 6 | 50,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/jakiro.png" width="32"/> Jakiro | 12 | 8 | 4 | 66,7% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/skywrath_mage.png" width="32"/> Skywrath Mage | 10 | 2 | 8 | 20,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/batrider.png" width="32"/> Batrider | 23 | 11 | 12 | 47,8% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/doom_bringer.png" width="32"/> Doom | 22 | 8 | 14 | 36,4% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/elder_titan.png" width="32"/> Elder Titan | 22 | 10 | 12 | 45,5% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/shredder.png" width="32"/> Timbersaw | 21 | 7 | 14 | 33,3% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ursa.png" width="32"/> Ursa | 21 | 13 | 8 | 61,9% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/mars.png" width="32"/> Mars | 20 | 8 | 12 | 40,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/grimstroke.png" width="32"/> Grimstroke | 19 | 8 | 11 | 42,1% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/viper.png" width="32"/> Viper | 18 | 11 | 7 | 61,1% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/abaddon.png" width="32"/> Abaddon | 17 | 9 | 8 | 52,9% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/centaur.png" width="32"/> Centaur Warrunner | 16 | 4 | 12 | 25,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/pudge.png" width="32"/> Pudge | 15 | 6 | 9 | 40,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/spirit_breaker.png" width="32"/> Spirit Breaker | 13 | 5 | 8 | 38,5% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/vengefulspirit.png" width="32"/> Vengeful Spirit | 11 | 5 | 6 | 45,5% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/necrolyte.png" width="32"/> Necrophos | 10 | 4 | 6 | 40,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/meepo.png" width="32"/> Meepo | 10 | 3 | 7 | 30,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/bristleback.png" width="32"/> Bristleback | 10 | 4 | 6 | 40,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/witch_doctor.png" width="32"/> Witch Doctor | 9 | 6 | 3 | 66,7% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/obsidian_destroyer.png" width="32"/> Outworld Destroyer | 8 | 3 | 5 | 37,5% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/bane.png" width="32"/> Bane | 8 | 2 | 6 | 25,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/snapfire.png" width="32"/> Snapfire | 7 | 5 | 2 | 71,4% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/weaver.png" width="32"/> Weaver | 7 | 4 | 3 | 57,1% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/tidehunter.png" width="32"/> Tidehunter | 9 | 5 | 4 | 55,6% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/shadow_demon.png" width="32"/> Shadow Demon | 8 | 4 | 4 | 50,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/jakiro.png" width="32"/> Jakiro | 8 | 5 | 3 | 62,5% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/skywrath_mage.png" width="32"/> Skywrath Mage | 8 | 2 | 6 | 25,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/witch_doctor.png" width="32"/> Witch Doctor | 8 | 5 | 3 | 62,5% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/bloodseeker.png" width="32"/> Bloodseeker | 7 | 4 | 3 | 57,1% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/magnataur.png" width="32"/> Magnus | 6 | 2 | 4 | 33,3% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/silencer.png" width="32"/> Silencer | 5 | 2 | 3 | 40,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/templar_assassin.png" width="32"/> Templar Assassin | 4 | 3 | 1 | 75,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/morphling.png" width="32"/> Morphling | 4 | 2 | 2 | 50,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/lion.png" width="32"/> Lion | 4 | 1 | 3 | 25,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/legion_commander.png" width="32"/> Legion Commander | 4 | 3 | 1 | 75,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/pugna.png" width="32"/> Pugna | 4 | 2 | 2 | 50,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/lycan.png" width="32"/> Lycan | 4 | 1 | 3 | 25,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/terrorblade.png" width="32"/> Terrorblade | 6 | 3 | 3 | 50,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/weaver.png" width="32"/> Weaver | 6 | 4 | 2 | 66,7% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/magnataur.png" width="32"/> Magnus | 5 | 2 | 3 | 40,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/bane.png" width="32"/> Bane | 5 | 1 | 4 | 20,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/life_stealer.png" width="32"/> Lifestealer | 4 | 2 | 2 | 50,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/keeper_of_the_light.png" width="32"/> Keeper of the Light | 4 | 2 | 2 | 50,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/treant.png" width="32"/> Treant Protector | 4 | 2 | 2 | 50,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/disruptor.png" width="32"/> Disruptor | 4 | 3 | 1 | 75,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/venomancer.png" width="32"/> Venomancer | 4 | 4 | 0 | 100,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/techies.png" width="32"/> Techies | 4 | 3 | 1 | 75,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/bounty_hunter.png" width="32"/> Bounty Hunter | 3 | 0 | 3 | 0,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/crystal_maiden.png" width="32"/> Crystal Maiden | 3 | 1 | 2 | 33,3% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/snapfire.png" width="32"/> Snapfire | 3 | 2 | 1 | 66,7% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/shadow_shaman.png" width="32"/> Shadow Shaman | 3 | 2 | 1 | 66,7% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/obsidian_destroyer.png" width="32"/> Outworld Destroyer | 3 | 1 | 2 | 33,3% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/queenofpain.png" width="32"/> Queen of Pain | 3 | 1 | 2 | 33,3% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/legion_commander.png" width="32"/> Legion Commander | 3 | 3 | 0 | 100,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/dazzle.png" width="32"/> Dazzle | 3 | 1 | 2 | 33,3% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/lina.png" width="32"/> Lina | 2 | 1 | 1 | 50,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/death_prophet.png" width="32"/> Death Prophet | 2 | 0 | 2 | 0,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/sniper.png" width="32"/> Sniper | 2 | 1 | 1 | 50,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/lone_druid.png" width="32"/> Lone Druid | 2 | 1 | 1 | 50,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/oracle.png" width="32"/> Oracle | 2 | 0 | 2 | 0,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/night_stalker.png" width="32"/> Night Stalker | 2 | 0 | 2 | 0,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/marci.png" width="32"/> Marci | 2 | 0 | 2 | 0,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ogre_magi.png" width="32"/> Ogre Magi | 2 | 2 | 0 | 100,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/lycan.png" width="32"/> Lycan | 3 | 0 | 3 | 0,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/silencer.png" width="32"/> Silencer | 2 | 0 | 2 | 0,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/bounty_hunter.png" width="32"/> Bounty Hunter | 2 | 0 | 2 | 0,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/pugna.png" width="32"/> Pugna | 2 | 1 | 1 | 50,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ringmaster.png" width="32"/> Ringmaster | 2 | 2 | 0 | 100,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/dawnbreaker.png" width="32"/> Dawnbreaker | 1 | 0 | 1 | 0,0% |
-| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/skeleton_king.png" width="32"/> Wraith King | 1 | 1 | 0 | 100,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ogre_magi.png" width="32"/> Ogre Magi | 1 | 1 | 0 | 100,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/storm_spirit.png" width="32"/> Storm Spirit | 1 | 1 | 0 | 100,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/oracle.png" width="32"/> Oracle | 1 | 0 | 1 | 0,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/lion.png" width="32"/> Lion | 1 | 0 | 1 | 0,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/drow_ranger.png" width="32"/> Drow Ranger | 1 | 0 | 1 | 0,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/marci.png" width="32"/> Marci | 1 | 0 | 1 | 0,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/nyx_assassin.png" width="32"/> Nyx Assassin | 1 | 0 | 1 | 0,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/rattletrap.png" width="32"/> Clockwerk | 1 | 0 | 1 | 0,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/lone_druid.png" width="32"/> Lone Druid | 1 | 1 | 0 | 100,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/zuus.png" width="32"/> Zeus | 1 | 1 | 0 | 100,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ancient_apparition.png" width="32"/> Ancient Apparition | 1 | 0 | 1 | 0,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/puck.png" width="32"/> Puck | 1 | 1 | 0 | 100,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/lina.png" width="32"/> Lina | 1 | 1 | 0 | 100,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/morphling.png" width="32"/> Morphling | 1 | 1 | 0 | 100,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/riki.png" width="32"/> Riki | 1 | 1 | 0 | 100,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/crystal_maiden.png" width="32"/> Crystal Maiden | 1 | 0 | 1 | 0,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/kez.png" width="32"/> Kez | 1 | 0 | 1 | 0,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/enigma.png" width="32"/> Enigma | 1 | 0 | 1 | 0,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/night_stalker.png" width="32"/> Night Stalker | 1 | 0 | 1 | 0,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/axe.png" width="32"/> Axe | 1 | 0 | 1 | 0,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/huskar.png" width="32"/> Huskar | 1 | 0 | 1 | 0,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/death_prophet.png" width="32"/> Death Prophet | 1 | 0 | 1 | 0,0% |
+| <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/templar_assassin.png" width="32"/> Templar Assassin | 1 | 0 | 1 | 0,0% |
 | <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/primal_beast.png" width="32"/> Primal Beast | 1 | 1 | 0 | 100,0% |
 
 ## Recent games (links)
 
 | Match | Date | Hero | Result |
 |:------|:-----|:-----|:-------|
-| [#8671215927](https://www.opendota.com/matches/8671215927) | 2026-01-31 | Invoker | W |
-| [#8668989072](https://www.opendota.com/matches/8668989072) | 2026-01-29 | Arc Warden | W |
-| [#8668852225](https://www.opendota.com/matches/8668852225) | 2026-01-29 | Invoker | W |
-| [#8668201606](https://www.opendota.com/matches/8668201606) | 2026-01-28 | Lina | L |
-| [#8668119788](https://www.opendota.com/matches/8668119788) | 2026-01-28 | Shadow Demon | L |
-| [#8667436922](https://www.opendota.com/matches/8667436922) | 2026-01-28 | Tidehunter | W |
-| [#8666329371](https://www.opendota.com/matches/8666329371) | 2026-01-27 | Rubick | L |
-| [#8666307448](https://www.opendota.com/matches/8666307448) | 2026-01-27 | Tiny | L |
-| [#8666208307](https://www.opendota.com/matches/8666208307) | 2026-01-27 | Invoker | L |
-| [#8666136669](https://www.opendota.com/matches/8666136669) | 2026-01-27 | Bounty Hunter | L |
-| [#8665246403](https://www.opendota.com/matches/8665246403) | 2026-01-26 | Lifestealer | W |
-| [#8665042641](https://www.opendota.com/matches/8665042641) | 2026-01-26 | Ember Spirit | L |
-| [#8662991470](https://www.opendota.com/matches/8662991470) | 2026-01-24 | Invoker | W |
-| [#8662011086](https://www.opendota.com/matches/8662011086) | 2026-01-24 | Rubick | W |
-| [#8661484649](https://www.opendota.com/matches/8661484649) | 2026-01-23 | Templar Assassin | W |
-| [#8661387007](https://www.opendota.com/matches/8661387007) | 2026-01-23 | Ember Spirit | W |
-| [#8661248277](https://www.opendota.com/matches/8661248277) | 2026-01-23 | Tinker | L |
-| [#8661183423](https://www.opendota.com/matches/8661183423) | 2026-01-23 | Arc Warden | L |
-| [#8660705374](https://www.opendota.com/matches/8660705374) | 2026-01-23 | Invoker | W |
-| [#8660666029](https://www.opendota.com/matches/8660666029) | 2026-01-23 | Ember Spirit | L |
-| [#8660547364](https://www.opendota.com/matches/8660547364) | 2026-01-23 | Arc Warden | W |
-| [#8660516339](https://www.opendota.com/matches/8660516339) | 2026-01-23 | Arc Warden | L |
-| [#8660125319](https://www.opendota.com/matches/8660125319) | 2026-01-22 | Brewmaster | L |
-| [#8660093625](https://www.opendota.com/matches/8660093625) | 2026-01-22 | Brewmaster | L |
-| [#8659250913](https://www.opendota.com/matches/8659250913) | 2026-01-22 | Disruptor | L |
-| [#8658788699](https://www.opendota.com/matches/8658788699) | 2026-01-21 | Disruptor | W |
-| [#8657438047](https://www.opendota.com/matches/8657438047) | 2026-01-20 | Ember Spirit | W |
-| [#8657332835](https://www.opendota.com/matches/8657332835) | 2026-01-20 | Arc Warden | L |
-| [#8657270749](https://www.opendota.com/matches/8657270749) | 2026-01-20 | Spirit Breaker | W |
-| [#8657196980](https://www.opendota.com/matches/8657196980) | 2026-01-20 | Rubick | W |
-| [#8656907717](https://www.opendota.com/matches/8656907717) | 2026-01-20 | Shadow Demon | W |
-| [#8656460182](https://www.opendota.com/matches/8656460182) | 2026-01-19 | Ember Spirit | W |
-| [#8655060358](https://www.opendota.com/matches/8655060358) | 2026-01-18 | Invoker | W |
-| [#8654961963](https://www.opendota.com/matches/8654961963) | 2026-01-18 | Mars | L |
-| [#8654865145](https://www.opendota.com/matches/8654865145) | 2026-01-18 | Meepo | L |
-| [#8654199002](https://www.opendota.com/matches/8654199002) | 2026-01-18 | Tinker | L |
-| [#8653581328](https://www.opendota.com/matches/8653581328) | 2026-01-17 | Brewmaster | W |
-| [#8653523374](https://www.opendota.com/matches/8653523374) | 2026-01-17 | Invoker | W |
-| [#8653456474](https://www.opendota.com/matches/8653456474) | 2026-01-17 | Tinker | L |
-| [#8653366092](https://www.opendota.com/matches/8653366092) | 2026-01-17 | Doom | L |
-| [#8652921527](https://www.opendota.com/matches/8652921527) | 2026-01-17 | Tinker | W |
-| [#8652542159](https://www.opendota.com/matches/8652542159) | 2026-01-17 | Invoker | W |
-| [#8651980133](https://www.opendota.com/matches/8651980133) | 2026-01-16 | Timbersaw | W |
-| [#8651585346](https://www.opendota.com/matches/8651585346) | 2026-01-16 | Void Spirit | W |
-| [#8651150636](https://www.opendota.com/matches/8651150636) | 2026-01-16 | Ember Spirit | W |
-| [#8649875337](https://www.opendota.com/matches/8649875337) | 2026-01-15 | Tinker | W |
-| [#8649848435](https://www.opendota.com/matches/8649848435) | 2026-01-15 | Arc Warden | W |
-| [#8649363984](https://www.opendota.com/matches/8649363984) | 2026-01-14 | Ember Spirit | W |
-| [#8649121030](https://www.opendota.com/matches/8649121030) | 2026-01-14 | Rubick | L |
-| [#8649033160](https://www.opendota.com/matches/8649033160) | 2026-01-14 | Arc Warden | L |
+| [#8498489340](https://www.opendota.com/matches/8498489340) | 2025-10-06 | Snapfire | W |
+| [#8498410889](https://www.opendota.com/matches/8498410889) | 2025-10-06 | Undying | W |
+| [#8498316480](https://www.opendota.com/matches/8498316480) | 2025-10-06 | Invoker | W |
+| [#8498003431](https://www.opendota.com/matches/8498003431) | 2025-10-06 | Rubick | L |
+| [#8497952142](https://www.opendota.com/matches/8497952142) | 2025-10-06 | Invoker | L |
+| [#8497633222](https://www.opendota.com/matches/8497633222) | 2025-10-06 | Shadow Shaman | W |
+| [#8496726293](https://www.opendota.com/matches/8496726293) | 2025-10-05 | Invoker | L |
+| [#8495894296](https://www.opendota.com/matches/8495894296) | 2025-10-05 | Rubick | W |
+| [#8495369382](https://www.opendota.com/matches/8495369382) | 2025-10-04 | Grimstroke | L |
+| [#8495228221](https://www.opendota.com/matches/8495228221) | 2025-10-04 | Necrophos | L |
+| [#8495115421](https://www.opendota.com/matches/8495115421) | 2025-10-04 | Arc Warden | W |
+| [#8494905876](https://www.opendota.com/matches/8494905876) | 2025-10-04 | Void Spirit | L |
+| [#8494742910](https://www.opendota.com/matches/8494742910) | 2025-10-04 | Invoker | W |
+| [#8494616241](https://www.opendota.com/matches/8494616241) | 2025-10-04 | Ember Spirit | W |
+| [#8494095199](https://www.opendota.com/matches/8494095199) | 2025-10-04 | Tiny | L |
+| [#8494031158](https://www.opendota.com/matches/8494031158) | 2025-10-04 | Void Spirit | W |
+| [#8493955198](https://www.opendota.com/matches/8493955198) | 2025-10-04 | Rubick | L |
+| [#8493347966](https://www.opendota.com/matches/8493347966) | 2025-10-03 | Invoker | W |
+| [#8493124115](https://www.opendota.com/matches/8493124115) | 2025-10-03 | Mars | L |
+| [#8492286341](https://www.opendota.com/matches/8492286341) | 2025-10-02 | Mars | L |
+| [#8490083591](https://www.opendota.com/matches/8490083591) | 2025-10-01 | Terrorblade | L |
+| [#8489991893](https://www.opendota.com/matches/8489991893) | 2025-10-01 | Lifestealer | W |
+| [#8489913660](https://www.opendota.com/matches/8489913660) | 2025-10-01 | Brewmaster | W |
+| [#8485993911](https://www.opendota.com/matches/8485993911) | 2025-09-29 | Vengeful Spirit | W |
+| [#8485677237](https://www.opendota.com/matches/8485677237) | 2025-09-28 | Timbersaw | L |
+| [#8485123098](https://www.opendota.com/matches/8485123098) | 2025-09-28 | Meepo | W |
+| [#8484861527](https://www.opendota.com/matches/8484861527) | 2025-09-28 | Tinker | W |
+| [#8483657956](https://www.opendota.com/matches/8483657956) | 2025-09-27 | Ogre Magi | W |
+| [#8483121048](https://www.opendota.com/matches/8483121048) | 2025-09-27 | Viper | W |
+| [#8482853510](https://www.opendota.com/matches/8482853510) | 2025-09-27 | Invoker | W |
+| [#8482778011](https://www.opendota.com/matches/8482778011) | 2025-09-27 | Invoker | L |
+| [#8481826848](https://www.opendota.com/matches/8481826848) | 2025-09-26 | Mars | W |
+| [#8481710262](https://www.opendota.com/matches/8481710262) | 2025-09-26 | Invoker | W |
+| [#8481135851](https://www.opendota.com/matches/8481135851) | 2025-09-26 | Batrider | L |
+| [#8481041606](https://www.opendota.com/matches/8481041606) | 2025-09-26 | Rubick | W |
+| [#8480928989](https://www.opendota.com/matches/8480928989) | 2025-09-26 | Rubick | W |
+| [#8480887783](https://www.opendota.com/matches/8480887783) | 2025-09-26 | Monkey King | L |
+| [#8480752915](https://www.opendota.com/matches/8480752915) | 2025-09-26 | Rubick | L |
+| [#8480702489](https://www.opendota.com/matches/8480702489) | 2025-09-26 | Earthshaker | W |
+| [#8480648682](https://www.opendota.com/matches/8480648682) | 2025-09-26 | Void Spirit | W |
+| [#8480362449](https://www.opendota.com/matches/8480362449) | 2025-09-25 | Ember Spirit | L |
+| [#8480167754](https://www.opendota.com/matches/8480167754) | 2025-09-25 | Arc Warden | L |
+| [#8480094996](https://www.opendota.com/matches/8480094996) | 2025-09-25 | Centaur Warrunner | W |
+| [#8479496639](https://www.opendota.com/matches/8479496639) | 2025-09-25 | Rubick | L |
+| [#8479399980](https://www.opendota.com/matches/8479399980) | 2025-09-25 | Doom | W |
+| [#8479294380](https://www.opendota.com/matches/8479294380) | 2025-09-25 | Tinker | L |
+| [#8479165309](https://www.opendota.com/matches/8479165309) | 2025-09-25 | Rubick | W |
+| [#8478118246](https://www.opendota.com/matches/8478118246) | 2025-09-24 | Void Spirit | L |
+| [#8477877329](https://www.opendota.com/matches/8477877329) | 2025-09-24 | Rubick | W |
+| [#8477770523](https://www.opendota.com/matches/8477770523) | 2025-09-24 | Invoker | L |

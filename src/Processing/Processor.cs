@@ -76,6 +76,7 @@ namespace RampageTracker.Processing
                         {
                             if (list.Count > 0)
                             {
+                                var seen = new HashSet<long>(list.Select(m => m.MatchId));
                                 var minId = list.Min(m => m.MatchId);
                                 if (minId > lastChecked[pidLocal])
                                 {
@@ -85,7 +86,20 @@ namespace RampageTracker.Processing
                                     {
                                         var page = await api.GetPlayerMatchesAsync(pidLocal, limit: PageLimit, offset: offset) ?? Array.Empty<PlayerMatchSummary>();
                                         if (page.Length == 0) break;
-                                        list.AddRange(page);
+                                        var added = 0;
+                                        foreach (var p in page)
+                                        {
+                                            if (seen.Add(p.MatchId))
+                                            {
+                                                list.Add(p);
+                                                added++;
+                                            }
+                                        }
+                                        if (added == 0)
+                                        {
+                                            Logger.Warn($"[new] Player {pidLocal}: paging returned only duplicates; stopping pagination.");
+                                            break;
+                                        }
                                         var pageMin = page.Min(m => m.MatchId);
                                         if (pageMin <= lastChecked[pidLocal]) break;
                                         offset += page.Length;
@@ -305,13 +319,27 @@ namespace RampageTracker.Processing
         private static async Task<List<PlayerMatchSummary>> FetchAllMatchesAsync(ApiManager api, long playerId, CancellationToken ct)
         {
             var all = new List<PlayerMatchSummary>(2048);
+            var seen = new HashSet<long>();
             var offset = 0;
             const int pageSize = 1000;
             while (!ct.IsCancellationRequested)
             {
                 var page = await api.GetPlayerMatchesAsync(playerId, limit: pageSize, offset: offset);
                 if (page == null || page.Length == 0) break;
-                all.AddRange(page);
+                var added = 0;
+                foreach (var p in page)
+                {
+                    if (seen.Add(p.MatchId))
+                    {
+                        all.Add(p);
+                        added++;
+                    }
+                }
+                if (added == 0)
+                {
+                    Logger.Warn($"[new] Player {playerId}: paging returned only duplicates; stopping pagination.");
+                    break;
+                }
                 offset += page.Length;
                 if (offset > 300_000) { Logger.Warn($"[new] Player {playerId}: paging safety cap reached at offset {offset}"); break; }
             }
@@ -321,13 +349,23 @@ namespace RampageTracker.Processing
         private static async Task<List<PlayerMatchSummary>> FetchAllNewMatchesAsync(ApiManager api, long playerId, long lastChecked, CancellationToken ct)
         {
             var all = new List<PlayerMatchSummary>(512);
+            var seen = new HashSet<long>();
             var offset = 0;
             const int pageSize = 1000; // Balanced page size; ApiManager retries with lower limit if needed
             while (!ct.IsCancellationRequested)
             {
                 var page = await api.GetPlayerMatchesAsync(playerId, limit: pageSize, offset: offset) ?? Array.Empty<PlayerMatchSummary>();
                 if (page.Length == 0) break;
-                all.AddRange(page);
+                var added = 0;
+                foreach (var p in page)
+                {
+                    if (seen.Add(p.MatchId))
+                    {
+                        all.Add(p);
+                        added++;
+                    }
+                }
+                if (added == 0) break;
                 // If the oldest match in this page is still newer than lastChecked, continue; else we can stop
                 var minId = page.Min(m => m.MatchId);
                 if (minId <= lastChecked) break;

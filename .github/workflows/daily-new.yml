@@ -25,9 +25,32 @@ jobs:
       - name: Restore
         run: dotnet restore ./src/RampageTracker.csproj
 
+      - name: Prepare players.json from variables
+        shell: bash
+        env:
+          PLAYERS: ${{ vars.PLAYERS || secrets.PLAYERS }}
+        run: |
+          if [ -n "${PLAYERS}" ]; then
+            # Accept either a JSON array (e.g. [1,2,3]) or comma/semicolon separated ids (e.g. 1,2,3)
+            if [[ "${PLAYERS}" =~ ^\[.*\]$ ]]; then
+              echo "${PLAYERS}" > players.json
+            else
+              IFS=',' read -ra IDS <<< "${PLAYERS//;/,}"
+              JSON="["; SEP=""
+              for id in "${IDS[@]}"; do
+                id_trim=$(echo "$id" | xargs)
+                if [ -n "$id_trim" ]; then
+                  JSON+="$SEP$id_trim"; SEP=",";
+                fi
+              done
+              JSON+="]"
+              echo "$JSON" > players.json
+            fi
+          fi
+
       - name: Run tracker (new)
         env:
-          OPENDOTA_API_KEY: ${{ secrets.OPENDOTA_API_KEY }}
+          OPENDOTA_API_KEY: ${{ vars.API_KEY || secrets.API_KEY || secrets.OPENDOTA_API_KEY }}
         run: |
           dotnet run --project ./src/RampageTracker.csproj -- new --apikey "$OPENDOTA_API_KEY"
 
