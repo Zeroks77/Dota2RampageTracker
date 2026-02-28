@@ -1,5 +1,5 @@
 # Dota 2 Rampage Tracker
-Last updated: 2026-02-27 03:06 UTC
+Last updated: 2026-02-28 01:30 UTC
 
 > Note: All game data is sourced via the OpenDota API. This project is not affiliated with Valve or OpenDota.
 > Data source: OpenDota (https://www.opendota.com)
