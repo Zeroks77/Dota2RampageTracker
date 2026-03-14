@@ -1,5 +1,5 @@
 # Dota 2 Rampage Tracker
-Last updated: 2026-03-13 03:06 UTC
+Last updated: 2026-03-14 01:30 UTC
 
 > Note: All game data is sourced via the OpenDota API. This project is not affiliated with Valve or OpenDota.
 > Data source: OpenDota (https://www.opendota.com)
@@ -10,7 +10,7 @@ Last updated: 2026-03-13 03:06 UTC
 |:-------|:-------:|------------------:|--------:|--------:|-----:|:---------|
 | [Lucky](Players/308948139/README.md) | <img src="https://avatars.steamstatic.com/1191c81a57194f64acfcda94f0fd0cb94e92eff7_full.jpg" width="32" height="32"/> | 28/5599 | 54.51% | 55.13% | 53.89% | [View](Players/308948139/Rampages.md) |
 | [Xenas23](Players/181342370/README.md) | <img src="https://avatars.steamstatic.com/16392e7c2bf30770c48c4b989eef4a19f237d548_full.jpg" width="32" height="32"/> | 13/5927 | 55.26% | 56.51% | 53.97% | [View](Players/181342370/Rampages.md) |
-| [Zero](Players/183063377/README.md) | <img src="https://avatars.steamstatic.com/c0a975434fc5b15f662cbe8214fc898c493b55ea_full.jpg" width="32" height="32"/> | 8/8087 | 50.85% | 52.27% | 49.37% | [View](Players/183063377/Rampages.md) |
+| [Zero](Players/183063377/README.md) | <img src="https://avatars.steamstatic.com/c0a975434fc5b15f662cbe8214fc898c493b55ea_full.jpg" width="32" height="32"/> | 8/8207 | 50.80% | 52.27% | 49.27% | [View](Players/183063377/Rampages.md) |
 | [Mupfel](Players/131232145/README.md) | <img src="https://avatars.steamstatic.com/5975408a7d136abfeb6160943f0db7743d542d54_full.jpg" width="32" height="32"/> | 5/3991 | 55.02% | 55.04% | 55.01% | [View](Players/131232145/Rampages.md) |
 
 ## How it works
