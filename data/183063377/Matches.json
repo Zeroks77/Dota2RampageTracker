@@ -1,5 +1,12 @@
 [
   {
+    "match_id": 8767859988,
+    "start_time": 1775947807,
+    "hero_id": 109,
+    "player_slot": 3,
+    "radiant_win": false
+  },
+  {
     "match_id": 8766278499,
     "start_time": 1775860942,
     "hero_id": 31,
